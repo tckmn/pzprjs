@@ -104,6 +104,7 @@
 			search = RegExp.$3;
 		}
 
+		ui.boot_pzv = search; // for puzz.link solve callback
 		var pzl = pzpr.parser.parseURL(search);
 		var startmode = pzl.mode || (!pzl.body ? "editor" : "player");
 		onload_option.type = onload_option.type || startmode;
