@@ -5,6 +5,7 @@
 	/* 初期化時のみ使用するルーチン */
 	/********************************/
 
+	var onload_pzv = null;
 	var onload_pzl = null;
 	var onload_option = {};
 
@@ -43,11 +44,11 @@
 			title2.innerHTML = "Fail to import puzzle data or URL.";
 		}
 		document.getElementById("menupanel").innerHTML = "";
-		//throw new Error("No Include Puzzle Data Exception");
 	}
 
 	function startPuzzle() {
 		var pzl = onload_pzl;
+		ui.pzv = onload_pzv; // for the puzz.link callback
 
 		/* IE SVGのtextLengthがうまく指定できていないので回避策を追加 */
 		if (
@@ -104,7 +105,7 @@
 			search = RegExp.$3;
 		}
 
-		ui.boot_pzv = search; // for puzz.link solve callback
+		onload_pzv = search;
 		var pzl = pzpr.parser.parseURL(search);
 		var startmode = pzl.mode || (!pzl.body ? "editor" : "player");
 		onload_option.type = onload_option.type || startmode;
