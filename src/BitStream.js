@@ -38,8 +38,9 @@ pzpr.BitStream.prototype.write = function(len, data) {
     this.arr[this.bytepos] |= (data & ((2 << len) - 1)) << (this.bitsleft -= len);
 };
 
-// only used for tests currently
-pzpr.BitStream.prototype.reset = function() {
-    this.bytepos = 0;
-    this.bitsleft = 8;
+// WARNING: does not resize the buffer if seeking past the end
+// (should not matter, because buffer will autoresize on write)
+pzpr.BitStream.prototype.seek = function(bytepos, bitsleft) {
+    this.bytepos = bytepos || 0;
+    this.bitsleft = bitsleft || 8;
 };
