@@ -73,7 +73,7 @@ ui.menuarea = {
 					setevent = true;
 				}
 
-				var role = ui.customAttr(el, "menuexec");
+				var role = ui.customAttr(el, "menuExec");
 				if (!!role) {
 					addmenuevent(el, "mousedown", role);
 					setevent = true;

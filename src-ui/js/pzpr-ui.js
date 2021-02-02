@@ -16,6 +16,7 @@ exports.files = [
 	"ui/Timer",
 	"ui/AuxEditor",
 	"ui/Network",
+	"ui/LocalDb",
 	"common/outro"
 ].map(function(mod) {
 	return "src-ui/js/" + mod + ".js";

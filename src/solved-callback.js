@@ -24,15 +24,7 @@ ui.callbackComplete = function(puzzle, check){
         return;
     }
 
-    var xhr = new XMLHttpRequest();
-    xhr.addEventListener('load', function() {
-        ui.notify.alert(this.responseText);
-    });
-    xhr.open('POST', '/localdb');
-    xhr.send(JSON.stringify({
-        'url': pzv,
-        't': time
-    }) + '~' + puzzle.recording.finalize());
+    ui.localdb.send(pzv, time, puzzle.recording.finalize());
 
     if(puzzle.getConfig("variant")){
         // completion makes no sense for variants currently

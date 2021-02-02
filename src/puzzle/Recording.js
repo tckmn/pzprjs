@@ -6,9 +6,14 @@ pzpr.classmgr.makeCommon({
             this.puzzle = puzzle;
             this.lastOp = puzzle.getTime();
             this.recording = '';
+            this.finalized = false;
         },
 
         add: function(chainflag, obj) {
+            if (this.finalized) {
+                return;
+            }
+
             if (this.chainflag) {
                 this.recording += 0 + ';' + obj + '.';
                 window['console'].log('++', obj);
@@ -21,6 +26,7 @@ pzpr.classmgr.makeCommon({
         },
 
         finalize: function() {
+            this.finalized = true;
             return this.recording;
         },
 

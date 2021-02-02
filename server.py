@@ -32,10 +32,12 @@ def patch(genre):
         if genre in alias: return alias[0]
     return genre
 
-def tts(t):
+def tts(t, precise=False):
+    ms = t%1000
     t = t//1000
     h, m, s = t//3600, (t//60)%60, t%60
-    return '{}:{:02}:{:02}'.format(h, m, s) if h > 0 else '{}:{:02}'.format(m, s)
+    hms = f'{h}:{m:02}:{s:02}' if h > 0 else f'{m}:{s:02}'
+    return f'{hms}.{ms:03}' if precise else hms
 
 def recpath(rowid):
     return os.path.join(DATA_DIR, 'recordings', f'{rowid:06}')
@@ -51,7 +53,12 @@ CREATE TABLE IF NOT EXISTS d (
     date    TEXT NOT NULL,
     w       INTEGER NOT NULL,
     h       INTEGER NOT NULL,
-    t       INTEGER NOT NULL
+    t       INTEGER NOT NULL,
+    rate    INTEGER,
+    diff    INTEGER,
+    path    INTEGER,
+    uniq    INTEGER,
+    comm    TEXT
 )
 ''')
 conn.commit()
@@ -87,18 +94,36 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
             parts = data['url'].split('/')
             genre = patch(parts[0])
             flags, w, h = ([None]+parts[1:3]) if parts[1].isdigit() else parts[1:4]
-            c.execute('INSERT INTO d VALUES (?,?,?,?,datetime("now","localtime"),?,?,?)',
-                    (genre, data.get('v'), flags, data['url'], w, h, data['t']))
+            c.execute('INSERT INTO d (genre,flags,url,date,w,h,t) VALUES (?,?,?,datetime("now","localtime"),?,?,?)',
+                    (genre, flags, data['url'], w, h, data['t']))
             conn.commit()
 
-            with open(recpath(c.lastrowid), 'wb') as recfile:
+            rowid = c.lastrowid
+            with open(recpath(rowid), 'wb') as recfile:
                 recfile.write(recording)
 
             num, time = c.execute('SELECT COUNT(*), SUM(t) FROM d WHERE genre = ?', (genre,)).fetchone()
 
             self.send_response(200)
             self.end_headers()
-            self.wfile.write('saved time: {}<br>{} {} puzzles solved in {}'.format(tts(data['t']), num, genre, tts(time)).encode())
+            self.wfile.write(json.dumps({
+                'time': tts(data['t'], True),
+                'msg': f'{num} {genre} puzzles solved in {tts(time)}',
+                'rowid': rowid
+            }).encode())
+
+        elif self.path == '/update':
+            data = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+
+            if data['k'] in ['rate', 'diff', 'path', 'uniq', 'variant', 'comm']:
+                c.execute(f'UPDATE d SET {data["k"]} = ? WHERE rowid = ?', (data['v'], data['rowid']))
+                conn.commit()
+
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'msg': 'saved!'
+            }).encode())
 
         elif self.path == '/getrec':
             data = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
