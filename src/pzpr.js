@@ -11,6 +11,7 @@ exports.files = [
 	"pzpr/parser",
 	"pzpr/metadata",
 	"pzpr/util",
+	"BitStream",
 	"puzzle/Puzzle",
 	"puzzle/Config",
 	"puzzle/Address",
