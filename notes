@@ -1,0 +1,199 @@
+RECORDING FORMAT:
+
+HEADER
+    fixed 8 bits: version
+    HUFFMAN TREE FOR OPS
+        ...
+LIST OF OPS
+    bignum: time delta
+    huffman thing
+
+these aren't necessary because they can be derived from the url
+the min value of each is -1 (for excells); represent this as all 1s
+the max value of each is 2n+1 (for excells and tawamurenga)
+    smallnum: number of bits used for x
+    smallnum: number of bits used for y
+
+? bits: time delta
+4 bits: action type
+
+
+CM CA CS CK CB
+      XS
+   BA BS    BL
+
+AC TE TF [TR] SG
+
+
+CM -3? to 999
+CA usually 0 1, can be 2 (dosufuwa) 11-13 (amibo tateyoko) 41-50 (shugaku)
+CS usually 0 1, can be 2 (country sukoro X's, bgcolor2)
+CK 0 1
+CB_ -3 to 999
+XS 0 1
+BA 0 1
+BS usually 0 1 2, can be 11 12 (directional aux marks)
+BL 0 1
+
+CM,CB0,CB1,CB2,CB3  num
+CA usually 0 1, can be 2 (dosufuwa) 11-13 (amibo tateyoko) 41-50 (shugaku)
+CS usually 0 1, can be 2 (country sukoro X's, bgcolor2)
+BS usually 0 1 2, can be 11 12 (directional aux marks)
+CK 0 1
+XS 0 1
+BA 0 1
+BL 0 1
+
+SG 0 1 (two coords!)
+
+custom ops: clear, clear aux, enter trial, accept, reject, undo, redo (all no args)
+check??
+
+---
+
+AC -
+TE smallnum
+TF array(bignum)
+
+
+STRGROUP: {
+    C: "cell",      // also used for bgcolor (eg slither)
+    X: "cross",     // grid crossings (eg slant clues)
+    B: "border",    // loop puzzles, moving objects
+    E: "excell"     // exterior cell (eg kinkonkan clues)
+},
+STRPROP: {
+    U: "ques",      // [EDIT] givens
+    N: "qnum",      // [EDIT] given numbers
+    Z: "qnum2",     // [EDIT] given numbers in other triangle (eg kakuro)
+    C: "qchar",     // [EDIT] looks like only used for kinkonkan excells
+    M: "anum",      // sudoku numbers, random stuff like toichika arrows, pencil tips
+    D: "qdir",      // [EDIT] eg yajilin arrows
+    A: "qans",      // shaded cells, line answers when not loop segments (eg tentaisho)
+    S: "qsub",      // aux marks
+    K: "qcmp",      // "completed" mark (eg done circle in yosenabe)
+    B: "snum",      // sudoku pencil marks
+    L: "line"       // loop segments
+},
+
+from src-ui/p.html; cf docs/InputModes.md
+generally easiest to find these by grepping for them quoted
+sometimes definition is something like: if thing.inputMode === "thing"
+there's also a huge switch case in src/puzzle/MouseInput.js
+which likes referencing stuff in src/variety-common/MouseInput.js
+which in turn uses a lot of src/puzzle/Piece.js
+
+hebi roma yinyang have some weirdness with number input CB null
+not just these; eg toichika arrow removal triggers it too
+
+maybe tents should set chainflag when dragging out a tent
+documentation for circle-(un)shade is wrong
+
+number: num can go down to -3 (eg doppelblock snums), up to 999
+
+bit = 0,1
+bit n = 0,n
+
+auto
+shade           CA bit
+unshade         CS bit
+number          CM num or CB? num
+number-
+letter          [EDIT]
+letter-
+quesmark        [EDIT]
+quesmark-
+border          BA bit
+subline         BS bit
+direc           [EDIT]
+arrow           CM -1,1-4
+circle-unshade  CM -1,1
+circle-shade    CM -1,2
+goat            [EDIT]
+wolf            [EDIT]
+moon            [EDIT]
+sun             [EDIT]
+empty           [EDIT]
+ice             [EDIT]
+water           [EDIT]
+nabe            [EDIT]
+crossdot        [EDIT]
+ineq            [EDIT]
+move-clue       ???
+copy-answer     ???
+mark-circle     CM -1,1     [EDIT] different (nurimaze)
+mark-triangle   CM -1,2
+mark-rect       CM -1,3
+mark-tree       [EDIT]
+mark-tent       CM -1,2
+undef           [EDIT]
+line            BL bit
+peke            BS bit 2
+diraux          BS 0,11,12
+bar             CA 0,11,12,13       plus,vert,horiz (plus in amibo)
+akari           CA bit
+star            CA bit
+dot             BS bit or XS bit
+balloon         CA bit
+ironball        CA bit 2            presumably intended, but right now just inputs balloons lmao
+futon           CA 0,41-50          41-45 pillows, 46-50 feet (first is lone, 4 are directional)
+completion      CK bit
+copycircle      CM -1,1,2           cf circle-*shade
+copynum         CM num
+dragnum+        CM -1,1-5
+dragnum-
+objblank        CS bit
+numexist        CS bit
+numblank        CS bit 2
+subcircle       CS bit
+subcross        CS bit 2
+bgcolor         CS 0,1,2
+bgcolor1        CS bit
+bgcolor2        CS bit 2
+bgpaint         [EDIT]
+clear
+
+[check only]
+info-line
+info-blk
+info-road
+
+=======================
+
+ObjectOperation:
+- [CXBE][UNZCMDASKBL] + 4 numbers x,y,old,new
+- CB0-CB3
+BoardClearOperation:
+- AC
+TrialEnterOperation:
+- TE + 2 numbers prev,new which increment from 0
+TrialFinalizeOperation:
+- TF + array of numbers (positions, can be big)
+
+SegmentOperation:
+- kouchoku segments
+- SG + 6 numbers sx,sy,ex,ey,old,new (these are bits)
+
+=== [EDIT] ===
+
+BoardAdjustOperation:
+- AJ + [expand,reduce][up,dn,lt,rt]
+BoardFlipOperation:
+- AT + [turnl,turnr,flipx,flipy] + 4 numbers x,y,oldw,oldh
+
+StartposOperation, StartGoalOperation:
+- slalom start+end position, nurimaze/haisu start/goal position
+- P[SG] + 4 numbers oldx,oldy,newx,newy
+InOutOperation:
+- icebarn in/out position
+- P[IO] + 4 numbers oldx,oldy,newx,newy
+IndicatorOperation, StarCountOperation:
+- easyasabc range, starbattle count
+- AS + 2 numbers
+ObjectOperation2:
+- tapa clues
+- CR + 2 numbers + 2 arrays of numbers
+
+CurveDataOperation, SlideOperation:
+- oh god curve data
+- D[CS]

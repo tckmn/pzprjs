@@ -11,9 +11,12 @@
 <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
 
 <link rel="stylesheet" href="./css/ui.css?<%= git.hash %>" type="text/css">
+<link rel="stylesheet" href="./css/dark.css?<%= git.hash %>" type="text/css">
 <script type="text/javascript" src="./js/pzpr.js?<%= git.hash %>"></script>
 <script type="text/javascript" src="./js/pzpr-ui.js?<%= git.hash %>"></script>
 <title>puzz.link player</title>
+
+<script type="text/javascript" src="./js/solved-callback.js?<%= git.hash %>"></script>
 </head>
 
 <body>
@@ -98,6 +101,10 @@
      <hr>
      <li data-popup="about"><span>__puzz.linkについて__About__</span></li>
      <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__バグレポートと機能リクエスト__Bug reports and feature requests__</a></li>
+   </menu></li>
+   <li id="menu_pzplus"><span>__pzplus__pzplus__</span><menu label="__pzplus__pzplus__">
+     <li data-popup="about"><span>__Manual solve entry__Manual solve entry__</span></li>
+     <li data-menuexec="playRecording"><span>__Play recording__Play recording__</span></li>
    </menu></li>
   </menu>
   <div id="usepanel" style="display:none;">
@@ -330,6 +337,11 @@
   </div>
   <hr class="separator" id="separator2">
   <div id="timerpanel">経過時間：00:00</div>
+</div>
+
+<div style='display:@1'>
+  You have already solved this puzzle in @2!
+  @3
 </div>
 
 <div id="quesboard">

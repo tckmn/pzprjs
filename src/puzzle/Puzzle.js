@@ -73,6 +73,8 @@
 
 		metadata: null, // 作者やコメントなどの情報
 
+		recording: null,
+
 		// モード設定用定数
 		MODE_EDITOR: 1,
 		MODE_PLAYER: 3,
@@ -433,6 +435,8 @@
 				}
 
 				puzzle.resetTime();
+
+				puzzle.recording = new puzzle.klass.Recording(puzzle);
 
 				if (!!callback) {
 					callback(puzzle);

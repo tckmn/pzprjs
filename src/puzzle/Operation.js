@@ -605,9 +605,14 @@ pzpr.classmgr.makeCommon({
 		// um.add()  指定された操作を追加する(共通操作)
 		//---------------------------------------------------------------------------
 		add: function(newope) {
+
 			if (!this.puzzle.ready || (!this.forceRecord && this.disrec > 0)) {
 				return;
 			}
+
+			// disrec is set on undo/redo and "reject trial", so we record those separately
+			// it's also set in a few other files, but i don't think we need to care about those
+			this.record(newope.toString());
 
 			newope.broadcast();
 
@@ -647,6 +652,10 @@ pzpr.classmgr.makeCommon({
 			}
 			this.changeflag = true;
 			this.checkexec();
+		},
+
+		record: function(obj) {
+			this.puzzle.recording.add(this.chainflag, obj);
 		},
 
 		//---------------------------------------------------------------------------
@@ -754,7 +763,11 @@ pzpr.classmgr.makeCommon({
 		// opemgr.redoCore()  Redoを実行する(preproc/postprocなし)
 		// opemgr.resumeGoto()  指定された履歴の位置まで移動する(preproc/postprocなし)
 		//---------------------------------------------------------------------------
-		undoCore: function() {
+		undoCore: function(norec) {
+			// don't record undo when rejecting trial
+			if (!norec) {
+				this.record('undo');
+			}
 			this.undoExec = true;
 			var opes = this.history[this.position - 1];
 			for (var i = opes.length - 1; i >= 0; i--) {
@@ -765,7 +778,10 @@ pzpr.classmgr.makeCommon({
 			this.position--;
 			this.undoExec = false;
 		},
-		redoCore: function() {
+		redoCore: function(norec) {
+			if (!norec) {
+				this.record('redo');
+			}
 			this.redoExec = true;
 			var opes = this.history[this.position];
 			for (var i = 0; i < opes.length; ++i) {
@@ -779,11 +795,11 @@ pzpr.classmgr.makeCommon({
 		resumeGoto: function(pos) {
 			if (pos < this.position) {
 				while (pos < this.position) {
-					this.undoCore();
+					this.undoCore(true);
 				}
 			} else if (this.position < pos) {
 				while (this.position < pos) {
-					this.redoCore();
+					this.redoCore(true);
 				}
 			}
 			this.checkenable();
@@ -874,6 +890,7 @@ pzpr.classmgr.makeCommon({
 			if (this.trialpos.length === 0) {
 				return;
 			}
+			this.record('reject');
 			this.disableRecord();
 			this.board.errclear();
 			if (rejectall || this.trialpos.length === 1) {

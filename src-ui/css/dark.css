@@ -1,0 +1,56 @@
+body {
+    background-color: black;
+    background-image: none !important;
+    color: #d8d8d8;
+}
+
+div#main {
+    background-color: black;
+    border-color: #181818;
+    color: #d8d8d8;
+}
+
+body > div > div, #menupanel, div.notify, .player, .testcase {
+    background-color: #181818;
+    border-color: #383838;
+}
+
+div div.titlebar {
+    background-color: #282828;
+}
+
+button, .btn, input {
+    background: none;
+    background-color: #282828;
+    border-color: #383838;
+    color: #d8d8d8;
+}
+
+.links a {
+    color: #d8d8d8;
+}
+
+div#variantpanel input[type="checkbox"]:disabled:checked + span {
+    color: #ab4642;
+}
+
+div.childsel, div.childsel::before {
+    color: #ab4642;
+    background-color: #383838;
+}
+
+#menupanel > li > span {
+    color: #7cafc2;
+}
+
+div.blocks  { background-color: #311; }
+div.loops   { background-color: #113; }
+div.lines   { background-color: #223; }
+div.divides { background-color: #131; }
+div.numbers { background-color: #222; }
+div.others  { background-color: #331; }
+div.puztable { background-color: #444; }
+
+a:link    { color: #7cafc2; }
+a:visited { color: #ba8baf; }
+a.rules   { color: #d8d8d8; }

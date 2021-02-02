@@ -73,7 +73,7 @@ ui.menuarea = {
 					setevent = true;
 				}
 
-				var role = ui.customAttr(el, "menuExec");
+				var role = ui.customAttr(el, "menuexec");
 				if (!!role) {
 					addmenuevent(el, "mousedown", role);
 					setevent = true;
@@ -429,5 +429,18 @@ ui.menuarea = {
 				ui.puzzle.subclear();
 			}
 		);
+	},
+
+	playRecording: function() {
+		var xhr = new XMLHttpRequest();
+		xhr.addEventListener('load', function() {
+			ui.puzzle.recording.load(xhr.response);
+		});
+		// xhr.responseType = 'arraybuffer';
+		xhr.open('POST', '/getrec');
+		xhr.send(JSON.stringify({
+			'url': location.search.slice(1)
+		}));
+		this.stopHovering();
 	}
 };
