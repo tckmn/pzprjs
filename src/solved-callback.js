@@ -1,5 +1,6 @@
 var token = localStorage.getItem("token");
 var userid = 'tckmn';
+
 ui.callbackCalled = false;
 ui.callbackComplete = function(puzzle, check){
     if(ui.callbackCalled){
