@@ -99,4 +99,26 @@ describe('pzplus BitStream', function() {
         assert.equal(bs.read(32), 0xc80000fa);
     });
 
+    it('supports VLQs', function() {
+        var bs = new pzpr.BitStream(10);
+        bs.writeVLQ(5, 0xe024ba5b);
+        bs.seek();
+        assert.equal(bs.read(6), 0b1_11011);
+        assert.equal(bs.read(6), 0b1_10010);
+        assert.equal(bs.read(6), 0b1_01110);
+        assert.equal(bs.read(6), 0b1_01001);
+        assert.equal(bs.read(6), 0b1_00010);
+        assert.equal(bs.read(6), 0b1_10000);
+        assert.equal(bs.read(6), 0b0_00011);
+        bs.seek();
+        assert.equal(bs.readVLQ(5), 0xe024ba5b);
+    });
+
+    it('supports (utf8) strings', function() {
+        var bs = new pzpr.BitStream(10);
+        bs.writeString('this is šome text');
+        bs.seek();
+        assert.equal(bs.readString(), 'this is šome text');
+    });
+
 });

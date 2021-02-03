@@ -1,4 +1,4 @@
-Changes from base puzz.link:
+New files:
 
  * server.py should be run on the server
 
@@ -14,5 +14,13 @@ Changes from base puzz.link:
 
  * src-ui/css/dark.css provides the dark theme
 
+ * test/pzplus.js
+
+Changes from base puzz.link:
+
  * Puzzle objects have a recording property, which the OperationManager
    interacts with
+
+ * Operation objects have getSignature, encodeBin, decodeBin, [playback]
+
+ * new Pzplus* Operations introduced

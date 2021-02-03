@@ -41,6 +41,10 @@ pzpr.classmgr.makeCommon({
 		},
 		broadcast: function() {},
 
+		getSignature: function() { return [0]; },
+		encodeBin: function(stream, dims) { stream.writeString(this.toString()); },
+		decodeBin: function(stream, signature, args, dims) { return false; },
+
 		//---------------------------------------------------------------------------
 		// ope.undo()  操作opeを一手前に戻す
 		// ope.redo()  操作opeを一手進める
@@ -100,15 +104,10 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		decode: function(strs) {
-			this.group = this.STRGROUP[strs[0].charAt(0)];
-			this.property = this.STRPROP[strs[0].charAt(1)];
+			this.decodePrefix(strs[0]);
 			if (!this.group || !this.property) {
 				return false;
 			}
-			this.pos =
-				strs[0].substr(0, 2) === "CB" && strs[0].length > 2
-					? +strs[0].charAt(2)
-					: null;
 			this.bx = +strs[1];
 			this.by = +strs[2];
 			this.old = +strs[3];
@@ -116,6 +115,17 @@ pzpr.classmgr.makeCommon({
 			return true;
 		},
 		toString: function() {
+			var prefix = this.getPrefix();
+			return [prefix, this.bx, this.by, this.old, this.num].join(",");
+		},
+		broadcast: function() {
+			if (this.external) {
+				return;
+			}
+			this.puzzle.emit("cellop", this.toJSON());
+		},
+
+		getPrefix: function() {
 			var prefix = "";
 			for (var i in this.STRGROUP) {
 				if (this.group === this.STRGROUP[i]) {
@@ -132,13 +142,61 @@ pzpr.classmgr.makeCommon({
 			if (prefix === "CB" && this.pos !== null) {
 				prefix += this.pos;
 			}
-			return [prefix, this.bx, this.by, this.old, this.num].join(",");
+			return prefix;
 		},
-		broadcast: function() {
-			if (this.external) {
-				return;
+		decodePrefix: function(prefix) {
+			this.group = this.STRGROUP[prefix.charAt(0)];
+			this.property = this.STRPROP[prefix.charAt(1)];
+			if (prefix.substr(0, 2) === 'CB') {
+				this.pos = +prefix.charAt(2);
 			}
-			this.puzzle.emit("cellop", this.toJSON());
+		},
+
+		getSignature: function() {
+			var prefix = 'OO_' + this.getPrefix(), sig;
+
+			// first try hardcoded prefix+num combos
+			sig = pzpr.RecTools.key2sig[prefix + this.num];
+			if (sig) {
+				return [sig];
+			}
+
+			// then try hardcoded prefix with num param
+			sig = pzpr.RecTools.key2sig[prefix + '_n'];
+			if (sig) {
+				return [sig, this.num];
+			}
+
+			// fallback to generic ObjectOperation
+			return [pzpr.RecTools.key2sig.OO_GEN, prefix, this.num];
+		},
+		encodeBin: function(stream, dims) {
+			pzpr.RecTools.writeCoords(stream, dims, this.bx, this.by);
+		},
+		decodeBin: function(stream, signature, args, dims) {
+			var key = pzpr.RecTools.sig2key[signature];
+			if (!key || key.substr(0, 3) !== 'OO_') {
+				return false;
+			}
+
+			// read coords from stream
+			var coords = pzpr.RecTools.readCoords(stream, dims);
+			this.bx = coords[0];
+			this.by = coords[1];
+
+			// handle generic case first
+			if (key === 'OO_GEN') {
+				this.decodePrefix(args[0]);
+				// this.old
+				this.num = args[1];
+				return true;
+			}
+
+			// otherwise we have a specific case
+			this.decodePrefix(key.slice(3));
+			// this.old = +strs[3];
+			this.num = key.substr(-2, 2) === '_n' ? args[0] : +key.slice(5);
+			return true;
 		},
 
 		//---------------------------------------------------------------------------
@@ -223,7 +281,12 @@ pzpr.classmgr.makeCommon({
 		},
 		toString: function() {
 			return this.prefix;
-		}
+		},
+
+		getSignature: function() { return [pzpr.RecTools.key2sig.BCLR]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.BCLR; },
+		playback: function() { this.puzzle.ansclear(); }
 	},
 
 	// BoardAdjustOperationクラス
@@ -361,7 +424,12 @@ pzpr.classmgr.makeCommon({
 		},
 		toString: function() {
 			return ["TE", this.old, this.num].join(",");
-		}
+		},
+
+		getSignature: function() { return [pzpr.RecTools.key2sig.TENT]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.TENT; },
+		playback: function() { this.puzzle.enterTrial(); }
 	},
 
 	// TrialFinalizeOperationクラス
@@ -393,7 +461,33 @@ pzpr.classmgr.makeCommon({
 		},
 		toString: function() {
 			return "TF,[" + this.old.join(",") + "]";
-		}
+		},
+
+		getSignature: function() { return [pzpr.RecTools.key2sig.TFIN]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.TFIN; },
+		playback: function() { this.puzzle.acceptTrial(); }
+	},
+
+	"PzplusUndo:Operation": {
+		getSignature: function() { return [pzpr.RecTools.key2sig.UNDO]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.UNDO; },
+		playback: function() { this.puzzle.undo(); }
+	},
+
+	"PzplusRedo:Operation": {
+		getSignature: function() { return [pzpr.RecTools.key2sig.REDO]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.REDO; },
+		playback: function() { this.puzzle.redo(); }
+	},
+
+	"PzplusTrialReject:Operation": {
+		getSignature: function() { return [pzpr.RecTools.key2sig.TREJ]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.TREJ; },
+		playback: function() { this.puzzle.rejectCurrentTrial(); }
 	},
 
 	//---------------------------------------------------------------------------
@@ -454,7 +548,10 @@ pzpr.classmgr.makeCommon({
 				classes.BoardAdjustOperation,
 				classes.BoardFlipOperation,
 				classes.TrialEnterOperation,
-				classes.TrialFinalizeOperation
+				classes.TrialFinalizeOperation,
+				classes.PzplusUndo,
+				classes.PzplusRedo,
+				classes.PzplusTrialReject
 			];
 			this.addExtraOperation();
 		},
@@ -612,7 +709,7 @@ pzpr.classmgr.makeCommon({
 
 			// disrec is set on undo/redo and "reject trial", so we record those separately
 			// it's also set in a few other files, but i don't think we need to care about those
-			this.record(newope.toString());
+			this.record(newope);
 
 			newope.broadcast();
 
@@ -766,7 +863,7 @@ pzpr.classmgr.makeCommon({
 		undoCore: function(norec) {
 			// don't record undo when rejecting trial
 			if (!norec) {
-				this.record('undo');
+				this.record(new this.puzzle.klass.PzplusUndo());
 			}
 			this.undoExec = true;
 			var opes = this.history[this.position - 1];
@@ -780,7 +877,7 @@ pzpr.classmgr.makeCommon({
 		},
 		redoCore: function(norec) {
 			if (!norec) {
-				this.record('redo');
+				this.record(new this.puzzle.klass.PzplusRedo());
 			}
 			this.redoExec = true;
 			var opes = this.history[this.position];
@@ -890,7 +987,7 @@ pzpr.classmgr.makeCommon({
 			if (this.trialpos.length === 0) {
 				return;
 			}
-			this.record('reject');
+			this.record(new this.puzzle.klass.PzplusTrialReject());
 			this.disableRecord();
 			this.board.errclear();
 			if (rejectall || this.trialpos.length === 1) {

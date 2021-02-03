@@ -10,10 +10,11 @@ ui.localdb = {
     },
 
     send: function(pzv, time, recording) {
-        this.xhr('/localdb', JSON.stringify({
+        var json = new TextEncoder().encode(JSON.stringify({
             'url': pzv,
             't': time
-        }) + '~' + recording, this.send_resp);
+        }));
+        this.xhr('/localdb', recording.finalize(json), this.send_resp);
     },
 
     send_resp: function(localdb, resp) {

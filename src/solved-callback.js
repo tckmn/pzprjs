@@ -24,7 +24,7 @@ ui.callbackComplete = function(puzzle, check){
         return;
     }
 
-    ui.localdb.send(pzv, time, puzzle.recording.finalize());
+    ui.localdb.send(pzv, time, puzzle.recording);
 
     if(puzzle.getConfig("variant")){
         // completion makes no sense for variants currently

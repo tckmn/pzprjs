@@ -88,7 +88,7 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
 
         if self.path == '/localdb':
-            data, recording = self.rfile.read(int(self.headers['Content-Length'])).split(b'~', 1)
+            data, recording = self.rfile.read(int(self.headers['Content-Length'])).split(b'\0', 1)
             data = json.loads(data)
 
             parts = data['url'].split('/')
