@@ -291,12 +291,12 @@ pzpr.RecTools = {
     sig2params: {},
 
     writeCoords: function(stream, dims, x, y) {
-        stream.writeVLQ(3, x);
-        stream.writeVLQ(3, y);
+        stream.writeVLQ(5, x);
+        stream.writeVLQ(5, y);
     },
 
     readCoords: function(stream, dims) {
-        return [stream.readVLQ(3), stream.readVLQ(3)];
+        return [stream.readVLQ(5), stream.readVLQ(5)];
     }
 
 };
