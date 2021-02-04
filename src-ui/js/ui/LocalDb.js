@@ -105,7 +105,7 @@ pzpr.on('load', function() {
     });
 
     var tokenerr = 'You have missing authentication information! Click <em>pzplus → Authentication</em> to input it.';
-    if (!localStorage.getItem('token') || !localStorage.getItem('userid')) {
+    if (!localStorage.getItem('token') || !localStorage.getItem('user_id')) {
         addMsg(tokenerr);
     } else {
         var xhr = new XMLHttpRequest();
