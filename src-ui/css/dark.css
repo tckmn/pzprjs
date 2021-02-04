@@ -10,7 +10,7 @@ div#main {
     color: #d8d8d8;
 }
 
-body > div > div, #menupanel, div.notify, .player, .testcase {
+body > div > div, #menupanel, div.notify, .player, .testcase, div.popup {
     background-color: #181818;
     border-color: #383838;
 }
@@ -24,6 +24,14 @@ button, .btn, input, textarea {
     background-color: #282828;
     border-color: #383838;
     color: #d8d8d8;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+}
+
+.btn-ok {
+    background-color: #3e5861;
 }
 
 .links a {
@@ -41,6 +49,19 @@ div.childsel, div.childsel::before {
 
 #menupanel > li > span {
     color: #7cafc2;
+}
+
+#menupanel menu li.check > span, #menupanel menu li[data-value] > span, #menupanel menu a, #menupanel menu li.checked > span {
+    color: #d8d8d8;
+}
+
+#menupanel menu li {
+    background-color: #282828;
+    color: #d8d8d8;
+}
+
+#menupanel menu li:hover {
+    background-color: #562321;
 }
 
 div.blocks  { background-color: #311; }

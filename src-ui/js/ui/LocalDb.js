@@ -88,3 +88,37 @@ ui.localdb = {
     }
 
 };
+
+pzpr.on('load', function() {
+    var msg = document.getElementById('pzplusmsg'), msgs = [], addMsg = function(s) {
+        msgs.push(s);
+        msg.innerHTML = msgs.join('<br>');
+    };
+
+    ui.localdb.xhr('/prevsolves', JSON.stringify({
+        'url': location.search.slice(1)
+    }), function(localdb, resp) {
+        if (resp.length) {
+            addMsg('You have already solved this puzzle in ' + resp.map(function(x) { return x.t; }).join(', ') + '!');
+            addMsg('Click <em>pzplus → Play recording</em> to view the recording.');
+        }
+    });
+
+    var tokenerr = 'You have missing authentication information! Click <em>pzplus → Authentication</em> to input it.';
+    if (!localStorage.getItem('token') || !localStorage.getItem('userid')) {
+        addMsg(tokenerr);
+    } else {
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', function() {
+            var resp = JSON.parse(this.response);
+            if (resp && resp[0] && resp[0].token) {
+                localStorage.setItem('token', resp[0].token);
+            } else {
+                addMsg(tokenerr);
+            }
+        });
+        xhr.open('GET', 'https://puzz.link/db/api/rpc/refresh_token');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
+        xhr.send();
+    }
+});

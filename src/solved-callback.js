@@ -1,6 +1,3 @@
-var token = localStorage.getItem("token");
-var userid = 'tckmn';
-
 ui.callbackCalled = false;
 ui.callbackComplete = function(puzzle, check){
     if(ui.callbackCalled){
@@ -33,7 +30,9 @@ ui.callbackComplete = function(puzzle, check){
     }
 
     var xmlhttp = new XMLHttpRequest(),
-        data = { pzv: pzv, time: time };
+        data = { pzv: pzv, time: time },
+        token = localStorage.getItem('token'),
+        userid = localStorage.getItem('user_id');
     if (token && userid) {
         data.user_id = userid;
         xmlhttp.open("POST", "https://puzz.link/db/api/pzv_solves");
@@ -45,5 +44,4 @@ ui.callbackComplete = function(puzzle, check){
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.setRequestHeader("Prefer", "return=minimal"); // anon auth error otherwise
     xmlhttp.send(JSON.stringify(data));
-
 };

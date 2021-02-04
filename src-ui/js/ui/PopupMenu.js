@@ -946,3 +946,23 @@ ui.popupmgr.addpopup("network", {
 		ui.network.start();
 	}
 });
+
+ui.popupmgr.addpopup('pzplus_auth', {
+	formname: 'pzplus_auth',
+
+	init: function() {
+		ui.popupmgr.popups.template.init.call(this);
+		this.form.user_id.value = localStorage.getItem('user_id');
+		this.form.token.value = localStorage.getItem('token');
+	},
+
+	pzplus_auth: function() {
+		localStorage.setItem('user_id', this.form.user_id.value);
+		localStorage.setItem('token', this.form.token.value);
+		this.close();
+	}
+});
+
+ui.popupmgr.addpopup('pzplus_manual', {
+	formname: 'pzplus_manual'
+});

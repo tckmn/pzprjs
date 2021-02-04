@@ -136,6 +136,15 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
             if fname:
                 self.wfile.write(open(fname, 'rb').read())
 
+        elif self.path == '/prevsolves':
+            data = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(json.dumps([{
+                't': tts(t)
+            } for (t,) in c.execute('SELECT t FROM d WHERE url = ?', (data['url'],)).fetchall()]).encode())
+
         else:
             self.send_response(404)
             self.end_headers()

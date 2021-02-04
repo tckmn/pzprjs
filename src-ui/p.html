@@ -103,7 +103,8 @@
      <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__バグレポートと機能リクエスト__Bug reports and feature requests__</a></li>
    </menu></li>
    <li id="menu_pzplus"><span>__pzplus__pzplus__</span><menu label="__pzplus__pzplus__">
-     <li data-popup="about"><span>__Manual solve entry__Manual solve entry__</span></li>
+     <li data-popup="pzplus_auth"><span>__Authentication__Authentication__</span></li>
+     <li data-popup="pzplus_manual"><span>__Manual solve entry__Manual solve entry__</span></li>
      <li data-menu-exec="playRecording"><span>__Play recording__Play recording__</span></li>
    </menu></li>
   </menu>
@@ -339,9 +340,7 @@
   <div id="timerpanel">経過時間：00:00</div>
 </div>
 
-<div style='display:@1'>
-  You have already solved this puzzle in @2!
-  @3
+<div id='pzplusmsg'>
 </div>
 
 <div id="quesboard">
@@ -588,6 +587,33 @@
     <form name="about">
       <p><a href="https://github.com/robx/pzprjs">github.com/robx/pzprjs</a> version <%= git.hash %></p>
       <p>based on <span>__ぱずぷれv3__PUZ-PRE v3__</span> by <span>__は はっぱ/連続発破__happa__</span></p>
+      <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
+    </form>
+  </div>
+
+  <div class="popup" id="pzplus_auth">
+    <div class="titlebar">__Authentication__Authentication__</div>
+    <form name="pzplus_auth">
+      <p style='max-width:30rem'>
+        Please visit any puzz.link page
+        and enter <code>localStorage.user_id</code> and <code>localStorage.token</code> in your browser console,
+        then paste the results here.
+      </p>
+      <p style='max-width:30rem'>
+        These are only used to register your solves in the puzz.link database;
+        they are not stored or transmitted anywhere except your own computer and to the puzz.link servers.
+      </p>
+      <p><label>user_id <input name='user_id'></label></p>
+      <p><label>token <input name='token'></label></p>
+      <button type="button" class="btn btn-ok" data-button-exec="pzplus_auth">Update</button>
+      <button type="button" class="btn" data-button-exec="close">Close</button>
+    </form>
+  </div>
+
+  <div class="popup" id="pzplus_manual">
+    <div class="titlebar">__Manual solve entry__Manual solve entry__</div>
+    <form name="pzplus_manual">
+      <p>hi</p>
       <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
     </form>
   </div>
