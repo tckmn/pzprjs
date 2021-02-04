@@ -28,6 +28,7 @@
     "check-format": "prettier --check \"{src,src-ui,test}/**/*.{js,css}\"",
     "lint": "eslint src src-ui test sample",
     "test": "eslint --quiet src src-ui test sample && mocha -r source-map-support/register -R progress --recursive test",
+    "testpzplus": "eslint test/pzplus.js && mocha test/pzplus.js",
     "prepublishOnly": "npm test"
   },
   "devDependencies": {

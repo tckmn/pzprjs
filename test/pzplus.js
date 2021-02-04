@@ -70,13 +70,13 @@ describe('pzplus BitStream', function() {
     });
 
     it('resizes many times', function() {
-        var bs = new pzpr.BitStream(1);
+        var bs = new pzpr.BitStream(1), i;
         assert.equal(bs.arr.length, 1);
-        for (var i = 0; i < 256; ++i) {
+        for (i = 0; i < 256; ++i) {
             bs.write(32, (0xbbe297c9*i)>>>0);
         }
         bs.seek();
-        for (var i = 0; i < 256; ++i) {
+        for (i = 0; i < 256; ++i) {
             assert.equal(bs.read(32), (0xbbe297c9*i)>>>0);
         }
     });
@@ -103,13 +103,13 @@ describe('pzplus BitStream', function() {
         var bs = new pzpr.BitStream(10);
         bs.writeVLQ(5, 0xe024ba5b);
         bs.seek();
-        assert.equal(bs.read(6), 0b1_11011);
-        assert.equal(bs.read(6), 0b1_10010);
-        assert.equal(bs.read(6), 0b1_01110);
-        assert.equal(bs.read(6), 0b1_01001);
-        assert.equal(bs.read(6), 0b1_00010);
-        assert.equal(bs.read(6), 0b1_10000);
-        assert.equal(bs.read(6), 0b0_00011);
+        assert.equal(bs.read(6), 0b111011);
+        assert.equal(bs.read(6), 0b110010);
+        assert.equal(bs.read(6), 0b101110);
+        assert.equal(bs.read(6), 0b101001);
+        assert.equal(bs.read(6), 0b100010);
+        assert.equal(bs.read(6), 0b110000);
+        assert.equal(bs.read(6), 0b000011);
         bs.seek();
         assert.equal(bs.readVLQ(5), 0xe024ba5b);
     });

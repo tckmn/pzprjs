@@ -6,6 +6,9 @@ build:
 test:
 	npm test
 
+testpzplus:
+	npm run-script testpzplus
+
 serve:
 	cd dist && python3 -m http.server -b localhost
 
