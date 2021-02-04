@@ -79,8 +79,9 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
         elif hasattr(API, 'j_' + self.path[1:]):
             ret = getattr(API, 'j_' + self.path[1:])(json.loads(self.rfile.read(int(self.headers['Content-Length']))))
 
-        if ret:
+        if ret is not None:
             self.send_response(200)
+            self.send_header('Content-Type', 'application/octet-stream') # shh firefox
             self.end_headers()
             self.wfile.write(ret if type(ret) is bytes else json.dumps(ret).encode())
         else:

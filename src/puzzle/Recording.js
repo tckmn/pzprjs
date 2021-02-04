@@ -15,6 +15,8 @@ pzpr.classmgr.makeCommon({
                 return;
             }
 
+            window['console'].log(obj);
+
             var t = 0;
             if (!this.chainflag) {
                 var now = this.puzzle.getTime();
@@ -275,6 +277,12 @@ pzpr.RecTools = {
         {key: 'UNDO', sig: 42},
         {key: 'REDO', sig: 43},
         {key: 'TREJ', sig: 44},
+        {key: 'ACLR', sig: 45},
+        {key: 'CHEK', sig: 46},
+
+        // puzzle-specific operations
+        {key: 'SEGT0', sig: 47},
+        {key: 'SEGT1', sig: 48},
 
         {key: 'EOF', sig: 255}
     ],

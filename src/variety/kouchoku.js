@@ -828,6 +828,28 @@
 			].join(",");
 		},
 
+		getSignature: function() {
+			return [this.num ? pzpr.RecTools.key2sig.SEGT1 : pzpr.RecTools.key2sig.SEGT0];
+		},
+		encodeBin: function(stream, dims) {
+			pzpr.RecTools.writeCoords(stream, dims, this.bx1, this.by1);
+			pzpr.RecTools.writeCoords(stream, dims, this.bx2, this.by2);
+		},
+		decodeBin: function(stream, signature, args, dims) {
+			var key = pzpr.RecTools.sig2key[signature], coords;
+			if (key.substr(0, 4) !== 'SEGT') {
+				return false;
+			}
+
+			this.num = (key.charAt(4) === '1')+0;
+			coords = pzpr.RecTools.readCoords(stream, dims);
+			this.bx1 = coords[0];
+			this.by1 = coords[1];
+			coords = pzpr.RecTools.readCoords(stream, dims);
+			this.bx2 = coords[0];
+			this.by2 = coords[1];
+		},
+
 		exec: function(num) {
 			var bx1 = this.bx1,
 				by1 = this.by1,

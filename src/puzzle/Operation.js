@@ -493,6 +493,20 @@ pzpr.classmgr.makeCommon({
 		playback: function() { this.puzzle.rejectCurrentTrial(); }
 	},
 
+	"PzplusAuxClear:Operation": {
+		getSignature: function() { return [pzpr.RecTools.key2sig.ACLR]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.ACLR; },
+		playback: function() { this.puzzle.subclear(); }
+	},
+
+	"PzplusCheck:Operation": {
+		getSignature: function() { return [pzpr.RecTools.key2sig.CHEK]; },
+		encodeBin: function() {},
+		decodeBin: function(stream, sig, args, dims) { return sig === pzpr.RecTools.key2sig.CHEK; },
+		playback: function() {}
+	},
+
 	//---------------------------------------------------------------------------
 	// ★OperationListクラス OperationのListと時刻を保持する
 	//---------------------------------------------------------------------------
@@ -529,6 +543,7 @@ pzpr.classmgr.makeCommon({
 			this.initpos = 0; // 盤面初期化時のposition
 
 			this.disrec = 0; // このクラスからの呼び出し時は1にする
+			this.disrec2 = 0;
 			this.disCombine = false; // 数字がくっついてしまうので、それを一時的に無効にするためのフラグ
 			this.forceRecord = false; // 強制的に登録する(盤面縮小時限定)
 			this.changeflag = false; // 操作が行われたらtrueにする(mv.notInputted()用)
@@ -554,7 +569,9 @@ pzpr.classmgr.makeCommon({
 				classes.TrialFinalizeOperation,
 				classes.PzplusUndo,
 				classes.PzplusRedo,
-				classes.PzplusTrialReject
+				classes.PzplusTrialReject,
+				classes.PzplusAuxClear,
+				classes.PzplusCheck
 			];
 			this.addExtraOperation();
 		},
@@ -626,6 +643,16 @@ pzpr.classmgr.makeCommon({
 		enableRecord: function() {
 			if (this.disrec > 0) {
 				this.disrec--;
+			}
+		},
+
+		// just in case messing with this.disrec breaks any mysterious internal nonsense
+		disableRecord2: function() {
+			++this.disrec2;
+		},
+		enableRecord2: function() {
+			if (this.disrec2 > 0) {
+				--this.disrec2;
 			}
 		},
 
@@ -712,7 +739,9 @@ pzpr.classmgr.makeCommon({
 
 			// disrec is set on undo/redo and "reject trial", so we record those separately
 			// it's also set in a few other files, but i don't think we need to care about those
-			this.record(newope);
+			if (!this.disrec2) {
+				this.record(newope);
+			}
 
 			newope.broadcast();
 

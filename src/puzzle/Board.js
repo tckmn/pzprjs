@@ -404,20 +404,26 @@ pzpr.classmgr.makeCommon({
 			opemgr.newOperation();
 			opemgr.add(new this.puzzle.klass.BoardClearOperation());
 
+			opemgr.disableRecord2();
 			this.cell.ansclear();
 			this.cross.ansclear();
 			this.border.ansclear();
 			this.excell.ansclear();
 			this.rebuildInfo();
+			opemgr.enableRecord2();
 		},
 		// 呼び出し元：補助消去ボタン押した時
 		subclear: function() {
-			this.puzzle.opemgr.newOperation();
+			var opemgr = this.puzzle.opemgr;
+			opemgr.newOperation();
+			opemgr.add(new this.puzzle.klass.PzplusAuxClear());
 
+			opemgr.disableRecord2();
 			this.cell.subclear();
 			this.cross.subclear();
 			this.border.subclear();
 			this.excell.subclear();
+			opemgr.enableRecord2();
 		},
 
 		errclear: function() {

@@ -395,6 +395,8 @@ ui.menuarea = {
 	// menuarea.submarkclear()  「補助消去」ボタンを押したときの処理
 	//------------------------------------------------------------------------------
 	answercheck: function() {
+		ui.puzzle.opemgr.newOperation();
+		ui.puzzle.opemgr.add(new ui.puzzle.klass.PzplusCheck());
 		var check = ui.puzzle.check(true);
 		if (check.complete) {
 			ui.timer.stop();
