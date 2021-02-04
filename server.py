@@ -68,85 +68,63 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args):
         super().__init__(*args, directory='dist')
 
-    def copyfile(self, source, outputfile):
-        if source.name.endswith('p.html'):
-            outputfile.write(self.patchp(source.read().decode()).encode())
-        else:
-            shutil.copyfileobj(source, outputfile)
-
-    def patchp(self, html):
-        res = c.execute('SELECT rowid, t FROM d WHERE url = ?', (self.path.split('?', 1)[1],)).fetchone()
-        if res:
-            rowid, t = res
-            return html \
-                .replace('@1', 'block') \
-                .replace('@2', tts(t)) \
-                .replace('@3', '<br>A recording is available (pzplus -> Play recording).' if os.path.isfile(recpath(rowid)) else '')
-        else:
-            return html.replace('@1', 'none')
+    def do_GET(self):
+        if self.path == '/p' or self.path.startswith('/p?'): self.path = '/p.html' + self.path[2:]
+        super().do_GET()
 
     def do_POST(self):
+        ret = None
+        if hasattr(API, 'b_' + self.path[1:]):
+            ret = getattr(API, 'b_' + self.path[1:])(self.rfile.read(int(self.headers['Content-Length'])))
+        elif hasattr(API, 'j_' + self.path[1:]):
+            ret = getattr(API, 'j_' + self.path[1:])(json.loads(self.rfile.read(int(self.headers['Content-Length']))))
 
-        if self.path == '/localdb':
-            data, recording = self.rfile.read(int(self.headers['Content-Length'])).split(b'\0', 1)
-            data = json.loads(data)
-
-            parts = data['url'].split('/')
-            genre = patch(parts[0])
-            flags, w, h = ([None]+parts[1:3]) if parts[1].isdigit() else parts[1:4]
-            c.execute('INSERT INTO d (genre,flags,url,date,w,h,t) VALUES (?,?,?,datetime("now","localtime"),?,?,?)',
-                    (genre, flags, data['url'], w, h, data['t']))
-            conn.commit()
-
-            rowid = c.lastrowid
-            with open(recpath(rowid), 'wb') as recfile:
-                recfile.write(recording)
-
-            num, time = c.execute('SELECT COUNT(*), SUM(t) FROM d WHERE genre = ?', (genre,)).fetchone()
-
+        if ret:
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(json.dumps({
-                'time': tts(data['t'], True),
-                'msg': f'{num} {genre} puzzles solved in {tts(time)}',
-                'rowid': rowid
-            }).encode())
-
-        elif self.path == '/update':
-            data = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
-
-            if data['k'] in ['rate', 'diff', 'path', 'uniq', 'variant', 'comm']:
-                c.execute(f'UPDATE d SET {data["k"]} = ? WHERE rowid = ?', (data['v'], data['rowid']))
-                conn.commit()
-
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                'msg': 'saved!'
-            }).encode())
-
-        elif self.path == '/getrec':
-            data = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
-
-            self.send_response(200)
-            self.end_headers()
-
-            res = c.execute('SELECT rowid FROM d WHERE url = ?', (data['url'],)).fetchone()
-            fname = recpath(res[0]) if res else None
-            if fname:
-                self.wfile.write(open(fname, 'rb').read())
-
-        elif self.path == '/prevsolves':
-            data = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
-
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(json.dumps([{
-                't': tts(t)
-            } for (t,) in c.execute('SELECT t FROM d WHERE url = ?', (data['url'],)).fetchall()]).encode())
-
+            self.wfile.write(ret if type(ret) is bytes else json.dumps(ret).encode())
         else:
             self.send_response(404)
             self.end_headers()
+
+class API:
+
+    def b_localdb(data):
+        data, recording = data.split(b'\0', 1)
+        data = json.loads(data)
+
+        parts = data['url'].split('/')
+        genre = patch(parts[0])
+        flags, w, h = ([None]+parts[1:3]) if parts[1].isdigit() else parts[1:4]
+        c.execute('INSERT INTO d (genre,flags,url,date,w,h,t) VALUES (?,?,?,datetime("now","localtime"),?,?,?)',
+                (genre, flags, data['url'], w, h, data['t']))
+        conn.commit()
+
+        rowid = c.lastrowid
+        with open(recpath(rowid), 'wb') as recfile:
+            recfile.write(recording)
+
+        num, time = c.execute('SELECT COUNT(*), SUM(t) FROM d WHERE genre = ?', (genre,)).fetchone()
+        return {
+            'time': tts(data['t'], True),
+            'msg': f'{num} {genre} puzzles solved in {tts(time)}',
+            'rowid': rowid
+        }
+
+    def j_update(data):
+        if data['k'] in ['rate', 'diff', 'path', 'uniq', 'variant', 'comm']:
+            c.execute(f'UPDATE d SET {data["k"]} = ? WHERE rowid = ?', (data['v'], data['rowid']))
+            conn.commit()
+        return { 'msg': 'saved!' }
+
+    def j_getrec(data):
+        res = c.execute('SELECT rowid FROM d WHERE url = ?', (data['url'],)).fetchone()
+        fname = recpath(res[0]) if res else None
+        return open(fname, 'rb').read() if fname else b''
+
+    def j_prevsolves(data):
+        return [{
+            't': tts(t)
+        } for (t,) in c.execute('SELECT t FROM d WHERE url = ?', (data['url'],)).fetchall()]
 
 http.server.HTTPServer(('', PORT), PuzzlinkHelper).serve_forever()
