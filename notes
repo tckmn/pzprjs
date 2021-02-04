@@ -1,5 +1,4 @@
 TODO
- * fix all instance of location.search.slice(1)
  * better timestamp and x/y coord compression
  * fix BoardClearOperation
  * implement SegmentOperation (kouchoku)

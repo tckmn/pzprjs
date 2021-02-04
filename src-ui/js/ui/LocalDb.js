@@ -96,7 +96,7 @@ pzpr.on('load', function() {
     };
 
     ui.localdb.xhr('/prevsolves', JSON.stringify({
-        'url': location.search.slice(1)
+        'url': ui.pzv
     }), function(localdb, resp) {
         if (resp.length) {
             addMsg('You have already solved this puzzle in ' + resp.map(function(x) { return x.t; }).join(', ') + '!');

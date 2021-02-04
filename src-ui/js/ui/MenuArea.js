@@ -439,7 +439,7 @@ ui.menuarea = {
 		xhr.responseType = 'arraybuffer';
 		xhr.open('POST', '/getrec');
 		xhr.send(JSON.stringify({
-			'url': location.search.slice(1)
+			'url': ui.pzv
 		}));
 		this.stopHovering();
 	}

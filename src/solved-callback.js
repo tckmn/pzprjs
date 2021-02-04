@@ -8,7 +8,7 @@ ui.callbackComplete = function(puzzle, check){
 
     var time = puzzle.getTime();
 
-    var pzv = location.search.slice(1);
+    var pzv = ui.pzv;
     if(!pzv){
         // no boot pzv saved
         return;
