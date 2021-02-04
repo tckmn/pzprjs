@@ -153,16 +153,16 @@ pzpr.classmgr.makeCommon({
 		},
 
 		getSignature: function() {
-			var prefix = 'OO_' + this.getPrefix(), sig;
+			var prefix = this.getPrefix(), sig;
 
 			// first try hardcoded prefix+num combos
-			sig = pzpr.RecTools.key2sig[prefix + this.num];
+			sig = pzpr.RecTools.key2sig['OO_' + prefix + this.num];
 			if (sig) {
 				return [sig];
 			}
 
 			// then try hardcoded prefix with num param
-			sig = pzpr.RecTools.key2sig[prefix + '_n'];
+			sig = pzpr.RecTools.key2sig['OO_' + prefix + '_n'];
 			if (sig) {
 				return [sig, this.num];
 			}

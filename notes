@@ -5,24 +5,28 @@ TODO
  * dark theme the actual puzzles???
  * edit mode (probably not happening)
 
-RECORDING FORMAT:
 
-HEADER
-    fixed 8 bits: version
-    HUFFMAN TREE FOR OPS
-        ...
-LIST OF OPS
-    bignum: time delta
-    huffman thing
+EXTRA POSSIBILITIES FROM AUTO:
+ - shaka: CA345
 
-these aren't necessary because they can be derived from the url
-the min value of each is -1 (for excells); represent this as all 1s
-the max value of each is 2n+1 (for excells and tawamurenga)
-    smallnum: number of bits used for x
-    smallnum: number of bits used for y
+            RECORDING FORMAT:
 
-? bits: time delta
-4 bits: action type
+            HEADER
+                fixed 8 bits: version
+                HUFFMAN TREE FOR OPS
+                    ...
+            LIST OF OPS
+                bignum: time delta
+                huffman thing
+
+            these aren't necessary because they can be derived from the url
+            the min value of each is -1 (for excells); represent this as all 1s
+            the max value of each is 2n+1 (for excells and tawamurenga)
+                smallnum: number of bits used for x
+                smallnum: number of bits used for y
+
+            ? bits: time delta
+            4 bits: action type
 
 
 CM CA CS CK CB
@@ -205,3 +209,10 @@ ObjectOperation2:
 CurveDataOperation, SlideOperation:
 - oh god curve data
 - D[CS]
+
+=======================
+
+importing from old db:
+
+    attach '/home/tckmn/code/py/puzzlink-helper/p.db' as old;
+    insert into d (genre, variant, flags, url, date, w, h, t) select genre, variant, flags, url, date, w, h, t*1000 from old.d;
