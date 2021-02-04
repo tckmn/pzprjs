@@ -125,6 +125,17 @@ describe('pzplus BitStream', function() {
         assert.equal(bs.readSignedVLQ(5), -0xfdedaf58);
     });
 
+    it('sequential VLQs including zeroes', function() {
+        var bs = new pzpr.BitStream(10);
+        bs.writeVLQ(5, 12345);
+        bs.writeVLQ(5, 0);
+        bs.writeVLQ(5, 67890);
+        bs.seek();
+        assert.equal(bs.readVLQ(5), 12345);
+        assert.equal(bs.readVLQ(5), 0);
+        assert.equal(bs.readVLQ(5), 67890);
+    });
+
     it('supports (utf8) strings', function() {
         var bs = new pzpr.BitStream(10);
         bs.writeString('this is šome text');

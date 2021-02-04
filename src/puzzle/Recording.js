@@ -15,10 +15,8 @@ pzpr.classmgr.makeCommon({
                 return;
             }
 
-            window['console'].log(obj);
-
             var t = 0;
-            if (!this.chainflag) {
+            if (!chainflag) {
                 var now = this.puzzle.getTime();
                 t = 1 + now - this.lastOp;
                 this.lastOp = now;

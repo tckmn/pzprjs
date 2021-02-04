@@ -49,6 +49,9 @@ pzpr.BitStream.prototype.readVLQ = function(chunklen) {
 };
 
 pzpr.BitStream.prototype.writeVLQ = function(chunklen, n) {
+    if (!n) {
+        this.write(chunklen+1, 0);
+    }
     while (n) {
         var chunk = n & ((1 << chunklen) - 1);
         n >>>= chunklen;
