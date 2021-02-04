@@ -82,10 +82,10 @@ pzpr.classmgr.makeCommon({
                     stream.write(1, 0);
                     var sig = JSON.parse(tree.sig);
                     stream.write(8, sig[0]);
-                    pzpr.RecTools.sig2params[sig].forEach(function(ptype, idx) {
+                    pzpr.RecTools.sig2params[sig[0]].forEach(function(ptype, idx) {
                         switch (ptype) {
                         case 'number':
-                            stream.writeVLQ(3, sig[idx+1]);
+                            stream.writeSignedVLQ(5, sig[idx+1]);
                             break;
                         case 'string':
                             stream.writeString(sig[idx+1]);
@@ -137,7 +137,7 @@ pzpr.classmgr.makeCommon({
                         args = pzpr.RecTools.sig2params[sig].map(function(ptype) {
                             switch (ptype) {
                             case 'number':
-                                return stream.readVLQ(3);
+                                return stream.readSignedVLQ(5);
                             case 'string':
                                 return stream.readString();
                             }

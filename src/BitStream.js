@@ -57,6 +57,16 @@ pzpr.BitStream.prototype.writeVLQ = function(chunklen, n) {
     }
 };
 
+pzpr.BitStream.prototype.readSignedVLQ = function(chunklen) {
+    var sign = this.read(1) ? -1 : 1;
+    return sign * this.readVLQ(chunklen);
+};
+
+pzpr.BitStream.prototype.writeSignedVLQ = function(chunklen, n) {
+    this.write(1, n < 0 ? 1 : 0);
+    this.writeVLQ(chunklen, Math.abs(n));
+};
+
 pzpr.BitStream.prototype.writeString = function(str) {
     var encoded = new TextEncoder().encode(str);
     this.writeVLQ(3, encoded.length);
