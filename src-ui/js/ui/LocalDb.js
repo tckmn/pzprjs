@@ -27,8 +27,9 @@ ui.localdb = {
             localdb.genscale('rate', 'bad', 'good'),
             localdb.genscale('diff', 'easy', 'hard'),
             localdb.genscale('path', 'bash', 'logic'),
+            localdb.genscale('uniq', 'intuit', 'proved'),
             '</tbody></table>',
-            '<label><input type="checkbox" style="vertical-align:middle"> proved uniqueness</label>',
+            // '<label><input type="checkbox" style="vertical-align:middle"> proved uniqueness</label>',
             '<div class="localdbtext">',
             '<textarea rows="1" cols="30" data-key="variant" placeholder="variant"></textarea>',
             '<textarea rows="4" cols="30" data-key="comm" placeholder="comments..."></textarea>',
@@ -38,7 +39,7 @@ ui.localdb = {
 
         var notif = document.querySelector('#assertbox');
 
-        ['rate', 'diff', 'path'].forEach(function(key) {
+        ['rate', 'diff', 'path', 'uniq'].forEach(function(key) {
             var btns = notif.querySelectorAll('.scale-' + key);
             btns.forEach(function(btn) {
                 btn.addEventListener('click', function() {
@@ -49,9 +50,9 @@ ui.localdb = {
             });
         });
 
-        notif.querySelector('input').addEventListener('change', function(e) {
-            localdb.update(resp.rowid, 'uniq', e.target.checked);
-        });
+        // notif.querySelector('input').addEventListener('change', function(e) {
+        //     localdb.update(resp.rowid, 'uniq', e.target.checked);
+        // });
 
         notif.querySelectorAll('textarea').forEach(function(ta) {
             ta.addEventListener('change', function(e) {
