@@ -116,7 +116,14 @@ class API:
         if data['k'] in ['rate', 'diff', 'path', 'uniq', 'variant', 'comm']:
             c.execute(f'UPDATE d SET {data["k"]} = ? WHERE rowid = ?', (data['v'], data['rowid']))
             conn.commit()
-        return { 'msg': 'saved!' }
+            return { 'msg': 'saved!' }
+        if data['k'] == 'unsave' and data['v'] == 1:
+            c.execute('DELETE FROM d WHERE rowid = ?', (data['rowid'],))
+            conn.commit()
+            try: os.remove(recpath(data['rowid']))
+            except: pass
+            return { 'msg': 'deleted' }
+        return { 'msg': 'error' }
 
     def j_getrec(data):
         res = c.execute('SELECT rowid FROM d WHERE url = ?', (data['url'],)).fetchone()

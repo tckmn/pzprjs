@@ -620,6 +620,10 @@ button.scale.sel {
     background-color: red;
 }
 
+button.scale-x {
+    border-radius: 999px;
+}
+
 span.loadindic {
     float: left;
     margin: 4px;
@@ -629,4 +633,8 @@ span.loadindic {
 div.localdbtext textarea {
     display: block;
     margin-top: 10px;
+}
+
+a:link.timeout {
+    color: #888;
 }

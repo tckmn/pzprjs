@@ -21,6 +21,7 @@ ui.localdb = {
         ui.notify.alert([
             'saved time: ',
             resp.time,
+            ' (<a href="#">unsave</a>)',
             '<br>',
             resp.msg,
             '<table class="scales"><tbody>',
@@ -31,8 +32,8 @@ ui.localdb = {
             '</tbody></table>',
             // '<label><input type="checkbox" style="vertical-align:middle"> proved uniqueness</label>',
             '<div class="localdbtext">',
-            '<textarea rows="1" cols="30" data-key="variant" placeholder="variant"></textarea>',
-            '<textarea rows="4" cols="30" data-key="comm" placeholder="comments..."></textarea>',
+            '<textarea rows="1" cols="35" data-key="variant" placeholder="variant"></textarea>',
+            '<textarea rows="4" cols="35" data-key="comm" placeholder="comments..."></textarea>',
             '</div>',
             ''
         ].join(''));
@@ -44,8 +45,10 @@ ui.localdb = {
             btns.forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     btns.forEach(function(b2) { b2.classList.remove('sel'); });
-                    btn.classList.add('sel');
-                    localdb.update(resp.rowid, key, parseInt(btn.textContent));
+                    if (!btn.classList.contains('scale-x')) {
+                        btn.classList.add('sel');
+                    }
+                    localdb.update(resp.rowid, key, btn.textContent === 'x' ? null : parseInt(btn.textContent));
                 });
             });
         });
@@ -62,6 +65,27 @@ ui.localdb = {
                 // prevent pzpr from gobbling backspace and space
                 e.stopPropagation();
             });
+        });
+
+        notif.querySelector('a').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (this.classList.contains('timeout')) {
+                return;
+            }
+            var n = this.textContent.substr(0, 5) === 'click' ? +this.textContent.charAt(6) - 1 : 3;
+            if (n) {
+                this.classList.add('timeout');
+                this.textContent = 'click '+n+'x';
+                setTimeout(function() {
+                    e.target.classList.remove('timeout');
+                }, 1000);
+            } else {
+                localdb.update(resp.rowid, 'unsave', 1);
+                ui.notify.alert('unsaved time of '+resp.time);
+                // if (localdb.loadindic) {
+                //     localdb.loadindic.style.display = 'none';
+                // }
+            }
         });
     },
 
@@ -85,7 +109,7 @@ ui.localdb = {
     genscale: function(key, low, hi) {
         return '<tr><td>' + low + '</td><td>' + Array(10).fill().map(function(_, i) {
             return '<button class="btn scale scale-'+key+'" data-key="'+key+'">' + (i+1) + '</button>';
-        }).join('') + '</td><td>' + hi + '</td></tr>';
+        }).join('') + '</td><td>' + hi + '</td><td><button class="btn scale-x scale-'+key+'" data-key="'+key+'">x</button></td></tr>';
     }
 
 };
