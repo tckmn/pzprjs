@@ -1,6 +1,8 @@
 TODO
  * log instances of unknown ops and general objectoperations somehow
  * better timestamp and x/y coord compression
+ * edit previous solves
+ * manual solve entry
  * toggle option for dark theme
  * dark theme the actual puzzles???
  * edit mode (probably not happening)
