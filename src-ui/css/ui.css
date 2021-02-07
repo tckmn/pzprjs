@@ -106,7 +106,9 @@ div#menuboard {
 
 /* メニューより下の管理領域 */
 div#menuboard > div {
-  margin: 4pt 8pt 4pt 16pt;
+  /* margin: 4pt 8pt 4pt 16pt; */
+  /* (pzplus) bumped right margin for nicer pause button alignment */
+  margin: 4pt 16pt;
 }
 hr.separator {
   border: none;
@@ -638,3 +640,7 @@ div.localdbtext textarea {
 a:link.timeout {
     color: #888;
 }
+
+body.paused span#timertext { color: red; }
+body.paused div#divques { filter: brightness(0); pointer-events: none; }
+button#pausebtn { float: right; margin: 0; padding: 0 4pt; }

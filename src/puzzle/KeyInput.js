@@ -217,6 +217,15 @@ pzpr.classmgr.makeCommon({
 				puzzle.opemgr.updateStarts();
 			}
 
+			// pzplus pause functionality
+			if (this.keydown && c === 'p') {
+				puzzle.togglePause();
+				return;
+			}
+			if (puzzle.pausetime !== null) {
+				return;
+			}
+
 			puzzle.emit("key", c);
 			if (this.cancelEvent) {
 				return;

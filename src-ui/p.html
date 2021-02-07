@@ -343,7 +343,10 @@ if ('serviceWorker' in navigator) {
     </div>
   </div>
   <hr class="separator" id="separator2">
-  <div id="timerpanel">経過時間：00:00</div>
+  <div id="timerpanel">
+    <span id="timertext">経過時間：00:00</span>
+    <button type="button" class="btn" id="pausebtn" data-button-exec="togglePause">pause</button>
+  </div>
 </div>
 
 <div id='pzplusmsg'>
