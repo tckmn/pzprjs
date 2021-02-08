@@ -1,10 +1,15 @@
 TODO
- * log instances of unknown ops and general objectoperations somehow
+backend:
+ * recording audit script
  * better timestamp and x/y coord compression
+frontend:
+ * per-user database
+ * sql query interface
  * edit previous solves
  * manual solve entry
  * toggle option for dark theme
  * dark theme the actual puzzles???
+misc:
  * edit mode (probably not happening)
 
 
