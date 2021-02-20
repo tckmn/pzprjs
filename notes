@@ -6,9 +6,11 @@ frontend:
  * per-user database
  * sql query interface
  * edit previous solves
- * manual solve entry
+ * "fully manual entry"
  * toggle option for dark theme
  * dark theme the actual puzzles???
+ * more info about previous solve
+ * fast forward recording
 misc:
  * edit mode (probably not happening)
 

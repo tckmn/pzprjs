@@ -1,12 +1,13 @@
 ui.callbackCalled = false;
-ui.callbackComplete = function(puzzle, check){
+ui.callbackComplete = function(puzzle, check, timeOverride) {
     if(ui.callbackCalled){
         // only record the first solve
         return;
     }
     ui.callbackCalled = true;
 
-    var time = puzzle.getTime();
+    // careful about using || here because timeOverride could be 0
+    var time = timeOverride === undefined ? puzzle.getTime() : timeOverride;
 
     var pzv = ui.pzv;
     if(!pzv){
@@ -26,6 +27,10 @@ ui.callbackComplete = function(puzzle, check){
 
     if(puzzle.getConfig("variant")){
         // completion makes no sense for variants currently
+        return;
+    }
+    if (timeOverride !== undefined) {
+        // don't send overrides to puzz.link (only pzplus)
         return;
     }
 

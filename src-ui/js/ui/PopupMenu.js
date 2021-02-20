@@ -964,5 +964,29 @@ ui.popupmgr.addpopup('pzplus_auth', {
 });
 
 ui.popupmgr.addpopup('pzplus_manual', {
-	formname: 'pzplus_manual'
+	formname: 'pzplus_manual',
+
+	show: function(px, py) {
+		ui.popupmgr.popups.template.show.call(this, px, py);
+
+		var pad = function(n) {
+			return n < 10 ? '0'+n : n;
+		}, tts = function(t) {
+			// TODO maybe this should show millis
+			t = Math.floor(t/1000);
+			return Math.floor(t/3600) + ':' + pad(Math.floor(t/60)%60) + ':' + pad(t%60);
+		};
+		document.getElementById('pzplus_lastinputtime').textContent = tts(ui.puzzle.recording.lastOp + 1);
+	},
+
+	// with recording
+	pzplus_manual1: function() {
+		ui.callbackComplete(ui.puzzle, false, ui.puzzle.recording.lastOp + 1);
+		this.close();
+	},
+
+	// custom
+	pzplus_manual2: function() {
+		alert('sorry, not yet implemented :(');
+	}
 });

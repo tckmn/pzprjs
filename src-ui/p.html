@@ -622,8 +622,10 @@ if ('serviceWorker' in navigator) {
   <div class="popup" id="pzplus_manual">
     <div class="titlebar">__Manual solve entry__Manual solve entry__</div>
     <form name="pzplus_manual">
-      <p>hi</p>
-      <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
+        <p>Time of last input: <span id="pzplus_lastinputtime"></span></p>
+      <button type="button" class="btn btn-ok" data-button-exec="pzplus_manual1">Save with recording</button>
+      <button type="button" class="btn btn-ok" data-button-exec="pzplus_manual2">Fully manual entry</button>
+      <button type="button" class="btn" data-button-exec="close">Close</button>
     </form>
   </div>
 
