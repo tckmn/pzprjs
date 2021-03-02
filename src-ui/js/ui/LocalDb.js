@@ -14,7 +14,7 @@ ui.localdb = {
             'url': pzv,
             't': time
         }));
-        this.xhr('/localdb', recording.finalize(json), this.send_resp);
+        this.xhr('/localdb', recording ? recording.finalize(json) : json, this.send_resp);
     },
 
     send_resp: function(localdb, resp) {

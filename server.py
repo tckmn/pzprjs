@@ -91,7 +91,7 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 class API:
 
     def b_localdb(data):
-        data, recording = data.split(b'\0', 1)
+        data, *recording = data.split(b'\0', 1)
         data = json.loads(data)
 
         parts = data['url'].split('/')
@@ -100,10 +100,11 @@ class API:
         c.execute('INSERT INTO d (genre,flags,url,date,w,h,t) VALUES (?,?,?,datetime("now","localtime"),?,?,?)',
                 (genre, flags, data['url'], w, h, data['t']))
         conn.commit()
-
         rowid = c.lastrowid
-        with open(recpath(rowid), 'wb') as recfile:
-            recfile.write(recording)
+
+        if len(recording):
+            with open(recpath(rowid), 'wb') as recfile:
+                recfile.write(recording[0])
 
         num, time = c.execute('SELECT COUNT(*), SUM(t) FROM d WHERE genre = ?', (genre,)).fetchone()
         return {
