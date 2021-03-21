@@ -433,10 +433,13 @@ ui.menuarea = {
 		);
 	},
 
-	playRecording: function() {
+	playRecording: function() { this.doPlay(false); },
+	playRecordingInstant: function() { this.doPlay(true); },
+
+	doPlay: function(instant) {
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('load', function() {
-			ui.puzzle.recording.load(xhr.response);
+			ui.puzzle.recording.load(xhr.response, instant);
 		});
 		xhr.responseType = 'arraybuffer';
 		xhr.open('POST', '/getrec');

@@ -116,7 +116,7 @@ pzpr.classmgr.makeCommon({
             return stream.cut();
         },
 
-        load: function(buf) {
+        load: function(buf, instant) {
             // check version header
             var stream = new pzpr.BitStream(buf);
             if (stream.read(8) !== 0) {
@@ -151,6 +151,7 @@ pzpr.classmgr.makeCommon({
             // read operations
             this.ops = [];
             this.opidx = 0;
+            this.instant = instant;
             var oplist = this.puzzle.opemgr.operationlist, cumul = 0;
             while (stream.inbounds()) {
                 var huff = tree;
@@ -192,7 +193,7 @@ pzpr.classmgr.makeCommon({
                 this.start = t;
             }
 
-            while (this.ops[this.opidx].t <= t - this.start) {
+            while (this.instant || (this.ops[this.opidx].t <= t - this.start)) {
                 if (!this.ops[this.opidx].chainflag) {
                     this.puzzle.opemgr.newOperation();
                 }
