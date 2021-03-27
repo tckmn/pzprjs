@@ -108,9 +108,23 @@ class API:
 
         num, time = c.execute('SELECT COUNT(*), SUM(t) FROM d WHERE genre = ?', (genre,)).fetchone()
         return {
-            'time': tts(data['t'], True),
-            'msg': f'{num} {genre} puzzles solved in {tts(time)}',
+            'msg1': f'saved time: {tts(data["t"], True)}',
+            'msg2': f'{num} {genre} puzzles solved in {tts(time)}',
             'rowid': rowid
+        }
+
+    def j_fetch(data):
+        # oops, bunch of copy/paste from above
+        parts = data['url'].split('/')
+        genre = patch(parts[0])
+        num, time = c.execute('SELECT COUNT(*), SUM(t) FROM d WHERE genre = ?', (genre,)).fetchone()
+        rowid, t, rate, diff, path, uniq, comm, variant = \
+            c.execute('SELECT rowid, t, rate, diff, path, uniq, comm, variant FROM d WHERE url = ?', (data['url'],)).fetchone()
+        return {
+            'msg1': f'editing existing time: {tts(t, True)}',
+            'msg2': f'{num} {genre} puzzles solved in {tts(time)}',
+            'rowid': rowid,
+            'rate': rate, 'diff': diff, 'path': path, 'uniq': uniq, 'comm': comm, 'variant': variant
         }
 
     def j_update(data):

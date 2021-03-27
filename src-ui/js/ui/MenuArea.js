@@ -433,8 +433,10 @@ ui.menuarea = {
 		);
 	},
 
-	playRecording: function() { this.doPlay(false); },
-	playRecordingInstant: function() { this.doPlay(true); },
+	pzplus_edit: function() { ui.localdb.edit(ui.pzv); },
+
+	pzplus_playRecording: function() { this.doPlay(false); },
+	pzplus_playRecordingInstant: function() { this.doPlay(true); },
 
 	doPlay: function(instant) {
 		var xhr = new XMLHttpRequest();

@@ -17,23 +17,26 @@ ui.localdb = {
         this.xhr('/localdb', recording ? recording.finalize(json) : json, this.send_resp);
     },
 
+    edit: function(pzv) {
+        this.xhr('/fetch', JSON.stringify({'url': pzv}), this.send_resp);
+    },
+
     send_resp: function(localdb, resp) {
         ui.notify.alert([
-            'saved time: ',
-            resp.time,
+            resp.msg1,
             ' (<a href="#">unsave</a>)',
             '<br>',
-            resp.msg,
+            resp.msg2,
             '<table class="scales"><tbody>',
-            localdb.genscale('rate', 'bad', 'good'),
-            localdb.genscale('diff', 'easy', 'hard'),
-            localdb.genscale('path', 'bash', 'logic'),
-            localdb.genscale('uniq', 'intuit', 'proved'),
+            localdb.genscale('rate', 'bad', 'good', resp.rate),
+            localdb.genscale('diff', 'easy', 'hard', resp.diff),
+            localdb.genscale('path', 'bash', 'logic', resp.path),
+            localdb.genscale('uniq', 'intuit', 'proved', resp.uniq),
             '</tbody></table>',
             // '<label><input type="checkbox" style="vertical-align:middle"> proved uniqueness</label>',
             '<div class="localdbtext">',
-            '<textarea rows="1" cols="35" data-key="variant" placeholder="variant"></textarea>',
-            '<textarea rows="4" cols="35" data-key="comm" placeholder="comments..."></textarea>',
+            localdb.gentext('variant', 'variant', 1, resp.variant),
+            localdb.gentext('comm', 'comments...', 4, resp.comm),
             '</div>',
             ''
         ].join(''));
@@ -106,10 +109,15 @@ ui.localdb = {
         localdb.loadindic.textContent = resp.msg;
     },
 
-    genscale: function(key, low, hi) {
+    genscale: function(key, low, hi, prefill) {
         return '<tr><td>' + low + '</td><td>' + Array(10).fill().map(function(_, i) {
-            return '<button class="btn scale scale-'+key+'" data-key="'+key+'">' + (i+1) + '</button>';
+            return '<button class="btn scale scale-'+key+(prefill===i+1?' sel':'')+'" data-key="'+key+'">' + (i+1) + '</button>';
         }).join('') + '</td><td>' + hi + '</td><td><button class="btn scale-x scale-'+key+'" data-key="'+key+'">x</button></td></tr>';
+    },
+
+    gentext: function(key, placeholder, rows, prefill) {
+        prefill = prefill === undefined || prefill === null ? '' : prefill;
+        return '<textarea rows="'+rows+'" cols="35" data-key="'+key+'" placeholder="'+placeholder+'">'+prefill+'</textarea>';
     }
 
 };
