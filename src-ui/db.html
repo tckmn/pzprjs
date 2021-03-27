@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <title>puzz.link puzzle index</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+        <link rel="stylesheet" href="/css/db.css?<%= git.hash %>" />
+    </head>
+    <body>
+        <script src="/db.js?<%= git.hash %>"></script>
+        <script>
+          var app = Elm.Index.init({
+            flags: {
+              apiUrl: "https://puzz.link/db/api",
+              userId: localStorage.getItem("user_id"),
+              token: localStorage.getItem("token")
+            }
+          });
+          app.ports.saveSession.subscribe(function(data) {
+            if (!data.user_id || !data.token) {
+              localStorage.removeItem("user_id");
+              localStorage.removeItem("token");
+            } else {
+              localStorage.setItem("token", data.token);
+              localStorage.setItem("user_id", data.user_id);
+            }
+          });
+        </script>
+        <script src="/db-extra.js?<%= git.hash %>"></script>
+    </body>
+</html>

@@ -1,7 +1,7 @@
 module.exports = function(grunt){
   var pkg = grunt.file.readJSON('package.json'), deps = pkg.devDependencies;
   for(var plugin in deps){ if(plugin.match(/^grunt\-/)){ grunt.loadNpmTasks(plugin);}}
-  
+
   var fs = require('fs');
   var banner_min  = fs.readFileSync('./src/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/common/banner_full.js', 'utf-8');
@@ -21,7 +21,6 @@ module.exports = function(grunt){
           mode: true
         },
         files : [
-          { expand: true, cwd: 'src', src: ['solved-callback.js'], dest: 'dist/js' },
           { expand: true, cwd: 'src-ui/css', src: ['*.css'], dest: 'dist/css' },
           { expand: true, cwd: 'src-ui/img', src: ['*.png'], dest: 'dist/img' },
           { expand: true, cwd: 'src-ui',     src: ['*'],     dest: 'dist'     }
@@ -33,7 +32,7 @@ module.exports = function(grunt){
       options: {
         banner: banner_full,
         process: true,
-	  },
+      },
       pzpr: {
         options: {
           sourceMap: !PRODUCTION
@@ -96,7 +95,7 @@ module.exports = function(grunt){
       }
     }
   });
-  
+
   grunt.registerTask('default', ['build']);
   grunt.registerTask('release', ['build']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);

@@ -1,0 +1,284 @@
+body > div > div {
+    margin: 0.5em;
+    padding: 0.5em;
+    background-color: #f0f0f0;
+}
+
+.description {
+    margin: 0.5em;
+    padding: 0.5em;
+    background-color: #e0e0e0;
+}
+
+.content {
+    margin: 0.5em;
+    padding: 0.5em;
+    background-color: #f0f0f0;
+}
+
+.errors {
+    background-color: #fff0f0;
+}
+
+.messages {
+    background-color: #f0f0ff;
+}
+
+.article {
+    display: grid;
+    grid-template-columns: 10px 3fr 1fr 1fr;
+}
+
+.plus {
+    cursor: pointer;
+}
+
+svg {
+    pointer-events: none;
+}
+
+.draw {
+    text-align: center;
+}
+
+.canvas {
+    background: white;
+    margin: 1em auto 1em auto;
+}
+
+.check button {
+    margin: 10px;
+}
+
+.rules h4 {
+    margin: 0.2em 0;
+}
+
+.check p {
+    margin: 0.2em 0;
+}
+
+.check form {
+    margin: 0.2em 0;
+}
+
+.validity {
+    font-size: small;
+    font-style: italic;
+}
+
+.tag input {
+    display: none;
+}
+
+.tag span {
+    color: gray;
+    border-radius: 8px;
+    padding: 3px 5px;
+}
+
+.tag input + span {
+    cursor: pointer;
+}
+
+.tag input[type="checkbox"]:checked + span {
+    color: black;
+    background: lightgreen;
+}
+
+.tag .checked span {
+    color: black;
+    background: lightgreen;
+}
+
+.tag .default-checked span {
+    /* deliberately no color: black */
+    background: lightgreen;
+}
+
+.tag-broken input[type="checkbox"]:checked + span {
+    background: lightpink;
+}
+
+.tag-broken .checked span {
+    background: lightpink;
+}
+
+.tag-broken .default-checked span {
+    background: lightpink;
+}
+
+form.puzzlink {
+    display: inline;
+}
+
+button.link {
+    display: inline-block;
+    background:none!important;
+    color:inherit;
+    border:none;
+    padding:0!important;
+    font: inherit;
+    cursor: pointer;
+}
+
+.longlink {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    max-width: calc(100% - 120px);
+}
+
+ul.tweets {
+    margin: 0.5em;
+    padding: 0.5em;
+}
+
+.pzvpuzzle {
+    list-style: none;
+    margin: 0.5em 0;
+    overflow: hidden; /* to grow height for thumbnail */
+}
+
+.pzvpuzzle div:not(:first-child) {
+    margin-top: 0.2em;
+    margin-left: 2em;
+}
+
+.pzvpuzzle .thumb {
+    margin-top: 3px;
+    margin-right: 12px;
+    width: 100px;
+    height: 100px;
+    float: left;
+}
+
+.pzvpuzzle .thumb img {
+    max-width: 100px;
+    max-height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+span.date {
+    margin-right: 1em;
+}
+
+.filterplus {
+    color: gray;
+    cursor: pointer;
+    visibility: hidden;
+}
+span:hover .filterplus {
+    visibility: visible;
+}
+
+.selection td:first-child {
+    width: 8em;
+    vertical-align: top;
+}
+
+.selection label {
+    white-space: nowrap;
+}
+
+.paging {
+    display: inline-block;
+}
+
+a.link {
+    cursor: pointer;
+}
+
+.links a {
+    text-decoration: none;
+    color: black;
+}
+
+.links {
+    display: inline-block;
+    width: 25ch;
+}
+
+.links +span {
+    display: inline-block;
+    width: 3ch;
+}
+
+.tags {
+    display: inline-block;
+}
+
+.links a {
+    text-decoration: none;
+    color: black;
+}
+
+.login form {
+    display: grid;
+    grid-template-columns: max-content;
+}
+
+.login label {
+    display: block;
+    text-align: right;
+    margin: 2px;
+}
+
+.login button {
+    width: max-content;
+    margin-left: auto;
+}
+
+.login .link {
+    display: block;
+    width: max-content;
+    margin-left: auto;
+    margin-top: 0.2em;
+    text-decoration: underline;
+    font-size: small;
+}
+
+.solves {
+    padding: 10px;
+}
+
+.solves thead td {
+    text-align: center;
+    font-variant: small-caps;
+    font-size: x-small;
+}
+
+.solves tr td:first-child {
+    white-space: nowrap;
+}
+
+/* FIXME */
+.solves tr.code-incorrect td:last-child {
+    color: red;
+}
+.solves tr.code-unknown td:last-child {
+    color: gray;
+}
+
+.stats {
+    min-width: 150px;
+    margin: 1em;
+}
+
+.stats caption {
+    font-weight: bold;
+}
+
+.stats tr td:nth-child(2) {
+    text-align: right;
+}
+
+/* CUSTOM PZPLUS DARK THEME */
+body { background-color: black; color: #d8d8d8; }
+body > div > div { background-color: #181818; }
+button { background-color: #282828; border-color: #383838; color: #d8d8d8; }
+a:link    { color: #7cafc2; }
+a:visited { color: #ba8baf; }

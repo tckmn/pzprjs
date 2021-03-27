@@ -1,17 +1,27 @@
 TODO
-backend:
- * recording audit script
- * better timestamp and x/y coord compression
-frontend:
- * per-user database
- * sql query interface
- * "fully manual entry"
- * toggle option for dark theme
- * dark theme the actual puzzles???
- * fast forward recording
-misc:
- * edit mode (probably not happening)
 
+    backend:
+     * recording audit script
+     * better timestamp and x/y coord compression
+    frontend:
+     * per-user database
+     * sql query interface
+     * "fully manual entry"
+     * toggle option for dark theme
+     * dark theme the actual puzzles???
+     * fast forward recording
+    misc:
+     * edit mode (probably not happening)
+
+FILES FROM PUZZ.LINK AND MODIFIED
+
+    /p (inline)   -> src-ui/p-extra.js
+    /db           -> src-ui/db.html
+    /db/style.css -> src-ui/db.css
+
+===============================================================================
+OLD STUFF BELOW
+===============================================================================
 
 EXTRA POSSIBILITIES FROM AUTO:
  - shaka: CA345

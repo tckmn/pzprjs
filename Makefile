@@ -1,7 +1,9 @@
-.PHONY: build test serve format
+.PHONY: build test testpzplus serve serve-all format scrape
 
 build:
 	npm run-script build
+
+build-all: build scrape
 
 test:
 	npm test
@@ -17,3 +19,6 @@ serve-all:
 
 format:
 	npm run-script format
+
+scrape:
+	curl 'https://puzz.link/db/index.js' > dist/db.js
