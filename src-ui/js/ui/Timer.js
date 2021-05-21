@@ -75,13 +75,15 @@
 				seconds = "0" + seconds;
 			}
 
-			this.timerEL.innerHTML = [
-				this.label(),
-				!!hours ? hours + ":" : "",
-				minutes,
-				":",
-				seconds
-			].join("");
+			if (this.timerEL) {
+				this.timerEL.innerHTML = [
+					this.label(),
+					!!hours ? hours + ":" : "",
+					minutes,
+					":",
+					seconds
+				].join("");
+			}
 		},
 		updatetime: function() {
 			var seconds = (ui.puzzle.getTime() / 1000) | 0;
