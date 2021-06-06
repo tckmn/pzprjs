@@ -13,6 +13,7 @@ import http.server
 import json
 import shutil
 import sqlite3
+import threading
 
 aliases = list(map(str.split, '''
 cave bag corral correl
@@ -44,7 +45,7 @@ def tts(t, precise=False):
 def recpath(rowid):
     return os.path.join(DATA_DIR, 'recordings', f'{rowid:06}')
 
-conn = sqlite3.connect(os.path.join(DATA_DIR, 'p.db'))
+conn = sqlite3.connect(os.path.join(DATA_DIR, 'p.db'), check_same_thread=False)
 c = conn.cursor()
 c.execute('''
 CREATE TABLE IF NOT EXISTS d (
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS d (
 )
 ''')
 conn.commit()
+clock = threading.Lock()
 
 class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 
@@ -104,10 +106,11 @@ class API:
         parts = data['url'].split('/')
         genre = patch(parts[0])
         flags, w, h = ([None]+parts[1:3]) if parts[1].isdigit() else parts[1:4]
-        c.execute('INSERT INTO d (genre,flags,url,date,w,h,t) VALUES (?,?,?,datetime("now","localtime"),?,?,?)',
-                (genre, flags, data['url'], w, h, data['t']))
-        conn.commit()
-        rowid = c.lastrowid
+        with clock:
+            c.execute('INSERT INTO d (genre,flags,url,date,w,h,t) VALUES (?,?,?,datetime("now","localtime"),?,?,?)',
+                    (genre, flags, data['url'], w, h, data['t']))
+            conn.commit()
+            rowid = c.lastrowid
 
         if len(recording):
             with open(recpath(rowid), 'wb') as recfile:
@@ -136,12 +139,14 @@ class API:
 
     def j_update(data):
         if data['k'] in ['rate', 'diff', 'path', 'uniq', 'variant', 'comm']:
-            c.execute(f'UPDATE d SET {data["k"]} = ? WHERE rowid = ?', (data['v'], data['rowid']))
-            conn.commit()
+            with clock:
+                c.execute(f'UPDATE d SET {data["k"]} = ? WHERE rowid = ?', (data['v'], data['rowid']))
+                conn.commit()
             return { 'msg': 'saved!' }
         if data['k'] == 'unsave' and data['v'] == 1:
-            c.execute('DELETE FROM d WHERE rowid = ?', (data['rowid'],))
-            conn.commit()
+            with clock:
+                c.execute('DELETE FROM d WHERE rowid = ?', (data['rowid'],))
+                conn.commit()
             try: os.remove(recpath(data['rowid']))
             except: pass
             return { 'msg': 'deleted' }
@@ -157,4 +162,4 @@ class API:
             't': tts(t)
         } for (t,) in c.execute('SELECT t FROM d WHERE url = ?', (data['url'],)).fetchall()]
 
-http.server.HTTPServer(('', PORT), PuzzlinkHelper).serve_forever()
+http.server.ThreadingHTTPServer(('', PORT), PuzzlinkHelper).serve_forever()
