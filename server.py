@@ -47,7 +47,7 @@ def recpath(rowid):
 
 conn = sqlite3.connect(os.path.join(DATA_DIR, 'p.db'), check_same_thread=False)
 c = conn.cursor()
-c.execute('''
+c.executescript('''
 CREATE TABLE IF NOT EXISTS d (
     genre   TEXT NOT NULL,
     variant TEXT,
@@ -62,10 +62,30 @@ CREATE TABLE IF NOT EXISTS d (
     path    INTEGER,
     uniq    INTEGER,
     comm    TEXT
-)
+);
+CREATE TABLE IF NOT EXISTS users (
+    name    TEXT NOT NULL,
+    pass    BLOB NOT NULL,
+    salt    BLOB NOT NULL
+);
+CREATE TABLE IF NOT EXISTS tokens (
+    uid     INTEGER NOT NULL,
+    token   TEXT NOT NULL,
+    date    TEXT NOT NULL
+);
 ''')
 conn.commit()
 clock = threading.Lock()
+
+def pwhash(pwd, salt):
+    return hashlib.pbkdf2_hmac('sha256', pwd, salt, 100000)
+
+# only call this when locked
+def maketoken(uid):
+    token = os.urandom(32).hex()
+    c.execute('insert into tokens (uid, token, date) values (?, ?, datetime("now","localtime"))', (uid, token))
+    conn.commit()
+    return token
 
 class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 
@@ -82,6 +102,12 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self):
+        uid = c.execute('SELECT uid FROM tokens WHERE token = ?', (self.headers.get('PzplusAuth', ''),)).fetchone()
+        if not uid:
+            self.send_response(403)
+            self.end_headers()
+            return
+
         ret = None
         if hasattr(API, 'b_' + self.path[1:]):
             ret = getattr(API, 'b_' + self.path[1:])(self.rfile.read(int(self.headers['Content-Length'])))

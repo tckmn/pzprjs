@@ -1,11 +1,17 @@
 ui.localdb = {
 
-    xhr: function(path, data, cb) {
+    xhr: function(path, data, cb, otherstatus) {
         var xhr = new XMLHttpRequest(), localdb = this;
         xhr.addEventListener('load', function() {
-            cb(localdb, JSON.parse(this.response));
+            if (this.status === 200) {
+                cb(localdb, JSON.parse(this.response));
+            } else if (otherstatus && otherstatus[this.status]) {
+                otherstatus[this.status](localdb, this.response);
+            }
         });
         xhr.open('POST', path);
+        var auth = localStorage.getItem('pzplusauth');
+        if (auth) { xhr.setRequestHeader('PzplusAuth', auth); }
         xhr.send(data);
     },
 
@@ -14,11 +20,17 @@ ui.localdb = {
             'url': pzv,
             't': time
         }));
-        this.xhr('/localdb', recording ? recording.finalize(json) : json, this.send_resp);
+        this.xhr('/localdb', recording ? recording.finalize(json) : json, this.send_resp, this.send_err);
     },
 
     edit: function(pzv) {
-        this.xhr('/fetch', JSON.stringify({'url': pzv}), this.send_resp);
+        this.xhr('/fetch', JSON.stringify({'url': pzv}), this.send_resp, this.send_err);
+    },
+
+    send_err: {
+        403: function(localdb, resp) {
+            ui.notify.alert('You are not logged into pzplus, so this solve was not recorded.');
+        }
     },
 
     send_resp: function(localdb, resp) {
@@ -137,7 +149,7 @@ pzpr.on('load', function() {
         }
     });
 
-    var tokenerr = 'You have missing authentication information! Click <em>pzplus → Authentication</em> to input it.';
+    var tokenerr = '<a href="/db">Log in to puzz.link</a> in order to register your solves in the database.';
     if (!localStorage.getItem('token') || !localStorage.getItem('user_id')) {
         addMsg(tokenerr);
     } else {
@@ -153,5 +165,10 @@ pzpr.on('load', function() {
         xhr.open('GET', 'https://puzz.link/db/api/rpc/refresh_token');
         xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
         xhr.send();
+    }
+
+    var pzplustokenerr = '<a href="/auth">Log in to pzplus</a> in order to log solve data and recordings.';
+    if (!localStorage.getItem('pzplusauth')) {
+        addMsg(pzplustokenerr);
     }
 });
