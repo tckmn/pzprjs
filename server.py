@@ -70,8 +70,13 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args):
         super().__init__(*args, directory='dist')
 
+    def nohtml(self, p):
+        if self.path == f'/{p}' or self.path.startswith(f'/{p}?'): self.path = f'/{p}.html{self.path[1+len(p):]}'
+
     def do_GET(self):
-        if self.path == '/p' or self.path.startswith('/p?'): self.path = '/p.html' + self.path[2:]
+        self.nohtml('p')
+        self.nohtml('db')
+        print(self.path)
         super().do_GET()
 
     def do_POST(self):
