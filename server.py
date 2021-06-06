@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import os
-PORT = 2345
-DATA_DIR = os.path.join(os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share')), 'pzplus')
+PORT = int(os.environ.get('PZPLUS_PORT', 2345))
+DATA_DIR = os.environ.get('PZPLUS_DATA',
+    os.path.join(os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share')),
+                 'pzplus'))
 
 import pathlib
 pathlib.Path(os.path.join(DATA_DIR, 'recordings')).mkdir(parents=True, exist_ok=True)
