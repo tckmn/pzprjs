@@ -168,7 +168,8 @@ class API:
         return {
             'msg1': f'saved time: {tts(data["t"], True)}',
             'msg2': f'{num} {genre} puzzles solved in {tts(time)}',
-            'rowid': rowid
+            'rowid': rowid,
+            'time': tts(data["t"], True)
         }
 
     def j_fetch(uid, data):
