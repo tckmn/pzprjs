@@ -233,3 +233,7 @@ importing from old db:
 
     attach '/home/tckmn/code/py/puzzlink-helper/p.db' as old;
     insert into d (genre, variant, flags, url, date, w, h, t) select genre, variant, flags, url, date, w, h, t*1000 from old.d;
+
+importing from less old db:
+
+    alter table d add column uid integer not null default 1;
