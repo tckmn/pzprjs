@@ -4,7 +4,6 @@ TODO
      * recording audit script
      * better timestamp and x/y coord compression
     frontend:
-     * per-user database
      * sql query interface
      * "fully manual entry"
      * toggle option for dark theme
