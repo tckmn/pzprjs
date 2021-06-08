@@ -9,6 +9,7 @@ DATA_DIR = os.environ.get('PZPLUS_DATA',
 import pathlib
 pathlib.Path(os.path.join(DATA_DIR, 'recordings')).mkdir(parents=True, exist_ok=True)
 
+import hashlib
 import http.server
 import json
 import shutil
@@ -108,6 +109,7 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
             self.send_response(403)
             self.end_headers()
             return
+        uid = uid[0]
 
         ret = None
         if hasattr(API, 'b_' + self.path[1:]):

@@ -35,6 +35,7 @@ body { background-color: #000; color: #d8d8d8; }
                         localStorage.removeItem('pzplusauth');
                         reset(false);
                     });
+                    reset(localStorage.getItem('pzplusauth'));
                 });
             </script>
     </head>
