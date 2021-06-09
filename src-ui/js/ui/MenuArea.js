@@ -445,6 +445,8 @@ ui.menuarea = {
 		});
 		xhr.responseType = 'arraybuffer';
 		xhr.open('POST', '/getrec');
+		var auth = localStorage.getItem('pzplusauth');
+		if (auth) { xhr.setRequestHeader('PzplusAuth', auth); }
 		xhr.send(JSON.stringify({
 			'url': ui.pzv
 		}));
