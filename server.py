@@ -109,7 +109,7 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
             self.send_response(403)
             self.end_headers()
             return
-        uid = uid[0]
+        if uid: uid = uid[0]
 
         ret = None
         if hasattr(API, 'b_' + self.path[1:]):
