@@ -8,6 +8,7 @@ DATA_DIR = os.environ.get('PZPLUS_DATA',
 
 import pathlib
 pathlib.Path(os.path.join(DATA_DIR, 'recordings')).mkdir(parents=True, exist_ok=True)
+pathlib.Path(os.path.join(DATA_DIR, 'userdb')).mkdir(parents=True, exist_ok=True)
 
 import hashlib
 import http.server
@@ -43,8 +44,8 @@ def tts(t, precise=False):
     hms = f'{h}:{m:02}:{s:02}' if h > 0 else f'{m}:{s:02}'
     return f'{hms}.{ms:03}' if precise else hms
 
-def recpath(rowid):
-    return os.path.join(DATA_DIR, 'recordings', f'{rowid:06}')
+recpath = lambda rowid: os.path.join(DATA_DIR, 'recordings', f'{rowid:06}')
+userdbpath = lambda uid: os.path.join(DATA_DIR, 'userdb', f'{uid:04}.db')
 
 conn = sqlite3.connect(os.path.join(DATA_DIR, 'p.db'), check_same_thread=False)
 c = conn.cursor()
@@ -101,6 +102,7 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
         self.nohtml('p')
         self.nohtml('db')
         self.nohtml('auth')
+        self.nohtml('query')
         super().do_GET()
 
     def do_POST(self):

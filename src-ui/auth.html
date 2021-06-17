@@ -4,40 +4,38 @@
         <meta charset='utf-8'>
         <meta name='viewport' content='width=device-width'>
         <title>pzplus login</title>
-<style>
-body { background-color: #000; color: #d8d8d8; }
-</style>
-            <script>
-                window.addEventListener('load', function() {
-                    var n = document.getElementById('name'), p = document.getElementById('pass'),
-                        reset = function(islogged) {
-                            n.value = '';
-                            p.value = '';
-                            document.getElementById('logindiv').style.display = islogged ? 'none' : 'block';
-                            document.getElementById('logoutdiv').style.display = islogged ? 'block' : 'none';
-                        },
-                        go = function(action) { return function() {
-                            var xhr = new XMLHttpRequest();
-                            xhr.addEventListener('load', function() {
-                                var resp = JSON.parse(this.response);
-                                if (resp.token) localStorage.setItem('pzplusauth', resp.token);
-                                if (resp.msg) document.getElementById('msg').innerText = resp.msg;
-                                reset(resp.token);
-                            });
-                            xhr.open('POST', '/auth');
-                            xhr.send(JSON.stringify({
-                                name: n.value, pass: p.value, action: action
-                            }));
-                        }; };
-                    document.getElementById('login').addEventListener('click', go('login'));
-                    document.getElementById('register').addEventListener('click', go('register'));
-                    document.getElementById('logout').addEventListener('click', function() {
-                        localStorage.removeItem('pzplusauth');
-                        reset(false);
-                    });
-                    reset(localStorage.getItem('pzplusauth'));
+        <link rel="stylesheet" href="./css/dark.css?<%= git.hash %>" type="text/css">
+        <script>
+            window.addEventListener('load', function() {
+                var n = document.getElementById('name'), p = document.getElementById('pass'),
+                    reset = function(islogged) {
+                        n.value = '';
+                        p.value = '';
+                        document.getElementById('logindiv').style.display = islogged ? 'none' : 'block';
+                        document.getElementById('logoutdiv').style.display = islogged ? 'block' : 'none';
+                    },
+                    go = function(action) { return function() {
+                        var xhr = new XMLHttpRequest();
+                        xhr.addEventListener('load', function() {
+                            var resp = JSON.parse(this.response);
+                            if (resp.token) localStorage.setItem('pzplusauth', resp.token);
+                            if (resp.msg) document.getElementById('msg').innerText = resp.msg;
+                            reset(resp.token);
+                        });
+                        xhr.open('POST', '/auth');
+                        xhr.send(JSON.stringify({
+                            name: n.value, pass: p.value, action: action
+                        }));
+                    }; };
+                document.getElementById('login').addEventListener('click', go('login'));
+                document.getElementById('register').addEventListener('click', go('register'));
+                document.getElementById('logout').addEventListener('click', function() {
+                    localStorage.removeItem('pzplusauth');
+                    reset(false);
                 });
-            </script>
+                reset(localStorage.getItem('pzplusauth'));
+            });
+        </script>
     </head>
     <body>
         <p id=msg></p>
