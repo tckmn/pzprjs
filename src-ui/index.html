@@ -5,6 +5,17 @@
         <meta name='viewport' content='width=device-width'>
         <title>pzplus</title>
         <link rel="stylesheet" href="./css/dark.css?<%= git.hash %>" type="text/css">
+        <script>
+            window.addEventListener('load', () => {
+                document.getElementById('helper').addEventListener('click', () => {
+                    if (confirm('are you sure? this action is not easily reversible.')) {
+                        localStorage.setItem('pzprv3_config:puzzle','{"irowake@nurikabe":true,"irowake@box":true,"irowake@creek":true,"irowake@mochikoro":true,"irowake@tasquare":true,"irowake@kurotto":true,"irowake@nuribou":true,"irowake@tawa":true,"irowake@lookair":true,"irowake@mochinyoro":true,"irowake@tapa":true,"irowake@cave":true,"irowake@nurimisaki":true,"irowake@snake":true,"irowake@nonogram":true,"irowake@interbd":true,"irowake@aqre":true,"irowake@tilepaint":true,"irowake@norinori":true,"irowake@nurimaze":true,"irowake@lits":true,"irowake@shimaguni":true,"irowake@stostone":true,"irowake@paintarea":true,"irowake@chocona":true,"irowake@aquarium":true,"irowake@heyawake":true,"irowake@hitori":true,"irowake@kurodoko":true,"irowake@usoone":true,"irowake@yajikazu":true,"irowake@kurochute":true,"irowake@ayeheya":true,"irowake@slither":true,"irowake@mashu":true,"irowake@yajilin":true,"irowake@slalom":true,"irowake@nagare":true,"irowake@moonsun":true,"irowake@country":true,"irowake@onsen":true,"irowake@mejilink":true,"irowake@angleloop":true,"irowake@doubleback":true,"irowake@scrin":true,"irowake@yajilin-regions":true,"irowake@geradeweg":true,"irowake@castle":true,"irowake@maxi":true,"irowake@midloop":true,"irowake@balance":true,"irowake@simpleloop":true,"irowake@detour":true,"irowake@haisu":true,"irowake@tapaloop":true,"irowake@reflect":true,"irowake@pipelink":true,"irowake@loopsp":true,"irowake@nagenawa":true,"irowake@kouchoku":true,"irowake@ringring":true,"irowake@icebarn":true,"irowake@pipelinkr":true,"irowake@barns":true,"irowake@icelom":true,"irowake@icelom2":true,"irowake@numlin":true,"irowake@wblink":true,"irowake@kusabi":true,"irowake@arukone":true,"irowake@hashikake":true,"irowake@firefly":true,"irowake@ichimaga":true,"irowake@ichimagam":true,"irowake@ichimagax":true,"irowake@amibo":true,"irowake@herugolf":true,"irowake@kaero":true,"irowake@yosenabe":true,"irowake@armyants":true,"irowake@bonsan":true,"irowake@heyabon":true,"irowake@rectslider":true,"irowake@satogaeri":true,"irowake@shikaku":true,"irowake@bdblock":true,"irowake@fivecells":true,"irowake@sashigane":true,"irowake@nawabari":true,"irowake@triplace":true,"irowake@fourcells":true,"irowake@aho":true,"irowake@heteromino":true,"irowake@dbchoco":true,"irowake@compass":true,"irowake@araf":true,"irowake@nikoji":true,"irowake@tentaisho":true,"irowake@kramma":true,"irowake@kramman":true,"irowake@shwolf":true,"irowake@cbblock":true,"irowake@loute":true,"irowake@tatamibari":true,"irowake@fillmat":true,"irowake@usotatami":true,"irowake@yajitatami":true,"irowake@kakuro":true,"irowake@minarism":true,"irowake@sukoro":true,"irowake@kakuru":true,"irowake@view":true,"irowake@bosanowa":true,"irowake@skyscrapers":true,"irowake@kropki":true,"irowake@easyasabc":true,"irowake@doppelblock":true,"irowake@sudoku":true,"irowake@fillomino":true,"irowake@symmarea":true,"irowake@ripple":true,"irowake@factors":true,"irowake@makaro":true,"irowake@nanro":true,"irowake@cojun":true,"irowake@renban":true,"irowake@sukororoom":true,"irowake@hanare":true,"irowake@kazunori":true,"irowake@meander":true,"irowake@putteria":true,"irowake@toichika2":true,"irowake@juosan":true,"irowake@gokigen":true,"irowake@tateyoko":true,"irowake@wagiri":true,"irowake@walllogic":true,"irowake@curvedata":true,"irowake@akari":true,"irowake@goishi":true,"irowake@shakashaka":true,"irowake@kinkonkan":true,"irowake@hebi":true,"irowake@shugaku":true,"irowake@pencils":true,"irowake@tents":true,"irowake@mines":true,"irowake@dosufuwa":true,"irowake@hakoiri":true,"irowake@roma":true,"irowake@toichika":true,"irowake@nondango":true,"irowake@yinyang":true,"irowake@starbattle":true,"irowakeblk@stostone":true,"autoerr@hitori":true,"multierr":true}');
+                        localStorage.setItem('pzprv3_config:ui','{"autocheck_mode":"simple"}');
+                        alert('success!');
+                    }
+                });
+            });
+        </script>
     </head>
     <body>
         <ul>
@@ -13,5 +24,6 @@
             <li><a href='/auth'>pzplus login</a></li>
             <li><a href='/query'>pzplus stats/query</a></li>
         </ul>
+        <button id='helper'>enable all helper settings (color each line, hitori reds, autocheck, check multiple errors)</button>
     </body>
 </html>

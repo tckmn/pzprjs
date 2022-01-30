@@ -8,7 +8,7 @@ setInterval(function() {
             var src = puzzle.getElementsByTagName("img")[0].src;
             var link = src.replace("v?thumb&","?");
             var pzvlink = link.replace("https://puzz.link","http://pzv.jp");
-            var pzpluslink = link.replace("https://puzz.link","http://localhost:2345");
+            var pzpluslink = link.replace("https://puzz.link","");
             puzzle.getElementsByTagName("a")[0].href = pzpluslink;
             puzzle.insertAdjacentHTML('beforeend', '<div class="plink"><a target="_blank" href="'+pzpluslink+'">[pzplus]</a> <a target="_blank" href="'+link+'">[puzz.link]</a> <a target="_blank" href="'+pzvlink+'">[pzv.jp]</a></div>');
         }
