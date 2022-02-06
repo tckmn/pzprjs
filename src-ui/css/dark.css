@@ -51,7 +51,7 @@ div.childsel, div.childsel::before {
     color: #7cafc2;
 }
 
-#menupanel menu li.check > span, #menupanel menu li[data-value] > span, #menupanel menu a, #menupanel menu li.checked > span {
+#menupanel menu li.check > span, #menupanel menu li[data-value] > span, #menupanel menu a, #menupanel menu li.checked > span, #menupanel menu li.checked > span:before {
     color: #d8d8d8;
 }
 
