@@ -1003,8 +1003,22 @@ ui.popupmgr.addpopup("pzplus_sharerec", {
 	reset: function(px, py) {
 		var urlanchor = this.urlanchor;
 		ui.localdb.xhr('/getshkey', JSON.stringify({ url: ui.pzv }), function(localdb, resp) {
-			var url = location.href + '&sharerec=' + resp.key;
+			var url = location.href.replace('?', '?sharerec=' + resp.key + '&');
 			urlanchor.href = urlanchor.textContent = url;
 		});
+	}
+});
+
+ui.popupmgr.addpopup("pzplus_loadshrec", {
+	formname: "pzplus_loadshrec",
+
+	loadshrec1: function() {
+		ui.puzzle.recording.load(ui.sharerec, 0);
+		this.close();
+	},
+
+	loadshrec2: function() {
+		ui.puzzle.recording.load(ui.sharerec, 1);
+		this.close();
 	}
 });

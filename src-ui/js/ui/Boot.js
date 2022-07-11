@@ -82,6 +82,20 @@
 			ui.network.configure(onload_option.net, onload_option.key);
 		}
 
+		if (!!onload_option.sharerec) {
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener('load', function() {
+				ui.sharerec = xhr.response;
+				ui.popupmgr.open('pzplus_loadshrec', innerWidth/3, innerHeight/3);
+			});
+			xhr.responseType = 'arraybuffer';
+			xhr.open('POST', '/getshrec');
+			xhr.send(JSON.stringify({
+				key: onload_option.sharerec,
+				url: onload_pzv
+			}));
+		}
+
 		return true;
 	}
 

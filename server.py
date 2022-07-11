@@ -99,6 +99,8 @@ def makeshkey():
 #     c.execute('update users set shkey = ? where name = ?', (makeshkey(), name[0]))
 # conn.commit()
 
+noauth = ['/auth', '/getshrec']
+
 class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 
     def __init__(self, *args):
@@ -115,18 +117,19 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self):
-        uid = c.execute('SELECT uid FROM tokens WHERE token = ?', (self.headers.get('PzplusAuth', ''),)).fetchone()
-        if not uid and self.path != '/auth':
-            self.send_response(403)
-            self.end_headers()
-            return
-        if uid: uid = uid[0]
+        with clock:
+            uid = c.execute('SELECT uid FROM tokens WHERE token = ?', (self.headers.get('PzplusAuth', ''),)).fetchone()
+            if not uid and self.path not in noauth:
+                self.send_response(403)
+                self.end_headers()
+                return
+            if uid: uid = uid[0]
 
-        ret = None
-        if hasattr(API, 'b_' + self.path[1:]):
-            ret = getattr(API, 'b_' + self.path[1:])(uid, self.rfile.read(int(self.headers['Content-Length'])))
-        elif hasattr(API, 'j_' + self.path[1:]):
-            ret = getattr(API, 'j_' + self.path[1:])(uid, json.loads(self.rfile.read(int(self.headers['Content-Length']))))
+            ret = None
+            if hasattr(API, 'b_' + self.path[1:]):
+                ret = getattr(API, 'b_' + self.path[1:])(uid, self.rfile.read(int(self.headers['Content-Length'])))
+            elif hasattr(API, 'j_' + self.path[1:]):
+                ret = getattr(API, 'j_' + self.path[1:])(uid, json.loads(self.rfile.read(int(self.headers['Content-Length']))))
 
         if ret is not None:
             self.send_response(200)
@@ -145,16 +148,15 @@ class API:
             if not res: return {'msg': 'no such user'}
             uid, pwd, salt = res
             if 'pass' not in data or pwhash(data['pass'].encode(), salt) != pwd: return {'msg': 'incorrect password'}
-            with clock: return {'msg': 'success!', 'token': maketoken(uid)}
+            return {'msg': 'success!', 'token': maketoken(uid)}
 
         if data.get('action') == 'register':
             if 'name' not in data or not data['name'] or 'pass' not in data or not data['pass']: return {'msg': 'missing login information'}
-            with clock:
-                if c.execute('SELECT COUNT(*) FROM users WHERE name = ?', (data.get('name'),)).fetchone()[0]: return {'msg': 'username already taken'}
-                salt = os.urandom(32)
-                c.execute('INSERT INTO users (name, pass, salt) VALUES (?, ?, ?)', (data['name'], pwhash(data['pass'].encode(), salt), salt))
-                conn.commit()
-                return {'msg': 'success!', 'token': maketoken(c.lastrowid)}
+            if c.execute('SELECT COUNT(*) FROM users WHERE name = ?', (data.get('name'),)).fetchone()[0]: return {'msg': 'username already taken'}
+            salt = os.urandom(32)
+            c.execute('INSERT INTO users (name, pass, salt) VALUES (?, ?, ?)', (data['name'], pwhash(data['pass'].encode(), salt), salt))
+            conn.commit()
+            return {'msg': 'success!', 'token': maketoken(c.lastrowid)}
 
         return {'msg': 'something weird happened'}
 
@@ -165,11 +167,10 @@ class API:
         parts = data['url'].split('/')
         genre = patch(parts[0])
         flags, w, h = ([None]+parts[1:3]) if parts[1].isdigit() else parts[1:4]
-        with clock:
-            c.execute('INSERT INTO d (uid,genre,flags,url,date,w,h,t) VALUES (?,?,?,?,datetime("now","localtime"),?,?,?)',
-                    (uid, genre, flags, data['url'], w, h, data['t']))
-            conn.commit()
-            rowid = c.lastrowid
+        c.execute('INSERT INTO d (uid,genre,flags,url,date,w,h,t) VALUES (?,?,?,?,datetime("now","localtime"),?,?,?)',
+                (uid, genre, flags, data['url'], w, h, data['t']))
+        conn.commit()
+        rowid = c.lastrowid
 
         if len(recording):
             with open(recpath(rowid), 'wb') as recfile:
@@ -201,14 +202,12 @@ class API:
         if c.execute('SELECT COUNT(*) FROM d WHERE uid = ? AND rowid = ?', (uid, data.get('rowid'))).fetchone()[0] == 0:
             return {'msg': 'no such solve'}
         if data['k'] in ['rate', 'diff', 'path', 'uniq', 'variant', 'comm']:
-            with clock:
-                c.execute(f'UPDATE d SET {data["k"]} = ? WHERE uid = ? AND rowid = ?', (data['v'], uid, data['rowid']))
-                conn.commit()
+            c.execute(f'UPDATE d SET {data["k"]} = ? WHERE uid = ? AND rowid = ?', (data['v'], uid, data['rowid']))
+            conn.commit()
             return { 'msg': 'saved!' }
         if data['k'] == 'unsave' and data['v'] == 1:
-            with clock:
-                c.execute('DELETE FROM d WHERE uid = ? AND rowid = ?', (uid, data['rowid']))
-                conn.commit()
+            c.execute('DELETE FROM d WHERE uid = ? AND rowid = ?', (uid, data['rowid']))
+            conn.commit()
             try: os.remove(recpath(data['rowid']))
             except: pass
             return { 'msg': 'deleted' }
@@ -226,11 +225,11 @@ class API:
 
     def j_getshkey(uid, data):
         s = c.execute('SELECT shkey FROM users WHERE rowid = ?', (uid,)).fetchone()[0] + data['url']
-        return { 'key': str(uid) + '.' + hashlib.sha256(s.encode()).hexdigest() }
+        return { 'key': str(uid) + 'z' + hashlib.sha256(s.encode()).hexdigest() }
 
     # ignore requester's uid here
     def j_getshrec(_, data):
-        uid, key = data['key'].split('.')
+        uid, key = data['key'].split('z', 1)
         uid = int(uid)
         s = c.execute('SELECT shkey FROM users WHERE rowid = ?', (uid,)).fetchone()[0] + data['url']
         if hashlib.sha256(s.encode()).hexdigest() != key: return b''
