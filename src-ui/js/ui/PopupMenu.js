@@ -990,3 +990,21 @@ ui.popupmgr.addpopup('pzplus_manual', {
 		alert('sorry, not yet implemented :(');
 	}
 });
+
+// copied and modified from urloutput
+ui.popupmgr.addpopup("pzplus_sharerec", {
+	formname: "pzplus_sharerec",
+
+	init: function() {
+		this.urlanchor = getEL("sharereclink");
+		ui.popupmgr.popups.template.init.call(this);
+	},
+
+	reset: function(px, py) {
+		var urlanchor = this.urlanchor;
+		ui.localdb.xhr('/getshkey', JSON.stringify({ url: ui.pzv }), function(localdb, resp) {
+			var url = location.href + '&sharerec=' + resp.key;
+			urlanchor.href = urlanchor.textContent = url;
+		});
+	}
+});

@@ -114,6 +114,7 @@ if ('serviceWorker' in navigator) {
      <li data-menu-exec="pzplus_edit"><span>__Edit existing entry__Edit existing entry__</span></li>
      <li data-menu-exec="pzplus_playRecording"><span>__Play recording__Play recording__</span></li>
      <li data-menu-exec="pzplus_playRecordingInstant"><span>__Load recording instantly__Load recording instantly__</span></li>
+     <li data-popup="pzplus_sharerec"><span>__Export shared recording__Export shared recording__</span></li>
    </menu></li>
   </menu>
   <div id="usepanel" style="display:none;">
@@ -665,6 +666,18 @@ if ('serviceWorker' in navigator) {
     <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
     </form>
   </div>
+
+  <div class="popup">
+    <div class="titlebar">__Export shared recording__Export shared recording__</div>
+    <form name="pzplus_sharerec">
+      Share this link to send someone a recording <br>
+      of your solve of this puzzle: <br>
+      <a id="sharereclink" class="urlanchor" target="_blank"></a>
+      <br>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
 </div>
 
 <!-- 隠し要素 -->

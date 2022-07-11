@@ -69,7 +69,8 @@ CREATE TABLE IF NOT EXISTS d (
 CREATE TABLE IF NOT EXISTS users (
     name    TEXT NOT NULL,
     pass    BLOB NOT NULL,
-    salt    BLOB NOT NULL
+    salt    BLOB NOT NULL,
+    shkey   TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS tokens (
     uid     INTEGER NOT NULL,
@@ -89,6 +90,14 @@ def maketoken(uid):
     c.execute('insert into tokens (uid, token, date) values (?, ?, datetime("now","localtime"))', (uid, token))
     conn.commit()
     return token
+
+def makeshkey():
+    return os.urandom(32).hex()
+
+# c.execute('alter table users add shkey TEXT') # nullable oops
+# for name in c.execute('select name from users').fetchall():
+#     c.execute('update users set shkey = ? where name = ?', (makeshkey(), name[0]))
+# conn.commit()
 
 class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 
@@ -214,5 +223,19 @@ class API:
         return [{
             't': tts(t)
         } for (t,) in c.execute('SELECT t FROM d WHERE uid = ? AND url = ?', (uid, data['url'])).fetchall()]
+
+    def j_getshkey(uid, data):
+        s = c.execute('SELECT shkey FROM users WHERE rowid = ?', (uid,)).fetchone()[0] + data['url']
+        return { 'key': str(uid) + '.' + hashlib.sha256(s.encode()).hexdigest() }
+
+    # ignore requester's uid here
+    def j_getshrec(_, data):
+        uid, key = data['key'].split('.')
+        uid = int(uid)
+        s = c.execute('SELECT shkey FROM users WHERE rowid = ?', (uid,)).fetchone()[0] + data['url']
+        if hashlib.sha256(s.encode()).hexdigest() != key: return b''
+        res = c.execute('SELECT rowid FROM d WHERE uid = ? AND url = ?', (uid, data['url'])).fetchone()
+        fname = recpath(res[0]) if res else None
+        return open(fname, 'rb').read() if fname else b''
 
 http.server.ThreadingHTTPServer(('', PORT), PuzzlinkHelper).serve_forever()
