@@ -96,6 +96,10 @@
 			}));
 		}
 
+		if (!!onload_option.challenge) {
+			setInterval(() => ui.puzzle.irowake(), 100);
+		}
+
 		return true;
 	}
 
