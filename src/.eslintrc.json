@@ -1,10 +1,11 @@
 {
   "env": {
     "browser": true,                    // Allow to use browser defined variable (not console, alert etc.)
-    "node": true                        // Allow to use node defined variable (require, process etc.)
+    "node": true,                       // Allow to use node defined variable (require, process etc.)
+    "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 6
   },
   "globals": {
     "pzpr": "readonly"
