@@ -382,7 +382,8 @@
 				);
 			}
 
-			g.fillStyle = this.quescolor;
+			// g.fillStyle = this.quescolor;
+			g.fillStyle = '#fff'; // TODO only if dark mode
 
 			g.vid = "bd_indicator";
 			g.font = ((this.ch * 0.66) | 0) + "px " + this.fontfamily;
