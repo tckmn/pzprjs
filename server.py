@@ -154,7 +154,7 @@ class API:
             if 'name' not in data or not data['name'] or 'pass' not in data or not data['pass']: return {'msg': 'missing login information'}
             if c.execute('SELECT COUNT(*) FROM users WHERE name = ?', (data.get('name'),)).fetchone()[0]: return {'msg': 'username already taken'}
             salt = os.urandom(32)
-            c.execute('INSERT INTO users (name, pass, salt) VALUES (?, ?, ?)', (data['name'], pwhash(data['pass'].encode(), salt), salt))
+            c.execute('INSERT INTO users (name, pass, salt, shkey) VALUES (?, ?, ?, ?)', (data['name'], pwhash(data['pass'].encode(), salt), salt, makeshkey()))
             conn.commit()
             return {'msg': 'success!', 'token': maketoken(c.lastrowid)}
 
