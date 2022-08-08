@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <title>pzplus puzzle index</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+        <link rel="stylesheet" href="/css/db2.css?<%= git.hash %>" />
+
+        <script src="/db2.js?<%= git.hash %>"></script>
+    </head>
+    <body class='noadmin'>
+
+        <p class='admin'>
+            <input id='dbcount' value='500'>
+            <button id='updatedb'>update database</button>
+        </p>
+
+        <p>database last updated: <span id='dbtime' class='load'>loading...</span></p>
+
+        <p><button id='sync'>sync data with puzz.link</button> (max once/hr)</p>
+
+    </body>
+</html>

@@ -6,16 +6,20 @@ DATA_DIR = os.environ.get('PZPLUS_DATA',
     os.path.join(os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share')),
                  'pzplus'))
 
-import pathlib
-pathlib.Path(os.path.join(DATA_DIR, 'recordings')).mkdir(parents=True, exist_ok=True)
-pathlib.Path(os.path.join(DATA_DIR, 'userdb')).mkdir(parents=True, exist_ok=True)
+DATA = lambda *x: os.path.join(DATA_DIR, *x)
 
+import pathlib
+pathlib.Path(DATA('recordings')).mkdir(parents=True, exist_ok=True)
+pathlib.Path(DATA('userdb')).mkdir(parents=True, exist_ok=True)
+
+from datetime import datetime
 import hashlib
 import http.server
 import json
 import shutil
 import sqlite3
 import threading
+import urllib.request
 
 aliases = list(map(str.split, '''
 cave bag corral correl
@@ -44,10 +48,10 @@ def tts(t, precise=False):
     hms = f'{h}:{m:02}:{s:02}' if h > 0 else f'{m}:{s:02}'
     return f'{hms}.{ms:03}' if precise else hms
 
-recpath = lambda rowid: os.path.join(DATA_DIR, 'recordings', f'{rowid:06}')
-userdbpath = lambda uid: os.path.join(DATA_DIR, 'userdb', f'{uid:04}.db')
+recpath = lambda rowid: DATA('recordings', f'{rowid:06}')
+userdbpath = lambda uid: DATA('userdb', f'{uid:04}.db')
 
-conn = sqlite3.connect(os.path.join(DATA_DIR, 'p.db'), check_same_thread=False)
+conn = sqlite3.connect(DATA('p.db'), check_same_thread=False)
 c = conn.cursor()
 c.executescript('''
 CREATE TABLE IF NOT EXISTS d (
@@ -70,15 +74,37 @@ CREATE TABLE IF NOT EXISTS users (
     name    TEXT NOT NULL,
     pass    BLOB NOT NULL,
     salt    BLOB NOT NULL,
-    shkey   TEXT NOT NULL
+    shkey   TEXT NOT NULL,
+    sync    TEXT
 );
 CREATE TABLE IF NOT EXISTS tokens (
     uid     INTEGER NOT NULL,
     token   TEXT NOT NULL,
     date    TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS pzlk (
+    src     TEXT NOT NULL,
+    url     TEXT NOT NULL,
+    date    INTEGER NOT NULL,
+    pzv     TEXT NOT NULL UNIQUE,
+    genre   TEXT NOT NULL,
+    w       INTEGER NOT NULL,
+    h       INTEGER NOT NULL,
+    solves  INTEGER NOT NULL,
+    diff    INTEGER NOT NULL,
+    gen     INTEGER NOT NULL,
+    broken  INTEGER NOT NULL,
+    variant INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS xtags (
+    uid     INTEGER NOT NULL,
+    pzv     TEXT NOT NULL,
+    tags    INTEGER NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS xtidx ON xtags (uid,pzv);
 ''')
 conn.commit()
+
 clock = threading.Lock()
 
 def pwhash(pwd, salt):
@@ -94,12 +120,17 @@ def maketoken(uid):
 def makeshkey():
     return os.urandom(32).hex()
 
-# c.execute('alter table users add shkey TEXT') # nullable oops
+def xtags(puz):
+    return ((puz.get('solved', False)) << 0) | \
+           (('favorite' in puz['tags']) << 1) | \
+           (('skip' in puz['tags']) << 2)
+
+# c.execute('alter table users add sync TEXT')
 # for name in c.execute('select name from users').fetchall():
 #     c.execute('update users set shkey = ? where name = ?', (makeshkey(), name[0]))
 # conn.commit()
 
-noauth = ['/auth', '/getshrec']
+noauth = ['/auth', '/getshrec', '/dbtime']
 
 class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 
@@ -112,6 +143,7 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         self.nohtml('p')
         self.nohtml('db')
+        self.nohtml('db2')
         self.nohtml('auth')
         self.nohtml('query')
         super().do_GET()
@@ -236,5 +268,63 @@ class API:
         res = c.execute('SELECT rowid FROM d WHERE uid = ? AND url = ?', (uid, data['url'])).fetchone()
         fname = recpath(res[0]) if res else None
         return open(fname, 'rb').read() if fname else b''
+
+    def j_updatedb(uid, data):
+        if uid != 1: return { 'alert': 'stop that' }
+
+        with open(DATA('dbtime'), 'w') as f:
+            f.write(datetime.now().astimezone().strftime('%F %T %Z'))
+
+        with urllib.request.urlopen(f'https://puzz.link/db/api/pzvs_anon?limit={data["count"]}&order=sort_key.asc') as f:
+            c.executemany('''
+                insert or replace into pzlk (
+                    src, url, date, pzv, genre, w, h, solves, diff, gen, broken, variant
+                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (( puz['source_name']
+                  , puz['source_url']
+                  , puz['published_at_posix']
+                  , puz['pzv_override']
+                  , puz['type']
+                  , puz['size'][0]
+                  , puz['size'][1]
+                  , puz['solves'] or 0
+                  , puz['difficulty'] or 0
+                  , puz['generated']
+                  , 'broken' in puz['tags_default']
+                  , 'variant' in puz['tags_default']
+                  ) for puz in json.load(f)))
+            conn.commit()
+
+        return { 'alert': 'database updated' }
+
+    def j_dbtime(_, __):
+        try:
+            with open(DATA('dbtime')) as f:
+                return { 't': f.read() }
+        except:
+            return { 't': '???' }
+
+    def j_dbreq(uid, data):
+        return c.execute('select * from pzlk order by date limit 100').fetchall()
+
+    def j_sync(uid, data):
+        last = c.execute('select julianday() - julianday(sync) from users where rowid = ?', (uid,)).fetchone()[0]
+        if uid != 1 and last and last*24 < 1:
+            wait = 60 - int(last*24*60)
+            return { 'alert': f'please wait {wait} minute{"" if wait == 1 else "s"} before doing that again' }
+        c.execute('update users set sync = datetime("now") where rowid = ?', (uid,))
+
+        with urllib.request.urlopen(urllib.request.Request('https://puzz.link/db/api/pzvs_user?limit=10', headers={'Authorization': f'Bearer {data["token"]}'})) as f:
+            c.executemany('''
+                insert or replace into xtags (uid, pzv, tags)
+                values (?, ?, ?)
+                on conflict (uid, pzv) do update set tags = excluded.tags
+            ''', (( uid
+                  , puz['pzv_override']
+                  , xtags(puz)
+                  ) for puz in json.load(f) if xtags(puz)))
+            conn.commit()
+
+        return { 'alert': 'synced!' }
 
 http.server.ThreadingHTTPServer(('', PORT), PuzzlinkHelper).serve_forever()

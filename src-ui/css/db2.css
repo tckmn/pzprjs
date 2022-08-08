@@ -1,0 +1,12 @@
+html, body {
+    background-color: #000;
+    color: #d8d8d8;
+    font: 12pt sans-serif;
+}
+
+body.noadmin .admin { display: none; }
+span.load { color: #888; font-style: italic; }
+
+input, button { background-color: #282828; color: #d8d8d8; border: 1px solid #383838; border-radius: 3px; }
+button:hover { background-color: #383838; }
+button:active { background-color: #484848; }
