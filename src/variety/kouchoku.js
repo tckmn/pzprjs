@@ -1124,7 +1124,6 @@
 			if (key.substr(0, 4) !== 'SEGT') {
 				return false;
 			}
-
 			this.num = (key.charAt(4) === '1')+0;
 			coords = pzpr.RecTools.readCoords(stream, dims);
 			this.bx1 = coords[0];
@@ -1132,6 +1131,7 @@
 			coords = pzpr.RecTools.readCoords(stream, dims);
 			this.bx2 = coords[0];
 			this.by2 = coords[1];
+			return true;
 		},
 
 		exec: function(num) {

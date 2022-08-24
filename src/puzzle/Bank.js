@@ -353,6 +353,23 @@ pzpr.classmgr.makeCommon({
 			this.num = num;
 		},
 
+		getSignature: function() {
+			return [this.num ? pzpr.RecTools.key2sig.BANK1 : pzpr.RecTools.key2sig.BANK0];
+		},
+		encodeBin: function(stream, dims) {
+			stream.writeVLQ(5, this.index);
+		},
+		decodeBin: function(stream, signature, args, dims) {
+			var key = pzpr.RecTools.sig2key[signature];
+			if (key.substr(0, 4) !== 'BANK') {
+				return false;
+			}
+			this.num = (key.charAt(4) === '1')+0;
+			this.index = stream.readVLQ(5);
+			this.property = 'qcmp';
+			return true;
+		},
+
 		exec: function(num) {
 			var piece = this.board.bank.pieces[this.index];
 			piece[this.property] = num;

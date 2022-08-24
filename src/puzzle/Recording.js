@@ -15,6 +15,11 @@ pzpr.classmgr.makeCommon({
                 return;
             }
 
+            // La Paz specific hack
+            if (obj.group === 'border' && obj.property === 'qcmp') {
+                return;
+            }
+
             var t = 0;
             if (!chainflag) {
                 var now = this.puzzle.getTime();
@@ -285,6 +290,15 @@ pzpr.RecTools = {
         // puzzle-specific operations
         {key: 'SEGT0', sig: 50},
         {key: 'SEGT1', sig: 51},
+
+        {key: 'BANK0', sig: 52},
+        {key: 'BANK1', sig: 53},
+
+        {key: 'OO_CA31', sig: 54},
+        {key: 'OO_CA32', sig: 55},
+        {key: 'OO_CA33', sig: 56},
+        {key: 'OO_BS13', sig: 57},
+        {key: 'OO_BS14', sig: 58},
 
         {key: 'EOF', sig: 255}
     ],
