@@ -156,8 +156,8 @@ pzpr.on('load', function() {
         var xhr = new XMLHttpRequest();
         xhr.addEventListener('load', function() {
             var resp = JSON.parse(this.response);
-            if (resp && resp[0] && resp[0].token) {
-                localStorage.setItem('token', resp[0].token);
+            if (resp && resp.token) {
+                localStorage.setItem('token', resp.token);
             } else {
                 addMsg(tokenerr);
             }
