@@ -5,8 +5,13 @@ html, body {
 }
 
 body.noadmin .admin { display: none; }
+.admin { background-color: #f88; }
 span.load { color: #888; font-style: italic; }
 
+form#searchform { display: flex; align-items: center; }
+input#search { flex: 1; margin-right: 5px; }
+
 input, button { background-color: #282828; color: #d8d8d8; border: 1px solid #383838; border-radius: 3px; }
-button:hover { background-color: #383838; }
-button:active { background-color: #484848; }
+input[type='submit']:hover, button:hover { background-color: #383838; }
+input[type='submit']:active, button:active { background-color: #484848; }
+input[type='submit']:disabled, button:disabled { background-color: #888; color: #fff; }

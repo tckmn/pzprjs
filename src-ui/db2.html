@@ -24,7 +24,13 @@
 
         <p>database last updated: <span id='dbtime' class='load'>loading...</span></p>
 
-        <p><button id='sync'>sync data with puzz.link</button> (max once/hr)</p>
+        <p><button id='sync'>sync personal puzz.link data</button> (max once/hr)</p>
+
+        <form id='searchform'>
+            <span>query:&nbsp;</span>
+            <input id='search' name='search' value='!solved & !generated & !skip & !broken'>
+            <input type='submit' value='go'></p>
+        </form>
 
     </body>
 </html>

@@ -50,8 +50,23 @@ window.addEventListener('load', () => {
         xhr('/updatedb', { count: +document.getElementById('dbcount').value });
     });
 
-    document.getElementById('sync').addEventListener('click', () => {
-        xhr('/sync', { token: localStorage.getItem('token') });
+    var sync = document.getElementById('sync');
+    sync.addEventListener('click', () => {
+        var prev = sync.innerText;
+        sync.setAttribute('disabled', 1);
+        sync.innerText = 'syncing... (this takes ~30 seconds)';
+        xhr('/sync', { token: localStorage.getItem('token') }, () => {
+        sync.removeAttribute('disabled');
+            sync.innerText = prev;
+        });
+    });
+
+    var form = document.getElementById('searchform');
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        xhr('/search', { q: form.search.value }, d => {
+            console.log(d);
+        });
     });
 
 });

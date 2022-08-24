@@ -16,6 +16,7 @@ from datetime import datetime
 import hashlib
 import http.server
 import json
+import re
 import shutil
 import sqlite3
 import threading
@@ -125,6 +126,13 @@ def xtags(puz):
            (('favorite' in puz['tags']) << 1) | \
            (('skip' in puz['tags']) << 2)
 
+def iflag(tok):
+    tok = tok.strip()
+    for inv in ['-', 'no']:
+        if tok[0:len(inv)] == inv:
+            return 0, tok[len(inv):].strip()
+    return 1, tok
+
 # c.execute('alter table users add sync TEXT')
 # for name in c.execute('select name from users').fetchall():
 #     c.execute('update users set shkey = ? where name = ?', (makeshkey(), name[0]))
@@ -151,17 +159,20 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         with clock:
             uid = c.execute('SELECT uid FROM tokens WHERE token = ?', (self.headers.get('PzplusAuth', ''),)).fetchone()
-            if not uid and self.path not in noauth:
-                self.send_response(403)
-                self.end_headers()
-                return
-            if uid: uid = uid[0]
 
-            ret = None
-            if hasattr(API, 'b_' + self.path[1:]):
-                ret = getattr(API, 'b_' + self.path[1:])(uid, self.rfile.read(int(self.headers['Content-Length'])))
-            elif hasattr(API, 'j_' + self.path[1:]):
-                ret = getattr(API, 'j_' + self.path[1:])(uid, json.loads(self.rfile.read(int(self.headers['Content-Length']))))
+        if not uid and self.path not in noauth:
+            self.send_response(403)
+            self.end_headers()
+            return
+        if uid: uid = uid[0]
+
+        ret = None
+        if hasattr(API, 'b_' + self.path[1:]):
+            with clock: ret = getattr(API, 'b_' + self.path[1:])(uid, self.rfile.read(int(self.headers['Content-Length'])))
+        elif hasattr(API, 'j_' + self.path[1:]):
+            with clock: ret = getattr(API, 'j_' + self.path[1:])(uid, json.loads(self.rfile.read(int(self.headers['Content-Length']))))
+        elif hasattr(API, 'jl_' + self.path[1:]):
+            ret = getattr(API, 'jl_' + self.path[1:])(uid, json.loads(self.rfile.read(int(self.headers['Content-Length']))))
 
         if ret is not None:
             self.send_response(200)
@@ -307,24 +318,50 @@ class API:
     def j_dbreq(uid, data):
         return c.execute('select * from pzlk order by date limit 100').fetchall()
 
-    def j_sync(uid, data):
-        last = c.execute('select julianday() - julianday(sync) from users where rowid = ?', (uid,)).fetchone()[0]
-        if uid != 1 and last and last*24 < 1:
-            wait = 60 - int(last*24*60)
-            return { 'alert': f'please wait {wait} minute{"" if wait == 1 else "s"} before doing that again' }
-        c.execute('update users set sync = datetime("now") where rowid = ?', (uid,))
+    def jl_sync(uid, data):
+        with clock:
+            last = c.execute('select julianday() - julianday(sync) from users where rowid = ?', (uid,)).fetchone()[0]
 
-        with urllib.request.urlopen(urllib.request.Request('https://puzz.link/db/api/pzvs_user?limit=10', headers={'Authorization': f'Bearer {data["token"]}'})) as f:
-            c.executemany('''
-                insert or replace into xtags (uid, pzv, tags)
-                values (?, ?, ?)
-                on conflict (uid, pzv) do update set tags = excluded.tags
-            ''', (( uid
-                  , puz['pzv_override']
-                  , xtags(puz)
-                  ) for puz in json.load(f) if xtags(puz)))
+            if uid != 1 and last and last*24 < 1:
+                wait = 60 - int(last*24*60)
+                return { 'alert': f'please wait {wait} minute{"" if wait == 1 else "s"} before doing that again' }
+
+            c.execute('update users set sync = datetime("now") where rowid = ?', (uid,))
             conn.commit()
 
+        with urllib.request.urlopen(urllib.request.Request('https://puzz.link/db/api/pzvs_user?limit=999999', headers={'Authorization': f'Bearer {data["token"]}'})) as f:
+            with clock:
+                c.executemany('''
+                    insert or replace into xtags (uid, pzv, tags)
+                    select :uid, :pzv, :tags where :tags != 1 or not exists
+                    (select * from d where uid = :uid and url = :pzv)
+                    on conflict (uid, pzv) do update set tags = excluded.tags
+                ''', ({ 'uid': uid
+                      , 'pzv': puz['pzv_override']
+                      , 'tags': xtags(puz)
+                      } for puz in json.load(f) if xtags(puz)))
+                conn.commit()
+
         return { 'alert': 'synced!' }
+
+    # def j_search(uid, data):
+    #     nest = 0
+    #     sql = 'select * from pzlk where '
+    #     for tok in re.findall(r'[()&|!]|.+', data['q']):
+    #         flag, tok = iflag(tok)
+    #         if tok == '(':
+    #             nest += 1
+    #             sql += '('
+    #         elif tok == ')':
+    #             nest -= 1
+    #             if nest < 1: return { 'alert': 'mismatched parentheses' }
+    #             sql += ')'
+    #         elif tok == '&': sql += ' and '
+    #         elif tok == '|': sql += ' or '
+    #         elif tok == '!': sql += ' not '
+    #         elif tok == 'solved': sql += '' #TODO
+    #         elif tok == 'generated': sql += f'(gen = {flag})'
+    #         elif tok == 'skip': sql += '' #TODO
+    #         elif tok == 'broken': sql += f'(broken = {flag})'
 
 http.server.ThreadingHTTPServer(('', PORT), PuzzlinkHelper).serve_forever()
