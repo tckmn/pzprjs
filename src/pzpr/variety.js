@@ -55,13 +55,13 @@
 	 * -X_Sheep
 	 */
 	var inhibited = false;
-	if (pzpr.env.browser) {
-		inhibited =
-			window.location.protocol !== "file:" &&
-			window.location.host.indexOf("localhost") === -1;
-	} else if (pzpr.env.node) {
-		inhibited = process.env.VERCEL;
-	}
+	// if (pzpr.env.browser) {
+	// 	inhibited =
+	// 		window.location.protocol !== "file:" &&
+	// 		window.location.host.indexOf("localhost") === -1;
+	// } else if (pzpr.env.node) {
+	// 	inhibited = process.env.VERCEL;
+	// }
 	var allowedGenres = new Set([
 		"dotchi",
 		"crossstitch",
