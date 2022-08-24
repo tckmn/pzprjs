@@ -102,13 +102,13 @@ if ('serviceWorker' in navigator) {
      <li class="link"><a target="_blank" href="https://hosted.weblate.org/projects/pzprjs/">__translate__</a></li>
      <li class="link"><a target="_blank" href="https://github.com/x-sheep/pzprjs/issues">__issues__</a></li>
    </menu></li>
-   <li id="menu_pzplus"><span>__pzplus__pzplus__</span><menu label="__pzplus__pzplus__">
-     <li data-popup="pzplus_auth"><span>__Authentication__Authentication__</span></li>
-     <li data-popup="pzplus_manual"><span>__Manual solve entry__Manual solve entry__</span></li>
-     <li data-menu-exec="pzplus_edit"><span>__Edit existing entry__Edit existing entry__</span></li>
-     <li data-menu-exec="pzplus_playRecording"><span>__Play recording__Play recording__</span></li>
-     <li data-menu-exec="pzplus_playRecordingInstant"><span>__Load recording instantly__Load recording instantly__</span></li>
-     <li data-popup="pzplus_sharerec"><span>__Export shared recording__Export shared recording__</span></li>
+   <li id="menu_pzplus"><span>__pzplus__</span><menu label="__pzplus__">
+     <li data-popup="pzplus_auth"><span>__auth__</span></li>
+     <li data-popup="pzplus_manual"><span>__manual__</span></li>
+     <li data-menu-exec="pzplus_edit"><span>__editentry__</span></li>
+     <li data-menu-exec="pzplus_playRecording"><span>__playrec1__</span></li>
+     <li data-menu-exec="pzplus_playRecordingInstant"><span>__playrec2__</span></li>
+     <li data-popup="pzplus_sharerec"><span>__sharerec__</span></li>
    </menu></li>
   </menu>
   <div id="usepanel" style="display:none;">
@@ -649,7 +649,7 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <div class="popup" id="pzplus_auth">
-    <div class="titlebar">__Authentication__Authentication__</div>
+    <div class="titlebar">__auth__</div>
     <form name="pzplus_auth">
       <p style='max-width:30rem'>
         Please visit any puzz.link page
@@ -663,17 +663,17 @@ if ('serviceWorker' in navigator) {
       <p><label>user_id <input name='user_id'></label></p>
       <p><label>token <input name='token'></label></p>
       <button type="button" class="btn btn-ok" data-button-exec="pzplus_auth">Update</button>
-      <button type="button" class="btn" data-button-exec="close">Close</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup" id="pzplus_manual">
-    <div class="titlebar">__Manual solve entry__Manual solve entry__</div>
+    <div class="titlebar">__manual__</div>
     <form name="pzplus_manual">
         <p>Time of last input: <span id="pzplus_lastinputtime"></span></p>
       <button type="button" class="btn btn-ok" data-button-exec="pzplus_manual1">Save with recording</button>
       <button type="button" class="btn btn-ok" data-button-exec="pzplus_manual2">Fully manual entry</button>
-      <button type="button" class="btn" data-button-exec="close">Close</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
@@ -732,25 +732,25 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <div class="popup">
-    <div class="titlebar">__Export shared recording__Export shared recording__</div>
+    <div class="titlebar">__sharerec__</div>
     <form name="pzplus_sharerec">
       Share this link to send someone a recording <br>
       of your solve of this puzzle: <br>
       <a id="sharereclink" class="urlanchor" target="_blank"></a>
       <br>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__Load shared recording__Load shared recording__</div>
+    <div class="titlebar">__loadshrec__</div>
     <form name="pzplus_loadshrec">
       This is a shared recording link. <br>
       You can play back the solve path of the person <br>
       who created this link. <br>
-      <button type="button" class="btn btn-ok" data-button-exec="loadshrec1">__Play recording__Play recording__</button>
-      <button type="button" class="btn btn-ok" data-button-exec="loadshrec2">__Load recording instantly__Load recording instantly__</button>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <button type="button" class="btn btn-ok" data-button-exec="loadshrec1">__playrec1__</button>
+      <button type="button" class="btn btn-ok" data-button-exec="loadshrec2">__playrec2__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 

@@ -265,5 +265,13 @@
     "about.title": "About pzprxs",
     "about.pzv": "PUZ-PRE v3",
     "about.author": "happa",
-    "network.title": "Network play"
+    "network.title": "Network play",
+    "pzplus": "pzplus",
+    "auth": "Authentication",
+    "manual": "Manual solve entry",
+    "editentry": "Edit existing entry",
+    "playrec1": "Play recording",
+    "playrec2": "Load recording instantly",
+    "sharerec": "Export shared recording",
+    "loadshrec": "Load shared recording"
 }
