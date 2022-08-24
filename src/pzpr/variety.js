@@ -1,4 +1,5 @@
 // Variety.js v3.4.1
+/* global Set:false */
 
 (function() {
 	var _info = {},
@@ -45,8 +46,64 @@
 	});
 	delete variety.extend;
 
+	/*
+	 * To avoid fragmentation, I'm disabling all old genres for the time being,
+	 * to try to avoid having 3 websites to choose from (puzz.link, pzv.jp and this one).
+	 *
+	 * To remove the inhibitor, delete all references to `inhibited` and `allowedGenres`.
+	 *
+	 * -X_Sheep
+	 */
+	var inhibited = false;
+	if (pzpr.env.browser) {
+		inhibited =
+			window.location.protocol !== "file:" &&
+			window.location.host.indexOf("localhost") === -1;
+	} else if (pzpr.env.node) {
+		inhibited = process.env.VERCEL;
+	}
+	var allowedGenres = new Set([
+		"dotchi",
+		"crossstitch",
+		"ovotovata",
+		"lohkous",
+		"chainedb",
+		"canal",
+		"cbanana",
+		"oneroom",
+		"bdwalk",
+		"voxas",
+		"tontti",
+		"rassi",
+		"parquet",
+		"lapaz",
+		"tren",
+		"pentominous",
+		"hinge",
+		"tajmahal",
+		"statuepark",
+		"statuepark-aux",
+		"railpool",
+		"coral",
+		"nuriuzu",
+		"ququ",
+		"coffeemilk",
+		"nothree",
+		"disloop",
+		"lither",
+		"snakepit",
+		"squarejam",
+		"context",
+		"pentopia",
+		"numrope",
+		"yajisoko"
+	]);
+
 	(function(Genre, obj) {
 		for (var pzprid in obj) {
+			if (inhibited && !allowedGenres.has(pzprid)) {
+				continue;
+			}
 			_info[pzprid] = new Genre(pzprid, obj[pzprid]);
 			try {
 				Object.freeze(_info[pzprid]);
@@ -93,16 +150,13 @@
 			arukone: [0, 0, "アルコネ", "Arukone", "numlin"],
 			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "ekawayeh", "heyawake"],
 			balance: [0, 0, "Balance Loop", "Balance Loop"],
-			cave: [
-				1,
-				0,
-				"バッグ",
-				"Cave",
-				"kurodoko",
-				{ alias: "bag", alias2: "corral", alias3: "correl" }
-			],
+			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
+			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
+			context: [0, 0, "Context", "Context"],
+			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			barns: [1, 0, "バーンズ", "Barns"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
+			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
 			bonsan: [1, 0, "ぼんさん", "Bonsan", "bonsan"],
 			bosanowa: [1, 0, "ボサノワ", "Bosanowa", "", { alias: "bossanova" }],
 			box: [0, 0, "ボックス", "Box"],
@@ -114,19 +168,25 @@
 				"",
 				{ alias: "building", alias2: "skyscraper" }
 			],
+			canal: [0, 0, "Canal View", "Canal View", "nurikabe"],
 			castle: [0, 0, "Castle Wall", "Castle Wall"],
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
+			chainedb: [0, 0, "チェンブロ", "Chained Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
+			coffeemilk: [0, 0, "コーヒー牛乳", "Coffee Milk", "wblink"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
 			compass: [0, 0, "Compass", "Compass", "compass"],
+			coral: [0, 0, "Coral", "Coral", "nonogram"],
 			country: [1, 0, "カントリーロード", "Country Road"],
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
 			"curvedata-aux": [0, 0, "図形の編集", "Edit shape"],
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
 			detour: [0, 0, "Detour", "Detour", "country"],
+			disloop: [0, 0, "Disorderly Loop", "Disorderly Loop", "tapaloop"],
 			doppelblock: [0, 0, "Doppelblock", "Doppelblock", "doppelblock"],
 			dosufuwa: [0, 0, "ドッスンフワリ", "Dosun-Fuwari"],
+			dotchi: [0, 0, "ドッチループ", "Dotchi-Loop", "country"],
 			doubleback: [0, 0, "Double Back", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
@@ -168,6 +228,7 @@
 				"heyawake",
 				{ alias: "heyawacky" }
 			],
+			hinge: [0, 0, "ちょうつがい", "Hinge", "shimaguni"],
 			hitori: [0, 1, "ひとりにしてくれ", "Hitori"],
 			icebarn: [1, 0, "アイスバーン", "Icebarn", "icebarn"],
 			icelom: [0, 0, "アイスローム", "Icelom", "icebarn"],
@@ -196,6 +257,7 @@
 			kurodoko: [0, 1, "黒どこ(黒マスはどこだ)", "Kurodoko"],
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
+			lapaz: [0, 0, "La Paz", "La Paz"],
 			lightup: [
 				0,
 				1,
@@ -204,7 +266,9 @@
 				"",
 				{ pzprurl: "akari", kanpen: "bijutsukan" }
 			],
+			lither: [0, 0, "Litherslink", "Litherslink"],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
+			lohkous: [0, 0, "Lohkous", "Lohkous"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],
@@ -227,6 +291,7 @@
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
 			nonogram: [0, 0, "ののぐらむ", "Nonogram"],
 			norinori: [0, 1, "のりのり", "Norinori", "lits"],
+			nothree: [0, 0, "ノースリー", "No Three"],
 			numlin: [
 				0,
 				1,
@@ -235,13 +300,20 @@
 				"",
 				{ kanpen: "numberlink" }
 			],
+			numrope: [0, 0, "ナンバーロープ", "Number Rope", "kakuru"],
 			nuribou: [1, 0, "ぬりぼう", "Nuribou", "nurikabe"],
 			nurikabe: [0, 1, "ぬりかべ", "Nurikabe", "nurikabe"],
 			nurimaze: [0, 0, "ぬりめいず", "Nuri-Maze", "nurimaze"],
 			nurimisaki: [0, 0, "ぬりみさき", "Nurimisaki", "kurodoko"],
+			nuriuzu: [0, 0, "ぬりうず", "Nuri-uzu", "tentaisho"],
+			ovotovata: [0, 0, "Ovotovata", "Ovotovata", "country"],
+			oneroom: [0, 0, "ワンルームワンドア", "One Room One Door", "heyawake"],
 			onsen: [0, 0, "温泉めぐり", "Onsen-meguri", "country"],
 			paintarea: [1, 0, "ペイントエリア", "Paintarea"],
+			parquet: [0, 0, "Parquet", "Parquet"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],
+			pentominous: [0, 0, "Pentominous", "Pentominous", "fillomino"],
+			pentopia: [0, 0, "Pentopia", "Pentopia", "statuepark"],
 			pipelink: [1, 0, "パイプリンク", "Pipelink", "pipelink"],
 			pipelinkr: [
 				1,
@@ -251,6 +323,9 @@
 				"pipelink"
 			],
 			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
+			ququ: [0, 0, "区区", "Ququ"],
+			railpool: [0, 0, "Rail Pool", "Rail Pool"],
+			rassi: [0, 0, "Rassi Silai", "Rassi Silai", "country"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
@@ -290,12 +365,17 @@
 				{ kanpen: "slitherlink" }
 			],
 			snake: [0, 0, "Snake", "Snake"],
+			snakepit: [0, 0, "Snake Pit", "Snake Pit", "fillomino"],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
+			squarejam: [0, 0, "Square Jam", "Square Jam"],
+			statuepark: [0, 0, "Statue Park", "Statue Park"],
+			"statuepark-aux": [0, 0, "図形の編集", "Edit shape"],
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],
 			sudoku: [0, 1, "数独", "Sudoku"],
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
 			symmarea: [0, 0, "シンメトリーエリア", "Symmetry Area", "fillomino"],
+			tajmahal: [0, 0, "タージ・マハル", "Taj Mahal", "kouchoku"],
 			tapa: [0, 0, "Tapa", "Tapa"],
 			tapaloop: [0, 0, "Tapa-Like Loop", "Tapa-Like Loop"],
 			tasquare: [0, 0, "たすくえあ", "Tasquare"],
@@ -307,10 +387,13 @@
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
+			tontti: [0, 0, "Tonttiraja", "Tonttiraja"],
+			tren: [0, 0, "パーキング", "Tren"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],
 			view: [1, 0, "ヴィウ", "View", "sukoro"],
+			voxas: [0, 0, "Voxas", "Voxas"],
 			wagiri: [0, 0, "ごきげんななめ・輪切", "Wagiri", "gokigen"],
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
@@ -331,6 +414,7 @@
 				"yajilin",
 				{ alias: "yajirin-regions" }
 			],
+			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
 			yosenabe: [0, 0, "よせなべ", "Yosenabe"]

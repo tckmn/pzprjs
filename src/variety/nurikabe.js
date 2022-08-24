@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nurikabe", "nuribou", "mochikoro", "mochinyoro"], {
+})(["nurikabe", "nuribou", "mochikoro", "mochinyoro", "canal"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -29,6 +29,39 @@
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
+		}
+	},
+	"MouseEvent@canal": {
+		inputModes: {
+			edit: ["number", "clear", "info-blk"],
+			play: ["shade", "unshade", "completion", "info-blk"]
+		},
+
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputcell();
+					if (this.notInputted()) {
+						this.inputqcmp();
+					}
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart) {
+					this.inputqnum();
+				}
+			}
+		},
+
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell.noNum()) {
+				return;
+			}
+
+			cell.setQcmp(+!cell.qcmp);
+			cell.draw();
+
+			this.mousereset();
 		}
 	},
 
@@ -64,9 +97,100 @@
 			return list;
 		}
 	},
+	"Cell@canal": {
+		maxnum: function() {
+			return this.board.cols + this.board.rows - 2;
+		},
+		minnum: 0,
+
+		updated: false,
+		complete: false,
+		viewclist: null,
+		extendShadeClistDir: function(clist, dx, dy) {
+			var c = this.relcell(dx, dy);
+			while (!!c && c.isShade()) {
+				clist.add(c);
+				c = c.relcell(dx, dy);
+			}
+			return !c || c.isnull || c.qnum !== -1 || c.qsub === 1;
+		},
+		updateViewClist: function() {
+			if (this.qnum === -1) {
+				this.complete = false;
+				return;
+			}
+			var clist = new this.klass.CellList();
+
+			this.complete = true;
+			this.complete &= this.extendShadeClistDir(clist, -2, 0);
+			this.complete &= this.extendShadeClistDir(clist, 0, -2);
+			this.complete &= this.extendShadeClistDir(clist, 2, 0);
+			this.complete &= this.extendShadeClistDir(clist, 0, 2);
+			this.viewclist = clist;
+			this.updated = true;
+
+			this.draw();
+		},
+		updateCluesDir: function(dx, dy) {
+			var c = this.relcell(dx, dy);
+			while (!!c && !c.isnull) {
+				if (c.qnum !== -1) {
+					c.updateViewClist();
+					return;
+				} else if (c.isShade()) {
+					c = c.relcell(dx, dy);
+				} else {
+					return;
+				}
+			}
+		},
+		updateClues: function() {
+			this.updateCluesDir(-2, 0);
+			this.updateCluesDir(0, -2);
+			this.updateCluesDir(2, 0);
+			this.updateCluesDir(0, 2);
+		},
+		posthook: {
+			qans: function(num) {
+				this.updateClues();
+			},
+			qsub: function(num) {
+				this.updateClues();
+			},
+			qnum: function(num) {
+				if (num !== -1) {
+					this.updateViewClist();
+					this.updateClues();
+				}
+			}
+		},
+
+		isCmp: function() {
+			if (this.qcmp === 1) {
+				return true;
+			}
+			if (!this.puzzle.execConfig("autocmp")) {
+				return false;
+			}
+
+			if (!this.updated) {
+				this.updateViewClist();
+			}
+
+			return this.complete && this.qnum === this.viewclist.length;
+		}
+	},
 	"Board@mochikoro,mochinyoro": {
 		addExtraInfo: function() {
 			this.ublk8mgr = this.addInfoList(this.klass.AreaUnshade8Graph);
+		}
+	},
+	"Board@canal": {
+		rebuildInfo: function() {
+			this.cell.each(function(cell) {
+				cell.updated = false;
+			});
+			this.common.rebuildInfo.call(this);
 		}
 	},
 
@@ -102,6 +226,9 @@
 			return cells;
 		}
 	},
+	"AreaUnshadeGraph@canal": {
+		enabled: false
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -112,7 +239,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			if (this.pid === "nurikabe") {
+			if (this.pid === "nurikabe" || this.pid === "canal") {
 				this.drawDotCells();
 			}
 			this.drawGrid();
@@ -127,6 +254,20 @@
 	"Graphic@nuribou,mochikoro,mochinyoro": {
 		bgcellcolor_func: "qsub1",
 		enablebcolor: true
+	},
+	"Graphic@canal": {
+		gridcolor_type: "DARK",
+		qcmpcolor: "rgb(127,127,127)",
+		autocmp: "number",
+
+		getQuesNumberColor: function(cell) {
+			if (cell.error === 1) {
+				return this.errcolor1;
+			} else if (cell.isCmp()) {
+				return this.qcmpcolor;
+			}
+			return this.quescolor;
+		}
 	},
 
 	//---------------------------------------------------------
@@ -210,6 +351,33 @@
 			});
 		}
 	},
+	"FileIO@canal": {
+		decodeCellAns: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.qans = 1;
+				} else if (ca === "+") {
+					cell.qsub = 1;
+				} else if (ca === "c") {
+					cell.qcmp = 1;
+				}
+			});
+		},
+
+		encodeCellAns: function() {
+			this.encodeCell(function(cell) {
+				if (cell.qans === 1) {
+					return "# ";
+				} else if (cell.qsub === 1) {
+					return "+ ";
+				} else if (cell.qcmp === 1) {
+					return "c ";
+				} else {
+					return ". ";
+				}
+			});
+		}
+	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
@@ -242,6 +410,14 @@
 			"checkDoubleNumberInUnshade",
 			"checkNumberAndUnshadeSize",
 			"checkShadeNotRect@mochinyoro",
+			"doneShadingDecided"
+		]
+	},
+	"AnsCheck@canal#1": {
+		checklist: [
+			"check2x2ShadeCell",
+			"checkNumberAndShadeView",
+			"checkConnectShade",
 			"doneShadingDecided"
 		]
 	},
@@ -355,44 +531,28 @@
 			);
 		}
 	},
-
-	FailCode: {
-		bkNoNum: [
-			"数字の入っていないシマがあります。",
-			"An area of unshaded cells has no numbers."
-		],
-		bkNumGe2: [
-			"1つのシマに2つ以上の数字が入っています。",
-			"An area of unshaded cells has more than one number."
-		],
-		bkSizeNe: [
-			"数字とシマの面積が違います。",
-			"The number is not equal to the size of the area."
-		]
-	},
-	"FailCode@nuribou": {
-		csWidthGt1: [
-			"「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。",
-			"There is a mass of shaded cells whose width is more than two."
-		],
-		csCornerSize: [
-			"同じ面積の黒マスのカタマリが、角を共有しています。",
-			"Masses of shaded cells with the same length share a corner."
-		]
+	"AnsCheck@canal": {
+		checkNumberAndShadeView: function() {
+			var clues = this.board.cell.filter(function(cell) {
+				return cell.qnum >= 0;
+			});
+			for (var i = 0; i < clues.length; i++) {
+				var c = clues[i];
+				if (!c.updated) {
+					c.updateViewClist();
+				}
+				if (c.qnum !== c.viewclist.length) {
+					this.failcode.add("nmShadeViewNe");
+					c.seterr(1);
+					c.viewclist.seterr(1);
+				}
+			}
+		}
 	},
 
 	"FailCode@mochikoro,mochinyoro": {
-		cuNotRect: [
-			"四角形でない白マスのブロックがあります。",
-			"There is a block of unshaded cells that is not a rectangle."
-		],
-		csRect: [
-			"四角形になっている黒マスのブロックがあります。",
-			"There is a block of shaded cells that is a rectangle."
-		],
-		csDivide8: [
-			"孤立した白マスのブロックがあります。",
-			"The unshaded cells are divided."
-		]
+		cuNotRect: "cuNotRect.mochikoro",
+		csRect: "csRect.mochikoro",
+		csDivide8: "csDivide8.mochikoro"
 	}
 });

@@ -302,40 +302,6 @@
 		}
 	},
 
-	CellList: {
-		getBlockShapes: function() {
-			if (!!this.shape) {
-				return this.shape;
-			}
-
-			var bd = this.board;
-			var d = this.getRectSize();
-			var data = [[], [], [], [], [], [], [], []];
-			var shapes = { cols: d.cols, rows: d.rows, data: [] };
-
-			for (var by = 0; by < 2 * d.rows; by += 2) {
-				for (var bx = 0; bx < 2 * d.cols; bx += 2) {
-					data[0].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
-					data[1].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
-				}
-			}
-			for (var bx = 0; bx < 2 * d.cols; bx += 2) {
-				for (var by = 0; by < 2 * d.rows; by += 2) {
-					data[4].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
-					data[5].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
-				}
-			}
-			data[2] = data[1].concat().reverse();
-			data[3] = data[0].concat().reverse();
-			data[6] = data[5].concat().reverse();
-			data[7] = data[4].concat().reverse();
-			for (var i = 0; i < 8; i++) {
-				shapes.data[i] = data[i].join("");
-			}
-			return (this.shape = shapes);
-		}
-	},
-
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -629,21 +595,6 @@
 				area2.clist.seterr(1);
 			}
 		},
-		isDifferentShapeBlock: function(area1, area2) {
-			if (area1.size !== area2.size) {
-				return true;
-			}
-			var s1 = area1.clist.getBlockShapes(),
-				s2 = area2.clist.getBlockShapes();
-			var t1 = s1.cols === s2.cols && s1.rows === s2.rows ? 0 : 4;
-			var t2 = s1.cols === s2.rows && s1.rows === s2.cols ? 8 : 4;
-			for (var t = t1; t < t2; t++) {
-				if (s2.data[0] === s1.data[t]) {
-					return false;
-				}
-			}
-			return true;
-		},
 
 		checkSmallNumberArea: function() {
 			return this.checkNumberArea(-1, "bkSizeLt");
@@ -788,11 +739,7 @@
 
 					var second = room.clist;
 					var secondshape = room.clist.getBlockShapes();
-					if (
-						firstshape.rows === secondshape.rows &&
-						firstshape.cols === secondshape.cols &&
-						firstshape.data[0] === secondshape.data[0]
-					) {
+					if (firstshape.id === secondshape.id) {
 						continue;
 					}
 					this.failcode.add("bkDifferentOrientation");
@@ -901,71 +848,5 @@
 				}
 			}
 		}
-	},
-
-	"FailCode@cbblock": {
-		bkRect: ["ブロックが四角形になっています。", "A block is rectangle."],
-		bsSameShape: [
-			"同じ形のブロックが接しています。",
-			"The blocks that has the same shape are adjacent."
-		],
-		bkSubLt2: [
-			"ブロックが1つの点線からなる領域で構成されています。",
-			"A block has one area framed by dotted line."
-		],
-		bkSubGt2: [
-			"ブロックが3つ以上の点線からなる領域で構成されています。",
-			"A block has three or more areas framed by dotted line."
-		]
-	},
-
-	"FailCode@dbchoco": {
-		bkSubLt2: [
-			"1色のマスしか入っていないブロックがあります。",
-			"A block contains a single color."
-		],
-		bkSubGt2: [
-			"同じ色のマスのカタマリが3個以上入っているブロックがあります。",
-			"A block has three or more shapes."
-		],
-		bkSizeLt: [
-			"同じ色のマスのカタマリの大きさより数字が大きいです。",
-			"A number is bigger than the size of the shape."
-		],
-		bkSizeGt: [
-			"同じ色のマスのカタマリの大きさより数字が小さいです。",
-			"A number is smaller than the size of the shape."
-		],
-		bkDifferentShape: [
-			"同じ形でないマスのカタマリを含むブロックがあります。",
-			"The two shapes inside a block are different."
-		]
-	},
-
-	"FailCode@nikoji": {
-		bkNoNum: [
-			"(please translate) An area has no letter.",
-			"An area has no letter."
-		],
-		bkNumGe2: [
-			"(please translate) An area has multiple letters.",
-			"An area has multiple letters."
-		],
-		bkDifferentShape: [
-			"(please translate) Two areas with equal letters have different shapes.",
-			"Two areas with equal letters have different shapes."
-		],
-		bkDifferentOrientation: [
-			"(please translate) Two areas with equal letters have different orientation.",
-			"Two areas with equal letters have different orientation."
-		],
-		bkDifferentPosition: [
-			"(please translate) Two areas with equal letters have the letter in different positions.",
-			"Two areas with equal letters have the letter in different positions."
-		],
-		bkDifferentLetters: [
-			"(please translate) Two areas with different letters have the same shape.",
-			"Two areas with different letters have the same shape."
-		]
 	}
 });

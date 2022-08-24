@@ -42,12 +42,14 @@ pzpr.variety.each(function(pid) {
 					assert.doesNotThrow(function() {
 						puzzle.open(urlstr + urlstr, function() {
 							if (
+								pid.indexOf("-aux") === -1 &&
 								pid !== "icebarn" &&
 								pid !== "icelom" &&
 								pid !== "icelom2" &&
 								pid !== "mejilink" &&
 								pid !== "yajitatami" &&
-								pid !== "doubleback"
+								pid !== "doubleback" &&
+								pid !== "lapaz"
 							) {
 								assert_equal_board(bd, bd2);
 							}

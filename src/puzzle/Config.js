@@ -38,6 +38,11 @@
 				option: [1, 2, 3]
 			}); /* interbd: Clue display mode */
 			this.add("snakebd", false); /* hebi: へびの境界線を表示する */
+			this.add(
+				"ensquare",
+				true
+			); /* tajmahal: Only draw given from square centers */
+			this.add("context_marks", true);
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
 			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
 
@@ -60,6 +65,7 @@
 				"singlenum",
 				!pzpr.env.API.touchevent
 			); /* hanare: 部屋に回答数字を一つだけ入力 */
+			this.add("singleregion", true); /* parquet: Unshade all other regions */
 			this.add("enline", true); /* kouchoku: 線は点の間のみ引ける */
 			this.add("lattice", true); /* kouchoku: 格子点チェック */
 
@@ -88,6 +94,18 @@
 				volatile: true
 			}); /* aquarium: Rule variation for disconnected cells in one region */
 			this.add("country_empty", false, { variant: true, volatile: true });
+			this.add("voxas_tatami", false, {
+				variant: true,
+				volatile: true
+			}); /* voxas: Rule variation for disallowing crossing borders */
+			this.add("tren_new", false, {
+				variant: true,
+				volatile: true
+			}); /* tren: Rule variation for connecting unused cells */
+			this.add("nuriuzu_connect", false, {
+				variant: true,
+				volatile: true
+			}); /* nuriuzu: Rule variation for shaded connectivity */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -319,6 +337,9 @@
 				case "disptype_bosanowa":
 					exec = pid === "bosanowa";
 					break;
+				case "context_marks":
+					exec = pid === "context";
+					break;
 				case "disptype_yajilin":
 					exec = pid === "yajilin";
 					break;
@@ -337,6 +358,9 @@
 				case "snakebd":
 					exec = pid === "hebi";
 					break;
+				case "ensquare":
+					exec = pid === "tajmahal";
+					break;
 				case "dispqnumbg":
 					exec = pid === "yinyang";
 					break;
@@ -352,6 +376,9 @@
 				case "singlenum":
 					exec = pid === "hanare" || pid === "putteria";
 					break;
+				case "singleregion":
+					exec = pid === "parquet";
+					break;
 				case "enline":
 				case "lattice":
 					exec = pid === "kouchoku" || pid === "angleloop";
@@ -363,7 +390,8 @@
 					exec = pid === "mashu";
 					break;
 				case "forceallcell":
-					exec = pid === "fillomino" || pid === "symmarea";
+					exec =
+						pid === "fillomino" || pid === "symmarea" || pid === "snakepit";
 					break;
 				case "dontpassallcell":
 					exec = pid === "arukone";
@@ -373,6 +401,15 @@
 					break;
 				case "country_empty":
 					exec = pid === "country";
+					break;
+				case "voxas_tatami":
+					exec = pid === "voxas";
+					break;
+				case "tren_new":
+					exec = pid === "tren";
+					break;
+				case "nuriuzu_connect":
+					exec = pid === "nuriuzu";
 					break;
 				default:
 					exec = !!this.list[name];
@@ -399,6 +436,7 @@
 				case "autoerr":
 				case "aquarium_regions":
 				case "snakebd":
+				case "context_marks":
 				case "disptype_yajilin":
 				case "disptype_interbd":
 				case "dispqnumbg":

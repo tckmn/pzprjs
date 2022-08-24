@@ -94,7 +94,7 @@
 			this.bseconds = seconds;
 		},
 		label: function() {
-			return ui.selectStr("経過時間：", "Time: ");
+			return ui.i18n("time") + (pzpr.lang === "en" ? " " : "");
 		},
 
 		//---------------------------------------------------------------------------
@@ -117,7 +117,7 @@
 					if (ui.callbackComplete) {
 						ui.callbackComplete(puzzle, check);
 					}
-					ui.notify.alert("正解です！", "Complete!");
+					ui.notify.alert(ui.i18n("completed"));
 					return;
 				}
 

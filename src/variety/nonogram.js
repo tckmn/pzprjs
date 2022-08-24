@@ -2,25 +2,13 @@
 // nonogram.js
 //
 
-function sameArray(array1, array2) {
-	if (array1.length !== array2.length) {
-		return false;
-	}
-	for (var k = 0; k < array2.length; k++) {
-		if (array1[k] !== array2[k]) {
-			return false;
-		}
-	}
-	return true;
-}
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nonogram"], {
+})(["nonogram", "coral"], {
 	MouseEvent: {
 		use: true,
 		inputModes: { edit: ["number"], play: ["shade", "unshade"] },
@@ -61,6 +49,13 @@ function sameArray(array1, array2) {
 			} else {
 				this.inputqnum_main(excell);
 			}
+		}
+	},
+
+	"MouseEvent@coral": {
+		inputModes: {
+			edit: ["number", "clear", "info-blk"],
+			play: ["shade", "unshade", "info-blk"]
 		}
 	},
 
@@ -133,7 +128,7 @@ function sameArray(array1, array2) {
 						excell.setQnum(num);
 					}
 				}
-			} else if (ca === " " || ca === "-") {
+			} else if (ca === " " || ca === "-" || ca === "BS") {
 				excell.setQnum(-1);
 			} else {
 				return;
@@ -170,6 +165,7 @@ function sameArray(array1, array2) {
 	},
 
 	Board: {
+		hasborder: 1,
 		hasexcell: 1,
 		hasflush: 1,
 
@@ -221,8 +217,23 @@ function sameArray(array1, array2) {
 		}
 	},
 
+	"BoardExec@coral": {
+		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d, true);
+		}
+	},
+
+	"AreaUnshadeGraph@coral": {
+		enabled: true
+	},
+
+	"AreaShadeGraph@coral": {
+		enabled: true
+	},
+
 	Graphic: {
 		enablebcolor: true,
+		shadecolor: "#444444",
 
 		paint: function() {
 			this.drawBGCells();
@@ -234,8 +245,19 @@ function sameArray(array1, array2) {
 			this.drawNumbersExCell();
 
 			this.drawChassis(true);
+			this.drawBorders();
 
 			this.drawTarget();
+		},
+
+		getBorderColor: function(border) {
+			if (this.board.maxbx % 10 || this.board.maxby % 10) {
+				return null;
+			}
+
+			return border.bx % 10 === 0 || border.by % 10 === 0
+				? this.quescolor
+				: null;
 		},
 
 		getBoardCols: function() {
@@ -303,6 +325,8 @@ function sameArray(array1, array2) {
 	AnsCheck: {
 		checklist: ["checkNonogram"],
 
+		excellsInUnknownOrder: false,
+
 		checkNonogram: function() {
 			this.checkRowsCols(this.isExCellCount, "exNoMatch");
 		},
@@ -326,7 +350,16 @@ function sameArray(array1, array2) {
 
 			var lines = this.getLines(clist);
 
-			if (!sameArray(nums, lines)) {
+			if (this.excellsInUnknownOrder) {
+				if (nums.length === 0) {
+					return true;
+				}
+
+				nums.sort();
+				lines.sort();
+			}
+
+			if (!this.puzzle.pzpr.util.sameArray(nums, lines)) {
 				clist.seterr(1);
 				excells.seterr(1);
 				return false;
@@ -353,10 +386,35 @@ function sameArray(array1, array2) {
 		}
 	},
 
-	FailCode: {
-		exNoMatch: [
-			"(please translate) The shaded cells don't match the clues in the row or column.",
-			"The shaded cells don't match the clues in the row or column."
-		]
+	"AnsCheck@coral": {
+		checklist: [
+			"check2x2ShadeCell",
+			"checkConnectUnshadeOutside",
+			"checkNonogram",
+			"checkConnectShade"
+		],
+
+		excellsInUnknownOrder: true,
+
+		checkConnectUnshadeOutside: function() {
+			var bd = this.board;
+			for (var r = 0; r < bd.ublkmgr.components.length; r++) {
+				var clist = bd.ublkmgr.components[r].clist;
+				var d = clist.getRectSize();
+				if (
+					d.x1 === 1 ||
+					d.x2 === bd.maxbx - 1 ||
+					d.y1 === 1 ||
+					d.y2 === bd.maxby - 1
+				) {
+					continue;
+				}
+				this.failcode.add("cuConnOut");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		}
 	}
 });

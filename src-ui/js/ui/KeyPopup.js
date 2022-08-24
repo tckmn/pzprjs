@@ -100,7 +100,32 @@ ui.keypopup = {
 		kusabi: [114, 0],
 		doppelblock: [10, 115],
 		interbd: [116, 0],
-		toichika2: [10, 10]
+		toichika2: [10, 10],
+		crossstitch: [10, 0],
+		ovotovata: [10, 0],
+		lohkous: [10, 0],
+		chainedb: [10, 0],
+		canal: [10, 0],
+		cbanana: [10, 0],
+		bdwalk: [117, 0],
+		voxas: [118, 0],
+		oneroom: [10, 0],
+		tontti: [10, 0],
+		lapaz: [10, 0],
+		tren: [10, 0],
+		pentominous: [119, 119],
+		hinge: [10, 0],
+		tajmahal: [8, 0],
+		railpool: [10, 0],
+		coral: [10, 0],
+		ququ: [10, 0],
+		disloop: [10, 0],
+		lither: [3, 0],
+		snakepit: [120, 10],
+		squarejam: [10, 0],
+		context: [4, 0],
+		numrope: [10, 10],
+		yajisoko: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -214,6 +239,14 @@ ui.keypopup = {
 			this.generate_doppelblock();
 		} else if (type === 116) {
 			this.generate_interbd();
+		} else if (type === 117) {
+			this.generate_bdwalk();
+		} else if (type === 118) {
+			this.generate_voxas();
+		} else if (type === 119) {
+			this.generate_pentominous(mode);
+		} else if (type === 120) {
+			this.generate_snakepit(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -259,8 +292,19 @@ ui.keypopup = {
 				null
 			);
 		}
-		if (mode === 1 && (pid === "kakuru" || pid === "tateyoko")) {
-			itemlist.push(["q1", "■"], ["w2", "□"], " ", ["-", "?"]);
+		if (
+			mode === 1 &&
+			(pid === "kakuru" ||
+				pid === "tateyoko" ||
+				pid === "crossstitch" ||
+				pid === "numrope" ||
+				pid === "yajisoko")
+		) {
+			itemlist.push(["q1", pid === "yajisoko" ? "□" : "■"]);
+			if (pid === "crossstitch") {
+				itemlist.push(["w2", "○"]);
+			}
+			itemlist.push(["-", "?"]);
 		}
 
 		itemlist.push("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
@@ -272,7 +316,14 @@ ui.keypopup = {
 		);
 
 		var cap = null;
-		if (mode === 3 || pid === "kakuru" || pid === "tateyoko") {
+		if (
+			mode === 3 ||
+			pid === "kakuru" ||
+			pid === "numrope" ||
+			pid === "tateyoko" ||
+			pid === "crossstitch" ||
+			pid === "yajisoko"
+		) {
 		} else if (!ui.puzzle.painter.hideHatena) {
 			cap = "?";
 		} else if (pid === "tasquare") {
@@ -507,6 +558,71 @@ ui.keypopup = {
 				["t", { text: "⬟", color: "#ff8000" }],
 				["y", { text: "⬣", color: "#00c0c0" }],
 				" "
+			],
+			4
+		);
+	},
+	generate_bdwalk: function() {
+		this.generate_main(
+			[
+				["-", { text: "■", color: "gray" }],
+				["u", { text: "▲" }],
+				["d", { text: "▼" }],
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
+				" "
+			],
+			4
+		);
+	},
+	generate_voxas: function() {
+		this.generate_main(
+			[
+				["2", { text: "●" }],
+				["3", { text: "●", color: "gray" }],
+				["4", { text: "○" }],
+				["1", { text: "━" }],
+				" "
+			],
+			3
+		);
+	},
+	generate_pentominous: function(mode) {
+		var items = "filnptuvwxyz".split("").map(function(c) {
+			return [c, { text: c.toUpperCase() }];
+		});
+		if (mode === 1) {
+			items.push(["-", "?"], ["q", "■"]);
+		}
+		items.push(" ");
+
+		this.generate_main(items, 5);
+	},
+	generate_snakepit: function() {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				" ",
+				["-", "?"],
+				["q", { text: "○" }],
+				["w", { text: "■", color: "gray" }]
 			],
 			4
 		);

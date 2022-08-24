@@ -57,6 +57,12 @@ pzpr.classmgr.makeCommon({
 			this.ublkmgr = this.addInfoList(classes.AreaUnshadeGraph); // 白マス情報を保持する
 			this.nblkmgr = this.addInfoList(classes.AreaNumberGraph); // 数字情報を保持する
 
+			if (classes.Bank.prototype.enabled) {
+				this.bank = new classes.Bank();
+				this.bank.init();
+				this.bank.initialize(this.bank.defaultPreset());
+			}
+
 			this.addExtraInfo();
 
 			this.exec = new classes.BoardExec();
@@ -111,11 +117,16 @@ pzpr.classmgr.makeCommon({
 			this.setminmax();
 			this.setposAll();
 
-			if (this.hasdots === 1) {
-				this.initDots(this.cols, this.rows);
+			if (this.hasdots) {
+				this.initDots(this.cols, this.rows, this.hasdots === 2);
 			}
 
 			this.initExtraObject(col, row);
+
+			if (this.bank) {
+				this.bank.width = this.cols / this.puzzle.painter.bankratio;
+				this.bank.performLayout();
+			}
 
 			this.rebuildInfo();
 
@@ -124,6 +135,14 @@ pzpr.classmgr.makeCommon({
 		},
 		createExtraObject: function() {},
 		initExtraObject: function(col, row) {},
+
+		//---------------------------------------------------------------------------
+		// bd.getBankPiecesInGrid(): Returns an array of [strings, PieceList] tuples
+		// which can be compared to the pieces inside the bank.
+		//---------------------------------------------------------------------------
+		getBankPiecesInGrid: function() {
+			return [];
+		},
 
 		//---------------------------------------------------------------------------
 		// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
@@ -409,6 +428,9 @@ pzpr.classmgr.makeCommon({
 			this.cross.ansclear();
 			this.border.ansclear();
 			this.excell.ansclear();
+			if (this.bank) {
+				this.bank.ansclear();
+			}
 			this.rebuildInfo();
 			opemgr.enableRecord2();
 		},
@@ -424,6 +446,11 @@ pzpr.classmgr.makeCommon({
 			this.border.subclear();
 			this.excell.subclear();
 			opemgr.enableRecord2();
+
+			if (this.bank) {
+				this.bank.subclear();
+			}
+			this.rebuildInfo();
 		},
 
 		errclear: function() {
@@ -433,6 +460,9 @@ pzpr.classmgr.makeCommon({
 				this.cross.errclear();
 				this.border.errclear();
 				this.excell.errclear();
+				if (this.bank) {
+					this.bank.errclear();
+				}
 				this.haserror = false;
 				this.hasinfo = false;
 			}
@@ -818,16 +848,18 @@ pzpr.classmgr.makeCommon({
 		dots: [],
 
 		//---------------------------------------------------------------------------
-		initDots: function(col, row) {
-			this.dotsmax = (2 * col - 1) * (2 * row - 1);
+		initDots: function(col, row, outer) {
+			var width = 2 * col + (outer ? 1 : -1);
+			var height = 2 * row + (outer ? 1 : -1);
+			this.dotsmax = width * height;
 			this.dots = [];
 			for (var id = 0; id < this.dotsmax; id++) {
 				this.dots[id] = new this.klass.Dot();
 				var dot = this.dots[id];
 				dot.id = id;
 
-				dot.bx = (id % (2 * col - 1)) + 1;
-				dot.by = ((id / (2 * col - 1)) | 0) + 1;
+				dot.bx = (id % width) + (outer ? 0 : 1);
+				dot.by = ((id / width) | 0) + (outer ? 0 : 1);
 
 				dot.isnull = false;
 				dot.piece = dot.getaddr().getobj();
@@ -836,11 +868,24 @@ pzpr.classmgr.makeCommon({
 
 		getDot: function(bx, by) {
 			var qc = this.cols,
-				qr = this.rows;
-			if (bx <= 0 || bx >= qc << 1 || by <= 0 || by >= qr << 1) {
+				qr = this.rows,
+				id = -1;
+
+			if (this.hasdots === 1) {
+				if (bx <= 0 || bx >= qc << 1 || by <= 0 || by >= qr << 1) {
+					return null;
+				}
+				id = bx - 1 + (by - 1) * (2 * qc - 1);
+			}
+			if (this.hasdots === 2) {
+				if (bx < 0 || bx > qc << 1 || by < 0 || by > qr << 1) {
+					return null;
+				}
+				id = bx + by * (2 * qc + 1);
+			}
+			if (id === -1) {
 				return null;
 			}
-			var id = bx - 1 + (by - 1) * (2 * qc - 1);
 			var dot = this.dots[id];
 			return dot.isnull ? null : dot;
 		},

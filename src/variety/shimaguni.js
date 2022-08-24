@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["shimaguni", "chocona", "stostone"], {
+})(["shimaguni", "chocona", "stostone", "hinge"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -54,7 +54,7 @@
 			return Math.min(999, this.room.clist.length);
 		}
 	},
-	"Cell@chocona": {
+	"Cell@chocona,hinge": {
 		minnum: 0
 	},
 	"Cell@stostone": {
@@ -76,6 +76,25 @@
 				len++;
 			}
 			return len;
+		}
+	},
+	"Border@hinge": {
+		isHinge: function() {
+			return (
+				this.ques === 1 &&
+				this.sidecell[0].isShade() &&
+				this.sidecell[1].isShade()
+			);
+		},
+
+		posthook: {
+			ques: function(num) {
+				for (var i = 0; i <= 1; i++) {
+					if (this.sidecell[i].sblk) {
+						this.sidecell[i].sblk.hinge = null;
+					}
+				}
+			}
 		}
 	},
 
@@ -176,8 +195,36 @@
 		}
 	},
 
+	"BorderList@hinge": {
+		applyTopLines: function() {
+			for (var i = 0; i < this.length; i++) {
+				var bd = this[i];
+				if (bd.isHinge()) {
+					var other = bd.isvert
+						? this.board.getb(bd.bx, bd.by - 2)
+						: this.board.getb(bd.bx - 2, bd.by);
+					if (other.isHinge()) {
+						bd.topline = other.topline;
+					} else {
+						bd.topline = bd;
+					}
+				} else {
+					bd.topline = null;
+				}
+			}
+		}
+	},
+
 	"AreaShadeGraph@chocona": {
 		enabled: true
+	},
+	"AreaShadeGraph@hinge": {
+		enabled: true,
+
+		setExtraData: function(component) {
+			component.clist = new this.klass.CellList(component.getnodeobjs());
+			component.hinge = null;
+		}
 	},
 	"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone": {
 		// Same as LITS AreaTetrominoGraph
@@ -376,6 +423,16 @@
 	"AnsCheck@chocona#1": {
 		checklist: ["checkShadeCellExist", "checkShadeRect", "checkShadeCellCount"]
 	},
+	"AnsCheck@hinge#1": {
+		checklist: [
+			"checkShadeCellExist",
+			"checkCrossRegionGt",
+			"checkSplit",
+			"checkMirrorShape",
+			"checkCrossRegionLt",
+			"checkShadeCellCount"
+		]
+	},
 	"AnsCheck@shimaguni,stostone": {
 		checkSideAreaShadeCell: function() {
 			this.checkSideAreaCell(
@@ -484,53 +541,123 @@
 			);
 		}
 	},
+	"AnsCheck@hinge": {
+		getHingeData: function(component) {
+			if (component.hinge) {
+				return component.hinge;
+			}
 
+			if (!this._info.topdata) {
+				this.board.border.applyTopLines();
+				this._info.topdata = true;
+			}
+
+			var d = component.clist.getRectSize();
+			var bds = this.board
+				.borderinside(d.x1, d.y1, d.x2, d.y2)
+				.filter(function(bd) {
+					return (
+						bd &&
+						!bd.isnull &&
+						bd.isHinge() &&
+						bd.sidecell[0].sblk === component
+					);
+				});
+
+			var hinge = null;
+
+			for (var i = 0; i < bds.length; i++) {
+				var bd = bds[i];
+				if (!hinge) {
+					hinge = bd.isvert
+						? { x: bd.bx, top: bd.topline }
+						: { y: bd.by, top: bd.topline };
+				} else if (bd.isvert ? hinge.x !== bd.bx : hinge.y !== bd.by) {
+					return (component.hinge = "bkHingeGt");
+				} else if (hinge.top !== bd.topline) {
+					hinge.top = null;
+				}
+			}
+
+			if (!hinge) {
+				return (component.hinge = "bkHingeLt");
+			}
+			if (!hinge.top) {
+				return (component.hinge = "bkHingeSplit");
+			}
+
+			if (
+				(hinge.x && hinge.x !== (d.x1 + d.x2) / 2) ||
+				(hinge.y && hinge.y !== (d.y1 + d.y2) / 2)
+			) {
+				return (component.hinge = "bkHingeMirror");
+			}
+
+			if (
+				component.clist.some(function(c) {
+					// Check if there's two consecutive shaded cells along the middle without a border
+					if (
+						(c.bx + 1 === hinge.x &&
+							c.adjacent.right.isShade() &&
+							c.adjborder.right.ques !== 1) ||
+						(c.by + 1 === hinge.y &&
+							c.adjacent.bottom.isShade() &&
+							c.adjborder.bottom.ques !== 1)
+					) {
+						return true;
+					}
+
+					if (hinge.x) {
+						return c.board.getc(d.x2 - (c.bx - d.x1), c.by).isUnshade();
+					}
+					return c.board.getc(c.bx, d.y2 - (c.by - d.y1)).isUnshade();
+				})
+			) {
+				return (component.hinge = "bkHingeMirror");
+			}
+
+			return (component.hinge = true);
+		},
+
+		checkHinge: function(code) {
+			var areas = this.board.sblkmgr.components;
+			for (var id = 0; id < areas.length; id++) {
+				var area = areas[id];
+				if (this.getHingeData(area) === code) {
+					this.failcode.add(code);
+					if (this.checkOnly) {
+						break;
+					}
+					area.clist.seterr(1);
+				}
+			}
+		},
+
+		checkCrossRegionGt: function() {
+			this.checkHinge("bkHingeGt");
+		},
+
+		checkMirrorShape: function() {
+			this.checkHinge("bkHingeMirror");
+		},
+
+		checkSplit: function() {
+			this.checkHinge("bkHingeSplit");
+		},
+
+		checkCrossRegionLt: function() {
+			this.checkHinge("bkHingeLt");
+		}
+	},
+
+	FailCode: {
+		bkShadeDivide: "bkShadeDivide",
+		bkNoShade: "bkNoShade",
+		bkShadeNe: "bkShadeNe"
+	},
 	"FailCode@shimaguni": {
-		bkShadeNe: [
-			"海域内の数字と国のマス数が一致していません。",
-			"The number of shaded cells is not equal to the number."
-		],
-		bkShadeDivide: [
-			"1つの海域に入る国が2つ以上に分裂しています。",
-			"The shaded cells in a marine area are divided."
-		],
-		bkNoShade: [
-			"黒マスのカタマリがない海域があります。",
-			"A marine area has no shaded cells."
-		],
-		cbShade: [
-			"異なる海域にある国どうしが辺を共有しています。",
-			"Countries in different marine areas are adjacent."
-		],
-		bsEqShade: [
-			"隣り合う海域にある国の大きさが同じです。",
-			"The sizes of countries that are in adjacent marine areas are the same."
-		]
-	},
-
-	"FailCode@chocona": {
-		csNotRect: [
-			"黒マスのカタマリが正方形か長方形ではありません。",
-			"A mass of shaded cells is not rectangle."
-		],
-		bkShadeNe: [
-			"数字のある領域と、領域の中にある黒マスの数が違います。",
-			"The number of shaded cells in the area and the number written in the area is different."
-		]
-	},
-
-	"FailCode@stostone": {
-		cbShade: [
-			"異なる部屋にある黒マスどうしが辺を共有しています。",
-			"Shaded cells are adjacent over a border."
-		],
-		csUpper: [
-			"ブロックを落とした後に黒マスが盤面の上半分に残っています。",
-			"Shaded cells remain in the upper half of the board after the blocks have fallen."
-		],
-		cuLower: [
-			"ブロックを落とした後の空間が盤面の下半分にあります。",
-			"Unshaded cells exist in the lower half of the board after the blocks have fallen."
-		]
+		bkShadeDivide: "bkShadeDivide.shimaguni",
+		bkNoShade: "bkNoShade.shimaguni",
+		bkShadeNe: "bkShadeNe.shimaguni"
 	}
 });
