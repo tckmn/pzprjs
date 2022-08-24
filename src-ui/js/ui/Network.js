@@ -16,12 +16,11 @@
 				return;
 			}
 
-			var loc = window.location;
 			var wsurl = "ws://";
 			if (document.location.protocol === "https:") {
 				wsurl = "wss://";
 			}
-			wsurl = wsurl + loc.host + "/game/" + this.key;
+			wsurl = wsurl + "puzz.link/game/" + this.key;
 
 			this.ws = new WebSocket(wsurl);
 			this.ws.onclose = this.onclose;
