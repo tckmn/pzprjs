@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+ENV = 'pzplus'
 PORT = int(os.environ.get('PZPLUS_PORT', 2345))
 DATA_DIR = os.environ.get('PZPLUS_DATA',
-    os.path.join(os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share')),
-                 'pzplus'))
+    os.path.join(os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share')), ENV))
 
 DATA = lambda *x: os.path.join(DATA_DIR, *x)
 
