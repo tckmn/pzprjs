@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-ENV = 'pzplus'
+ENV = os.environ.get('PZPLUS_ENV', 'pzplus')
 PORT = int(os.environ.get('PZPLUS_PORT', 2345))
 DATA_DIR = os.environ.get('PZPLUS_DATA',
     os.path.join(os.getenv('XDG_DATA_HOME', os.path.expanduser('~/.local/share')), ENV))
@@ -148,13 +148,14 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
     def nohtml(self, p):
         if self.path == f'/{p}' or self.path.startswith(f'/{p}?'): self.path = f'/{p}.html{self.path[1+len(p):]}'
 
-    def do_GET(self):
+    def parse_request(self):
+        ret = super().parse_request()
         self.nohtml('p')
         self.nohtml('db')
         self.nohtml('db2')
         self.nohtml('auth')
         self.nohtml('query')
-        super().do_GET()
+        return ret
 
     def do_POST(self):
         with clock:
