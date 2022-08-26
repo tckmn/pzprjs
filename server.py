@@ -150,11 +150,12 @@ class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 
     def parse_request(self):
         ret = super().parse_request()
-        self.nohtml('p')
-        self.nohtml('db')
-        self.nohtml('db2')
-        self.nohtml('auth')
-        self.nohtml('query')
+        if self.command != 'POST':
+            self.nohtml('p')
+            self.nohtml('db')
+            self.nohtml('db2')
+            self.nohtml('auth')
+            self.nohtml('query')
         return ret
 
     def do_POST(self):
