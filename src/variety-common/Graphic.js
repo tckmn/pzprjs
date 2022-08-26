@@ -2599,8 +2599,8 @@ pzpr.classmgr.makeCommon({
 			return piece.error
 				? this.errcolor1
 				: piece.qcmp
-				? this.qcmpcolor
-				: this.quescolor;
+				? '#444' //this.qcmpcolor TODO only if dark mode
+				: '#fff'; //this.quescolor;
 		},
 		drawBankAddButton: function() {
 			var g = this.vinc("piecebank_add", "crispEdges"),
