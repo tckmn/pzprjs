@@ -21,4 +21,4 @@ format:
 	npm run-script format
 
 scrape:
-	curl 'https://puzz.link/db/index.js' > dist/db.js
+	curl 'https://puzz.link/db/index.js' | sed 's!/pv?thumb!https://puzz.link&!' > dist/db.js
