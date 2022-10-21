@@ -218,7 +218,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			// pzplus pause functionality
-			if (this.keydown && c === 'p') {
+			if (this.keydown && (c === 'shift+p' || (c === 'p' && puzzle.pid !== 'pentominous'))) {
 				puzzle.togglePause();
 				return;
 			}
