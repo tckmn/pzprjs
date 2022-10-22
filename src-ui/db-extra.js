@@ -55,11 +55,12 @@ setInterval(function() {
                 });
             });
 
+            const gen = ['@hidesugar+', '@Melting_Solver+'];
             const btn = document.createElement('button');
             btn.style.marginLeft = '1rem';
             btn.appendChild(document.createTextNode('skip generated'));
             btn.addEventListener('click', () => {
-                Array.from(document.getElementsByClassName('pzvpuzzle')).filter(x=>x.getElementsByClassName('author')[0].textContent==='@hidesugar2+').map(x=>x.querySelector('.tag-skip input').click());
+                Array.from(document.getElementsByClassName('pzvpuzzle')).filter(x=>gen.indexOf(x.getElementsByClassName('author')[0].textContent)!==-1).map(x=>x.querySelector('.tag-skip input').click());
             });
             paging.appendChild(btn);
         }
