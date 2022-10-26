@@ -139,24 +139,41 @@ def iflag(tok):
 # conn.commit()
 
 noauth = ['/auth', '/getshrec', '/dbtime']
+pages = ['/p', '/db', '/db2', '/auth', '/query', '/list']
 
 class PuzzlinkHelper(http.server.SimpleHTTPRequestHandler):
 
     def __init__(self, *args):
         super().__init__(*args, directory='dist')
 
+    def subpath(self, s, t):
+        if self.base == s:
+            self.base = t
+            self.path = t + self.path[len(s):]
+
     def nohtml(self, p):
-        if self.path == f'/{p}' or self.path.startswith(f'/{p}?'): self.path = f'/{p}.html{self.path[1+len(p):]}'
+        self.subpath(p, p+'.html')
 
     def parse_request(self):
         ret = super().parse_request()
+        self.base = self.path.split('?',1)[0].split('#',1)[0]
         if self.command != 'POST':
-            self.nohtml('p')
-            self.nohtml('db')
-            self.nohtml('db2')
-            self.nohtml('auth')
-            self.nohtml('query')
+            for p in pages: self.nohtml(p)
+            # if 'theme=light' in self.headers.get('Cookie', ''):
+            #     self.subpath('/css/dark.css', '/css/light.css')
         return ret
+
+    def do_GET(self):
+        f = self.send_head()
+        if f:
+            try:
+                if 'theme=light' in self.headers.get('Cookie', '') and \
+                        (self.base == '/' or self.base.endswith('.html') and self.base[:-5] in pages):
+                    self.wfile.write(f.read().replace(b'dark.css', b'lite.css'))
+                else:
+                    self.copyfile(f, self.wfile)
+            finally:
+                f.close()
 
     def do_POST(self):
         with clock:
