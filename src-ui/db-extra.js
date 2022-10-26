@@ -55,7 +55,7 @@ setInterval(function() {
                 });
             });
 
-            const gen = ['@hidesugar+', '@Melting_Solver+'];
+            const gen = ['@hidesugar+', '@hidesugar2+', '@Melting_Solver+'];
             const btn = document.createElement('button');
             btn.style.marginLeft = '1rem';
             btn.appendChild(document.createTextNode('skip generated'));
