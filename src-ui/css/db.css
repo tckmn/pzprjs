@@ -275,10 +275,3 @@ a.link {
 .stats tr td:nth-child(2) {
     text-align: right;
 }
-
-/* CUSTOM PZPLUS DARK THEME */
-body { background-color: black; color: #d8d8d8; }
-body > div > div { background-color: #181818; }
-button { background-color: #282828; border-color: #383838; color: #d8d8d8; }
-a:link    { color: #7cafc2; }
-a:visited { color: #ba8baf; }

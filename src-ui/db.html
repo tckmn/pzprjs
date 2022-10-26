@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang='en' class='dark'>
     <head>
         <title>puzz.link puzzle index</title>
         <meta charset="UTF-8">
@@ -12,8 +12,10 @@
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
         <link rel="stylesheet" href="/css/db.css?<%= git.hash %>" />
+        <link rel="stylesheet" href="/css/dark.css?<%= git.hash %>" />
     </head>
     <body>
+        <script src="/theme.js?<%= git.hash %>"></script>
         <script src="/db.js?<%= git.hash %>"></script>
         <script>
           var app = Elm.Index.init({

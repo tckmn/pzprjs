@@ -1,81 +1,81 @@
-body {
+html.dark body {
     background-color: black;
     background-image: none !important;
     color: #d8d8d8;
 }
 
-div#main {
+html.dark div#main {
     background-color: black;
     border-color: #181818;
     color: #d8d8d8;
 }
 
-body > div > div, #menupanel, div.notify, .player, .testcase, div.popup {
+html.dark body > div > div, html.dark #menupanel, html.dark div.notify, html.dark .player, html.dark .testcase, html.dark div.popup {
     background-color: #181818;
     border-color: #383838;
 }
 
-div div.titlebar {
+html.dark div div.titlebar {
     background-color: #282828;
 }
 
-button, .btn, input, textarea {
+html.dark button, html.dark .btn, html.dark input, html.dark textarea {
     background: none;
     background-color: #282828;
     border-color: #383838;
     color: #d8d8d8;
 }
 
-.btn:disabled {
+html.dark .btn:disabled {
     opacity: 0.5;
 }
 
-.btn-ok {
+html.dark .btn-ok {
     background-color: #3e5861;
 }
 
-.links a {
+html.dark .links a {
     color: #d8d8d8;
 }
 
-div#variantpanel input[type="checkbox"]:disabled:checked + span {
+html.dark div#variantpanel input[type="checkbox"]:disabled:checked + span {
     color: #ab4642;
 }
 
-div.childsel, div.childsel::before {
+html.dark div.childsel, html.dark div.childsel::before {
     color: #ab4642;
     background-color: #383838;
 }
 
-#menupanel > li > span {
+html.dark #menupanel > li > span {
     color: #7cafc2;
 }
 
-#menupanel menu li.check > span, #menupanel menu li[data-value] > span, #menupanel menu a, #menupanel menu li.checked > span, #menupanel menu li.checked > span:before {
+html.dark #menupanel menu li.check > span, html.dark #menupanel menu li[data-value] > span, html.dark #menupanel menu a, html.dark #menupanel menu li.checked > span, html.dark #menupanel menu li.checked > span:before {
     color: #d8d8d8;
 }
 
-#menupanel menu li {
+html.dark #menupanel menu li {
     background-color: #282828;
     color: #d8d8d8;
 }
 
-#menupanel menu li:hover {
+html.dark #menupanel menu li:hover {
     background-color: #562321;
 }
 
-#divques > div {
+html.dark #divques > div {
     border: 1px solid #d8d8d8;
 }
 
-div.blocks  { background-color: #311; }
-div.loops   { background-color: #113; }
-div.lines   { background-color: #223; }
-div.divides { background-color: #131; }
-div.numbers { background-color: #222; }
-div.others  { background-color: #331; }
-div.puztable { background-color: #444; }
+html.dark div.blocks  { background-color: #311; }
+html.dark div.loops   { background-color: #113; }
+html.dark div.lines   { background-color: #223; }
+html.dark div.divides { background-color: #131; }
+html.dark div.numbers { background-color: #222; }
+html.dark div.others  { background-color: #331; }
+html.dark div.puztable { background-color: #444; }
 
-a:link    { color: #7cafc2; }
-a:visited { color: #ba8baf; }
-a.rules   { color: #d8d8d8; }
+html.dark a:link    { color: #7cafc2; }
+html.dark a:visited { color: #ba8baf; }
+html.dark a.rules   { color: #d8d8d8; }
