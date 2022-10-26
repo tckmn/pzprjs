@@ -152,12 +152,14 @@
 	},
 	"MouseEvent@yajisoko": {
 		inputModes: {
-			edit: ["number", "direc", "box", "clear"],
+			edit: ["number", "direc", "box", "empty", "clear"],
 			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
 		},
 		mouseinput_other: function() {
 			if (this.inputMode === "box") {
 				this.inputFixedNumber(-3);
+			} else if (this.inputMode === "empty") {
+				this.inputFixedNumber(-5);
 			}
 		},
 		mouseinput_auto: function() {
@@ -226,12 +228,12 @@
 				return -1;
 			} else if (this.btn === "right" && val === 0) {
 				return -2;
-			} else if (this.btn === "right" && (val === -3 || val === -4)) {
-				return -1;
 			} else if (this.btn === "right" && val === -1) {
 				return cell.getmaxnum();
 			}
-			return val + (this.btn === "left" ? 1 : -1);
+
+			val += this.btn === "left" ? 1 : -1;
+			return val < -3 ? -1 : val;
 		}
 	},
 
@@ -305,6 +307,8 @@
 				ca = "s2";
 			} else if (ca === "i") {
 				ca = "s3";
+			} else if (ca === "w") {
+				ca = "s4";
 			}
 			this.key_inputqnum(ca);
 		},
@@ -371,6 +375,9 @@
 				this.setQnum(-1);
 				this.setQnum2(val);
 			}
+		},
+		noLP: function() {
+			return this.qnum2 === -5;
 		}
 	},
 	CellList: {
@@ -391,9 +398,13 @@
 	},
 
 	Border: {
+		enableLineNG: true,
 		prehook: {
 			line: function(num) {
-				return this.puzzle.execConfig("dispmove") && this.checkFormCurve(num);
+				return (
+					this.puzzle.execConfig("dispmove") &&
+					(this.checkStableLine(num) || this.checkFormCurve(num))
+				);
 			}
 		}
 	},
@@ -522,7 +533,7 @@
 	},
 	"Graphic@yajisoko": {
 		bgcellcolor_func: "qsub2",
-		numbercolor_func: "move",
+		fontsizeratio: 0.75,
 		circlefillcolor_func: "qcmp",
 		circlebasecolor: "#CFCFCF",
 		qcmpcolor: "gray",
@@ -536,8 +547,8 @@
 			this.drawDepartures();
 			this.drawLines();
 
-			this.drawArrowNumbers({ bottom: true });
 			this.drawBoxes();
+			this.drawArrowNumbers({ scale: 0.75, arrowfontsize: 0.6, bottom: true });
 
 			this.drawPekes();
 
@@ -548,6 +559,18 @@
 
 		getNumberText: function(cell, num) {
 			return num === -4 ? "∞" : this.getNumberTextCore(num);
+		},
+		getQuesNumberColor: function(cell) {
+			if (this.puzzle.execConfig("dispmove") && cell.lcnt === 1) {
+				return "#00000050";
+			}
+			return this.quescolor;
+		},
+		getBGCellColor: function(cell) {
+			if (cell.qnum2 === -5) {
+				return cell.error ? this.errcolor1 : "black";
+			}
+			return this.getBGCellColor_qsub2(cell);
 		},
 
 		drawBoxes: function() {
@@ -708,6 +731,7 @@
 					}
 				}
 			});
+			this.decodeBinary("qnum2", -5);
 		},
 		encodePzpr: function(type) {
 			var bd = this.board;
@@ -722,6 +746,7 @@
 					cell.qdir;
 				return val;
 			});
+			this.encodeBinary("qnum2", -5, true);
 		}
 	},
 	//---------------------------------------------------------
@@ -920,6 +945,7 @@
 		checklist: [
 			"checkBranchLine",
 			"checkCrossLine",
+			"checkInvalidHasLine",
 			"checkConnectObject",
 			"checkLineOverLetter",
 			"checkCurveLine",
@@ -973,8 +999,16 @@
 
 		checkNumberHasArrow: function() {
 			this.checkAllCell(function(cell) {
-				return cell.qnum2 !== -1 && cell.qdir === cell.NDIR;
+				return (
+					cell.qnum2 !== -1 && cell.qnum2 !== -5 && cell.qdir === cell.NDIR
+				);
 			}, "anNoArrow");
+		},
+
+		checkInvalidHasLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum2 === -5 && cell.lcnt > 0;
+			}, "laOnBorder");
 		}
 	}
 });

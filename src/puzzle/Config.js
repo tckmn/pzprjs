@@ -106,6 +106,14 @@
 				variant: true,
 				volatile: true
 			}); /* nuriuzu: Rule variation for shaded connectivity */
+			this.add("pentopia_transparent", false, {
+				variant: true,
+				volatile: true
+			}); /* pentopia: Allow shading clues */
+			this.add("koburin_minesweeper", false, {
+				variant: true,
+				volatile: true
+			}); /* koburin: Orthogonal and diagonal clues */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -411,6 +419,12 @@
 				case "nuriuzu_connect":
 					exec = pid === "nuriuzu";
 					break;
+				case "pentopia_transparent":
+					exec = pid === "pentopia";
+					break;
+				case "koburin_minesweeper":
+					exec = pid === "koburin";
+					break;
 				default:
 					exec = !!this.list[name];
 			}
@@ -435,6 +449,7 @@
 				case "autocmp":
 				case "autoerr":
 				case "aquarium_regions":
+				case "koburin_minesweeper":
 				case "snakebd":
 				case "context_marks":
 				case "disptype_yajilin":
