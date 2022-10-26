@@ -637,7 +637,8 @@ button.scale:last-of-type {
     border-bottom-right-radius: 4pt;
 }
 
-button.scale.sel {
+/* don't get overridden by html.dark */
+html button.scale.sel {
     background-color: red;
 }
 
