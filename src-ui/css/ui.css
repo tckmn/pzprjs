@@ -639,7 +639,7 @@ button.scale:last-of-type {
 
 /* don't get overridden by html.dark */
 html button.scale.sel {
-    background-color: red;
+    background: red;
 }
 
 button.scale-x {
