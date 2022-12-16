@@ -208,6 +208,7 @@
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
 			lapaz: [0, 0, "La Paz", "La Paz"],
+			lightshadow: [0, 0, "Light and Shadow", "Light and Shadow"],
 			lightup: [
 				0,
 				1,
@@ -219,6 +220,7 @@
 			lither: [0, 0, "Litherslink", "Litherslink"],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
 			lohkous: [0, 0, "Lohkous", "Lohkous"],
+			lollipops: [0, 0, "ペロペロキャンディ", "Lollipops"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],
