@@ -35,6 +35,25 @@
             }
           });
         </script>
+
         <script src="/db-extra.js?<%= git.hash %>"></script>
+        <div id='extra'>
+            <div>
+                open all:
+                <a class='open' data-target='lpzp' href='#'>[pzplus]</a>
+                <a class='open' data-target='lpl' href='#'>[puzz.link]</a>
+                <a class='open' data-target='lpzv' href='#'>[pzv.jp]</a>
+            </div>
+            <div>
+                <label><input id='showdiff' type='checkbox'> show stats</label>
+            </div>
+            <div>
+                <button id='skipgen'>skip generated</button>
+            </div>
+            <!-- <div> -->
+            <!--     <input id='linksname'> -->
+            <!--     <button id='linksbtn'>save this search</button> -->
+            <!-- </div> -->
+        </div>
     </body>
 </html>

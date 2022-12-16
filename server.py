@@ -11,6 +11,7 @@ DATA = lambda *x: os.path.join(DATA_DIR, *x)
 import pathlib
 pathlib.Path(DATA('recordings')).mkdir(parents=True, exist_ok=True)
 pathlib.Path(DATA('userdb')).mkdir(parents=True, exist_ok=True)
+pathlib.Path(DATA('links')).mkdir(parents=True, exist_ok=True)
 
 from datetime import datetime
 import hashlib
@@ -345,6 +346,25 @@ class API:
                 conn.commit()
 
         return { 'alert': 'synced!' }
+
+    def jl_links(uid, data):
+        fname = DATA(f'links/{uid}')
+        if 'append' in data:
+            old = None
+            try:
+                with open(fname, 'r') as f:
+                    old = f.read()
+            except: pass
+            with open(fname, 'w') as f:
+                f.write(old + '\n' + data['append'] if old else data['append'])
+            return { 'alert': 'success!' }
+        elif 'rewrite' in data:
+            with open(fname, 'w') as f:
+                f.write(data['links'])
+            return { 'links': data['links'] }
+        else:
+            with open(fname, 'r') as f:
+                return { 'links': f.read() }
 
     # def j_search(uid, data):
     #     nest = 0

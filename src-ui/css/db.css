@@ -275,3 +275,13 @@ a.link {
 .stats tr td:nth-child(2) {
     text-align: right;
 }
+
+span.paging {
+    margin-right: 1rem;
+}
+
+#extra {
+    display: none;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+}
