@@ -440,8 +440,7 @@
 					);
 				}
 
-				// g.fillStyle = this.quescolor;
-				g.fillStyle = '#fff'; // TODO only if dark mode
+				g.fillStyle = this.lightDark(this.quescolor, '#fff');
 
 				g.vid = "bd_starCount";
 				g.font = ((this.ch * 0.66) | 0) + "px " + this.fontfamily;

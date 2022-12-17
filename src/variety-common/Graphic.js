@@ -3,6 +3,11 @@
 pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------
 	Graphic: {
+		// pzplus
+		lightDark: function(light, dark) {
+			return localStorage.getItem('theme') === 'light' ? light : dark
+		},
+
 		paintPost: function() {
 			this.drawTrialStarts();
 		},
@@ -2602,8 +2607,8 @@ pzpr.classmgr.makeCommon({
 			return piece.error
 				? this.errcolor1
 				: piece.qcmp
-				? '#444' //this.qcmpcolor TODO only if dark mode
-				: '#fff'; //this.quescolor;
+				? this.lightDark(this.qcmpcolor, '#444')
+				: this.lightDark(this.quescolor, '#fff');
 		},
 		drawBankAddButton: function() {
 			var g = this.vinc("piecebank_add", "crispEdges"),
