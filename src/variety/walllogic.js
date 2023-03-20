@@ -166,6 +166,7 @@
 				cell.setQnum(-1);
 			}
 			cell.setAnum(-1);
+			cell.draw();
 		}
 	},
 
@@ -325,7 +326,7 @@
 				var cell = clist[i];
 				var val = trans[cell.anum];
 				if (!!val) {
-					cell.setAnum(val);
+					cell.anum = val;
 				}
 			}
 		}

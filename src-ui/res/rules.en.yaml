@@ -378,10 +378,11 @@ barns: "Draw a loop that goes through every cell.\n1. Two perpendicular line seg
   \ or otherwise overlap.\n2. The loop may not turn on icy cells.\n3. Lines cannot\
   \ go through bold borders."
 bdblock: "Draw lines over the dotted lines to divide the board into several blocks.\n\
-  1. All identical numbers must be in the same block, and there can be no blocks without\
-  \ numbers.\n2. Dots represent a point where 3 or 4 lines meet. The outside border\
-  \ counts as a line.\n3. All possible dots are given, meaning lines cannot branch\
-  \ or cross at points without a dot.\n4. Lines can not form dead-ends."
+  1. All identical numbers must be in the same block, and different numbers must be\
+  \ in different blocks. There can be no blocks without numbers.\n2. Dots represent\
+  \ a point where 3 or 4 lines meet. The outside border counts as a line.\n3. All\
+  \ possible dots are given, meaning lines cannot branch or cross at points without\
+  \ a dot.\n4. Lines can not form dead-ends."
 bonsan: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other circles.\n\
@@ -574,10 +575,11 @@ ichimagax: "Draw lines over the dotted lines to connect the circles into one net
 interbd: "Shade some cells to divide the grid into countries.\n1. Some cells have\
   \ a number. The number indicates the amount of shaded cells orthogonally adjacent\
   \ to this cell.\n2. Some cells have a color. All identical colors must be in the\
-  \ same country, and there can be no countries without colors.\n3. Cells with numbers\
-  \ or symbols cannot be shaded.\n4. Gray cells can be of any color, as long as it\
-  \ exists elsewhere in the grid.\n5. All shaded cells must be used to divide countries,\
-  \ i.e. each shaded cell must be adjacent to 2 or more different countries.\n"
+  \ same country, and different colors must be in different countries. There can be\
+  \ no countries without colors.\n3. Cells with numbers or symbols cannot be shaded.\n\
+  4. Gray cells can be of any color, as long as it exists elsewhere in the grid.\n\
+  5. All shaded cells must be used to divide countries, i.e. each shaded cell must\
+  \ be adjacent to 2 or more different countries.\n"
 juosan: "Draw an orthogonal line in every cell, connecting two opposite edges and\
   \ going through the center.\n1. There cannot be a run of 3 or more parallel lines.\n\
   2. Numbers indicate either the amount of cells with a horizontal line, the amount\
@@ -634,6 +636,11 @@ kurochute: "Shade some cells on the board.\n1. Shaded cells cannot be horizontal
   \ one shaded cell with the indicated distance in a straight line vertically or horizontally\
   \ from each number.\n4. All unshaded cells on the board form an orthogonally connected\
   \ area."
+kuroclone: "Shade some cells on the board.\n1. Numbers cannot be shaded.\n2. Each\
+  \ region must include exactly two units (shaded blocks), and these units must have\
+  \ same shapes, counting rotations and reflections as the same.\n3. A number indicates\
+  \ the size of the unit that occupies the adjacent cell in the indicated direction.\n\
+  4. Shaded cells must not be adjacent across borders."
 kurodoko: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
   \ or vertically adjacent.\n2. Numbers cannot be shaded.\n3. Clues represent the\
   \ total number of unshaded cells that can be seen in a straight line vertically\
@@ -671,7 +678,8 @@ loopsp: "Draw multiple loops so that every cell is used by at least one loop.\n1
   \ same loop.\n5. Lines cannot intersect on a circle."
 loute: "Divide the grid into regions of orthogonally connected cells.\n1. Each region\
   \ must be an L shape with a width of one cell.\n2. A circle must be located in the\
-  \ corner of an L shape.\n3. Arrows point toward the corner of its L shape."
+  \ corner of an L shape.\n3. Arrows must be located on the ends of an L shape, and\
+  \ point towards the corner."
 makaro: "Place a number in each empty cell. Some numbers are given.\n1. Numbers must\
   \ be between 1 and N, where N is the size of the region.\n2. Each region contains\
   \ exactly one of each number.\n3. Two equal numbers cannot be orthogonally adjacent.\n\
@@ -779,10 +787,11 @@ nurimisaki: "Shade some cells on the board.\n1. There cannot be a 2x2 square of 
   \ orthogonally connected area."
 onsen: "Draw lines through the center of some cells to form multiple loops.\n1. Loops\
   \ cannot branch or overlap, and cannot cross themselves or each other.\n2. Every\
-  \ loop goes through exactly one circle.\n3. Every outlined room must be visited\
-  \ by at least one loop.\n4. A loop can enter and exit a room no more than once.\n\
-  5. The loop must visit the same amount of cells in every room it enters.\n6. A number\
-  \ indicates how many cells the loop visits in each room."
+  \ loop goes through exactly one circle.\n3. Every circle must be visited by a loop.\n\
+  4. Every outlined room must be visited by at least one loop.\n5. A loop can enter\
+  \ and exit a room no more than once.\n6. The loop must visit the same amount of\
+  \ cells in every room it enters.\n7. A number indicates how many cells the loop\
+  \ visits in each room."
 paintarea: "You're given a grid divided into tiles. Shade some tiles on the board.\n\
   1. A tile is either completely shaded or unshaded.\n2. There can not be a 2x2 square\
   \ of all shaded or all unshaded cells.\n3. Numbers indicate how many of the (up\
@@ -837,8 +846,9 @@ roma: "Place an arrow in every empty cell. Some arrows are given.\n1. Every outl
   \ circled goals."
 sashigane: "Divide the grid into regions of orthogonally connected cells.\n1. Each\
   \ region must be an L shape with a width of one cell.\n2. A circle must be located\
-  \ in the corner of an L shape.\n3. Arrows point toward the corner of its L shape.\n\
-  4. A number indicates the amount of cells contained in the L shape."
+  \ in the corner of an L shape.\n3. Arrows must be located on the ends of an L shape,\
+  \ and point towards the corner.\n4. A number indicates the amount of cells contained\
+  \ in the L shape."
 satogaeri: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other circles.\n\
@@ -1061,3 +1071,17 @@ news: "Place a letter N, E, W, or S in some of the cells.\n1. Each region contai
   \ with a cross must remain unused.\n4. Each letter must be further in the direction\
   \ it represents than the other letter in its region. N represents north, E represents\
   \ east, W represents west, and S represents south."
+trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot branch\
+  \ off or overlap.\n2. All cells where the loop crosses itself are given. The loop\
+  \ cannot cross itself in other places.\n3. Numbers denote train stations. The stations\
+  \ must be visited in ascending order.\n4. The loop cannot turn while visiting a\
+  \ station."
+wafusuma: "Divide the grid into regions.\n1. A circle must divide two different regions.\n\
+  2. A number on a circle indicates the sum of the sizes of the two adjacent regions.\n\
+  3. Two regions of the same size cannot be orthogonally adjacent."
+martini: "Shade some cells on the board to form blocks of orthogonally adjacent cells.\n\
+  1. Black circles must overlap a block, while white circles must not overlap a block.\n\
+  2. Outlined regions contain no more than one block.\n3. Shaded cells cannot be adjacent\
+  \ across region borders.\n4. All blocks form a diagonally contiguous area.\n5. Orthogonally\
+  \ adjacent unshaded cells form areas, which can go over region borders. Numbers\
+  \ indicate the amount of white circles in the area."

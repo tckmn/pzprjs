@@ -272,6 +272,8 @@
     "about.author": "happa",
     "network": "Network play",
     "network.title": "Network play",
+    "network.start": "Start",
+    "network.share": "Share this link to play with someone:",
     "pzplus": "pzplus",
     "auth": "Authentication",
     "manual": "Manual solve entry",

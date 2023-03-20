@@ -85,7 +85,7 @@ ui.keypopup = {
 		kakuru: [10, 10],
 		kazunori: [10, 10],
 		skyscrapers: [10, 10],
-		kropki: [10, 10],
+		kropki: [0, 10],
 		tilepaint: [51, 0],
 		triplace: [51, 0],
 		kakuro: [51, 10],
@@ -144,7 +144,28 @@ ui.keypopup = {
 		ladders: [10, 0],
 		akichi: [10, 0],
 		slashpack: [10, 0],
-		remlen: [10, 0]
+		remlen: [10, 0],
+		cocktail: [10, 0],
+		news: [123, 123],
+		dbchoco: [10, 0],
+		nurimisaki: [10, 0],
+		nonogram: [10, 0],
+		box: [10, 0],
+		aquarium: [10, 0],
+		snake: [10, 0],
+		tents: [10, 0],
+		armyants: [10, 0],
+		araf: [10, 0],
+		bosanowa: [10, 10],
+		meander: [10, 10],
+		juosan: [10, 0],
+		walllogic: [10, 0],
+		mines: [8, 0],
+		pencils: [10, 0],
+		minarism: [10, 10],
+		trainstations: [124, 0],
+		wafusuma: [10, 0],
+		kuroclone: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -270,6 +291,10 @@ ui.keypopup = {
 			this.generate_cts(mode);
 		} else if (type === 122) {
 			this.generate_anglers(mode);
+		} else if (type === 123) {
+			this.generate_news(mode);
+		} else if (type === 124) {
+			this.generate_trainstations(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -347,8 +372,6 @@ ui.keypopup = {
 			pid === "crossstitch" ||
 			pid === "yajisoko"
 		) {
-		} else if (!ui.puzzle.painter.hideHatena) {
-			cap = "?";
 		} else if (pid === "tasquare") {
 			cap = "□";
 		} else if (pid === "rectslider") {
@@ -360,9 +383,18 @@ ui.keypopup = {
 			pid === "heyabon" ||
 			pid === "yosenabe" ||
 			pid === "herugolf" ||
-			pid === "kazunori"
+			pid === "kazunori" ||
+			pid === "nurimisaki" ||
+			pid === "amibo" ||
+			pid === "firefly" ||
+			pid === "shikaku" ||
+			pid === "aho" ||
+			pid === "bosanowa" ||
+			pid === "minarism"
 		) {
 			cap = "○";
+		} else if (!ui.puzzle.painter.hideHatena) {
+			cap = "?";
 		}
 		if (cap !== null) {
 			itemlist.push(["-", cap]);
@@ -370,8 +402,19 @@ ui.keypopup = {
 		if (pid === "familyphoto") {
 			itemlist.push(["q", "●"]);
 		}
-		if (pid === "icelom" || pid === "icelom2" || pid === "icewalk") {
-			itemlist.push(["q", { text: "■", color: "rgb(192,224,255)" }]);
+		if (
+			pid === "icelom" ||
+			pid === "icelom2" ||
+			pid === "icewalk" ||
+			pid === "dbchoco"
+		) {
+			itemlist.push([
+				"q",
+				{
+					text: "■",
+					color: pid === "dbchoco" ? "rgb(204,204,204)" : "rgb(192,224,255)"
+				}
+			]);
 		}
 		this.generate_main(itemlist, 4);
 	},
@@ -430,7 +473,8 @@ ui.keypopup = {
 		this.generate_main(["1", "2", "3", "4", "5", "6", "0", " ", ["-", "?"]], 3);
 	},
 	gentable8: function(mode) {
-		if (ui.puzzle.pid !== "tapa" && ui.puzzle.pid !== "tapaloop") {
+		var pid = ui.puzzle.pid;
+		if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines") {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4
@@ -712,6 +756,44 @@ ui.keypopup = {
 				" "
 			],
 			5
+		);
+	},
+	generate_news: function(mode) {
+		var mbcolor = ui.puzzle.painter.mbcolor;
+		this.generate_main(
+			[
+				mode === 3 ? ["z", { text: "○", color: mbcolor }] : " ",
+				["n", "N"],
+				" ",
+				["w", "W"],
+				["x", mode === 3 ? { text: "⋅", color: mbcolor } : "×"],
+				["e", "E"],
+				" ",
+				["s", "S"],
+				" "
+			],
+			3
+		);
+	},
+
+	generate_trainstations: function(mode) {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				" ",
+				["-", "?"],
+				["q", "╋"]
+			],
+			4
 		);
 	},
 
