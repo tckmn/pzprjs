@@ -258,7 +258,7 @@ roundtrip: "Draw lines through orthogonally adjacent cells to form a loop.\n1. T
   \ loop cannot branch off or retrace itself. When the loop visits a cell twice, it\
   \ must travel in a straight line each time.\n2. The numbers to the left/right of\
   \ the rows indicate the number of cells visited by the nearest section of the loop\
-  \ that travels horizontally in that row. Likewise, The numbers to the top/bottom\
+  \ that travels horizontally in that row. Likewise, the numbers to the top/bottom\
   \ of the columns indicate the number of cells visited by the nearest section of\
   \ the loop that travels vertically in that column."
 cts: "Shade some cells on the board according to the numbers.\n1. Clues outside the\
@@ -1085,9 +1085,34 @@ trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot br
 wafusuma: "Divide the grid into regions.\n1. A circle must divide two different regions.\n\
   2. A number on a circle indicates the sum of the sizes of the two adjacent regions.\n\
   3. Two regions of the same size cannot be orthogonally adjacent."
+norinuri: "Shade some cells on the board to form regions of unshaded cells.\n1. Each\
+  \ region contains exactly one number.\n2. A number indicates the size of the region\
+  \ that contains it.\n3. You cannot shade a cell with a number.\n4. All shaded cells\
+  \ are orthogonally adjacent to exactly one other shaded cell."
 martini: "Shade some cells on the board to form blocks of orthogonally adjacent cells.\n\
   1. Black circles must overlap a block, while white circles must not overlap a block.\n\
   2. Outlined regions contain no more than one block.\n3. Shaded cells cannot be adjacent\
   \ across region borders.\n4. All blocks form a diagonally contiguous area.\n5. Orthogonally\
   \ adjacent unshaded cells form areas, which can go over region borders. Numbers\
   \ indicate the amount of white circles in the area."
+nanameguri: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
+  \ loop cannot branch off or cross itself. Cells can not be entered more than once.\n\
+  2. Every outlined region must be visited exactly once.\n3. The loop must visit every\
+  \ cell containing a diagonal line.\n4. The loop cannot go through diagonal lines."
+battleship: "Place every ship from the fleet into the grid. Ships can be rotated or\
+  \ mirrored.\n1. All ships must be used exactly once. There cannot be ships in the\
+  \ grid that aren't present in the bank.\n2. Two ships cannot be orthogonally or\
+  \ diagonally adjacent.\n3. Numbers outside the grid indicate how many cells in the\
+  \ row or column are occupied by ships.\n4. Some ship segments are given (corner\
+  \ pieces, centers, or single-length boats), along with their orientation. Gray cells\
+  \ represent ship segments of unknown shape.\n5. Cells marked with water cannot be\
+  \ used by ships."
+tontonbeya: "Place a triangle, square or circle in every empty cell.\n1. All instances\
+  \ of the same symbol within a room must be adjacent. This is called a cluster.\n\
+  2. A room can have 1, 2 or 3 different clusters. These must all have the same size.\n\
+  3. Every cluster is orthogonally adjacent to exactly one other cluster using the\
+  \ same symbol in a different room."
+circlesquare: "Shade some cells on the board.\n1. Black circles must be shaded, while\
+  \ white circles must not be shaded.\n2. The shaded cells cannot form a 2x2 square.\
+  \ \n3. All shaded cells form an orthogonally contiguous area.\n4. All unshaded areas\
+  \ must form squares."

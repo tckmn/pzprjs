@@ -98,6 +98,7 @@
 			balance: [0, 0, "Balance Loop", "Balance Loop"],
 			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
 			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
+			circlesquare: [0, 0, "Circles and Squares", "Circles and Squares"],
 			context: [0, 0, "Context", "Context"],
 			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			cts: [0, 0, "Cross the Streams", "Cross the Streams", "nonogram"],
@@ -247,6 +248,7 @@
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
 			nagare: [0, 0, "流れるループ", "Nagareru-Loop"],
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
+			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
 			nanro: [0, 1, "ナンロー", "Nanro"],
 			nawabari: [1, 0, "なわばり", "Territory", "nawabari"],
 			news: [0, 0, "NEWS", "NEWS", "toichika"],
@@ -254,6 +256,7 @@
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
 			nonogram: [0, 0, "ののぐらむ", "Nonogram"],
 			norinori: [0, 1, "のりのり", "Norinori", "lits"],
+			norinuri: [0, 0, "海苔ぬり", "Norinuri", "nurikabe"],
 			nothree: [0, 0, "ノースリー", "No Three"],
 			numlin: [
 				0,

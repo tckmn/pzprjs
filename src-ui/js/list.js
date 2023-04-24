@@ -194,6 +194,7 @@
 		],
 		omopa: [
 			"nuribou",
+			"norinuri",
 			"tawa",
 			"lookair",
 			"paintarea",
@@ -299,7 +300,8 @@
 			"crossstitch",
 			"chainedb",
 			"canal",
-			"railpool"
+			"railpool",
+			"circlesquare"
 		]
 	};
 	var tabstate = {

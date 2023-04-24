@@ -55,6 +55,7 @@ ui.keypopup = {
 		numlin: [10, 0],
 		nurikabe: [10, 0],
 		nuribou: [10, 0],
+		norinuri: [10, 0],
 		mochikoro: [10, 0],
 		mochinyoro: [10, 0],
 		shikaku: [10, 0],
@@ -89,6 +90,7 @@ ui.keypopup = {
 		tilepaint: [51, 0],
 		triplace: [51, 0],
 		kakuro: [51, 10],
+		usoone: [4, 0],
 
 		slalom: [101, 0],
 		reflect: [102, 0],
