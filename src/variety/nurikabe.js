@@ -13,17 +13,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: { edit: ["number", "clear"], play: ["shade", "unshade"] },
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "cell"
 	},
 	"MouseEvent@nurikabe": {
 		inputModes: {
@@ -96,6 +87,8 @@
 		updateViewClist: function() {
 			if (this.qnum === -1) {
 				this.complete = false;
+				this.updated = true;
+				this.viewclist = null;
 				return;
 			}
 			var clist = new this.klass.CellList();
@@ -107,14 +100,13 @@
 			this.complete &= this.extendShadeClistDir(clist, 0, 2);
 			this.viewclist = clist;
 			this.updated = true;
-
-			this.draw();
 		},
 		updateCluesDir: function(dx, dy) {
 			var c = this.relcell(dx, dy);
 			while (!!c && !c.isnull) {
 				if (c.qnum !== -1) {
 					c.updateViewClist();
+					c.draw();
 					return;
 				} else if (c.isShade()) {
 					c = c.relcell(dx, dy);

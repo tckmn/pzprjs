@@ -2633,7 +2633,7 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 
-			var g = this.vinc("piecebank", "crispEdges"),
+			var g = this.vinc("piecebank"),
 				bd = this.board;
 
 			var count = Math.max(bd.bank.pieces.length, this.lastBankPieceCount);
