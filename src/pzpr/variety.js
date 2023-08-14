@@ -109,6 +109,7 @@
 			bonsan: [1, 0, "ぼんさん", "Bonsan", "bonsan"],
 			bosanowa: [1, 0, "ボサノワ", "Bosanowa", "", { alias: "bossanova" }],
 			box: [0, 0, "ボックス", "Box"],
+			brownies: [0, 0, "ブラウニー", "Brownies", "yosenabe"],
 			skyscrapers: [
 				0,
 				0,
@@ -251,6 +252,7 @@
 			mochikoro: [1, 0, "モチコロ", "Mochikoro", "nurikabe"],
 			mochinyoro: [1, 0, "モチにょろ", "Mochinyoro", "nurikabe"],
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
+			myopia: [0, 0, "Myopia", "Myopia"],
 			nagare: [0, 0, "流れるループ", "Nagareru-Loop"],
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
@@ -314,6 +316,7 @@
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
 			roundtrip: [0, 0, "Round Trip", "Round Trip"],
 			sashigane: [0, 0, "さしがね", "Sashigane", "loute"],
+			sashikazune: [0, 0, "さしカズね", "Sashikazune", "loute"],
 			satogaeri: [
 				0,
 				1,
@@ -361,6 +364,7 @@
 			tawa: [0, 0, "たわむれんが", "Tawamurenga"],
 			tentaisho: [0, 0, "天体ショー", "Tentaisho"],
 			tents: [0, 0, "Tents", "Tents", "tents"],
+			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
