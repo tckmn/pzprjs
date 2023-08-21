@@ -157,6 +157,7 @@ function toBGimage(pid) {
 		"oneroom",
 		"ovotovata",
 		"oyakodori",
+		"patchwork",
 		"pencils",
 		"pentopia",
 		"ququ",
@@ -186,6 +187,7 @@ function toBGimage(pid) {
 		"voxas",
 		"vslither",
 		"walllogic",
+		"waterwalk",
 		"yinyang"
 	];
 	if (imgs.indexOf(pid) >= 0) {

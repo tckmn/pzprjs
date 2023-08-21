@@ -49,6 +49,10 @@
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
 			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
 			this.add("mouseonly", false); /* lollipops: Alternative mouse input */
+			this.add(
+				"patchwork_leftaux",
+				true
+			); /* patchwork: Alternative mouse input */
 
 			this.add("squarecell", true); /* セルは正方形にする */
 
@@ -394,6 +398,9 @@
 					break;
 				case "mouseonly":
 					exec = pid === "lollipops" || pid === "magnets";
+					break;
+				case "patchwork_leftaux":
+					exec = pid === "patchwork";
 					break;
 				case "undefcell":
 					exec = pid === "shugaku" || pid === "lightshadow";

@@ -285,6 +285,7 @@
 			oyakodori: [0, 0, "おやこどり", "Oyakodori", "kaero"],
 			paintarea: [1, 0, "ペイントエリア", "Paintarea"],
 			parquet: [0, 0, "Parquet", "Parquet"],
+			patchwork: [0, 0, "パッチワーク", "Patchwork"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],
 			pentominous: [0, 0, "Pentominous", "Pentominous", "fillomino"],
 			pentopia: [0, 0, "Pentopia", "Pentopia", "statuepark"],
@@ -382,6 +383,7 @@
 			wafusuma: [0, 0, "和フスマ", "Wafusuma", "fillomino"],
 			wagiri: [0, 0, "ごきげんななめ・輪切", "Wagiri", "gokigen"],
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
+			waterwalk: [0, 0, "Water Walk", "Water Walk", "icewalk"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
 			yajikazu: [1, 0, "やじさんかずさん", "Yajisan-Kazusan"],
 			yajilin: [
