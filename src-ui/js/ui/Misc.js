@@ -107,6 +107,7 @@ function toBGimage(pid) {
 	var imgs = [
 		"akichi",
 		"angleloop",
+		"aquapelago",
 		"aquarium",
 		"araf",
 		"skyscrapers",
@@ -139,6 +140,7 @@ function toBGimage(pid) {
 		"invlitso",
 		"ladders",
 		"kaidan",
+		"kaisu",
 		"kropki",
 		"kuroclone",
 		"lollipops",
@@ -159,6 +161,7 @@ function toBGimage(pid) {
 		"oyakodori",
 		"patchwork",
 		"pencils",
+		"pentatouch",
 		"pentopia",
 		"ququ",
 		"rassi",
@@ -188,6 +191,7 @@ function toBGimage(pid) {
 		"vslither",
 		"walllogic",
 		"waterwalk",
+		"wittgen",
 		"yinyang"
 	];
 	if (imgs.indexOf(pid) >= 0) {

@@ -182,7 +182,10 @@ ui.keypopup = {
 		brownies: [127, 0],
 		sashikazune: [10, 0],
 		patchwork: [10, 0],
-		waterwalk: [10, 0]
+		waterwalk: [10, 0],
+		haisu: [10, 0],
+		wittgen: [4, 0],
+		aquapelago: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -397,7 +400,7 @@ ui.keypopup = {
 		) {
 		} else if (pid === "tasquare") {
 			cap = "□";
-		} else if (pid === "rectslider") {
+		} else if (pid === "rectslider" || pid === "aquapelago") {
 			cap = "■";
 		} else if (pid === "patchwork") {
 			cap = {
