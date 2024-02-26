@@ -286,6 +286,8 @@
     "network.title": "Network play",
     "network.start": "Start",
     "network.share": "Share this link to play with someone:",
+    "list.sort.date": "Sort by date",
+    "list.sort.alpha": "Sort alphabetically",
     "pzplus": "pzplus",
     "auth": "Authentication",
     "manual": "Manual solve entry",

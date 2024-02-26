@@ -55,6 +55,7 @@ pzpr.classmgr.makeCommon({
 			if (cell.qans !== 1) {
 				return null;
 			}
+			var hasinfo = this.board.haserror || this.board.hasinfo;
 			var info = cell.error || cell.qinfo;
 			if (info === 1) {
 				return this.errcolor1;
@@ -62,7 +63,7 @@ pzpr.classmgr.makeCommon({
 				return this.errcolor2;
 			} else if (cell.trial) {
 				return this.trialcolor;
-			} else if (this.puzzle.execConfig("irowakeblk")) {
+			} else if (this.puzzle.execConfig("irowakeblk") && !hasinfo) {
 				return cell.sblk.color;
 			}
 			return this.shadecolor;
@@ -178,7 +179,7 @@ pzpr.classmgr.makeCommon({
 				if (!!color) {
 					g.fillStyle = color;
 					g.fillRectCenter(
-						cell.bx * this.bw,
+						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
 						cell.by * this.bh,
 						this.bw + 0.5,
 						this.bh + 0.5
@@ -187,6 +188,10 @@ pzpr.classmgr.makeCommon({
 					g.vhide();
 				}
 			}
+		},
+
+		getCellHorizontalOffset: function(cell) {
+			return 0;
 		},
 
 		//---------------------------------------------------------------------------
@@ -524,7 +529,7 @@ pzpr.classmgr.makeCommon({
 				g.vid = header + cell.id;
 				if (!!text) {
 					g.fillStyle = colorfunc.call(this, cell);
-					var x = cell.bx * this.bw;
+					var x = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
 					var y = cell.by * this.bh + this.getNumberVerticalOffset(cell);
 					this.disptext(text, x, y, textoption);
 				} else {
@@ -660,7 +665,8 @@ pzpr.classmgr.makeCommon({
 								: !cell.trial
 								? this.subcolor
 								: this.trialcolor;
-						this.disptext(text, cell.bx * this.bw, cell.by * this.bh, {
+						var px = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
+						this.disptext(text, px, cell.by * this.bh, {
 							position: posarray[n],
 							ratio: 0.33,
 							hoffset: 0.8
@@ -973,7 +979,7 @@ pzpr.classmgr.makeCommon({
 
 				g.vid = header + border.id;
 				if (!!color) {
-					var px = border.bx * this.bw,
+					var px = border.bx * this.bw + this.getBorderHorizontalOffset(border),
 						py = border.by * this.bh;
 					var lm = (this.lw + this.addlw) / 2;
 					g.fillStyle = color;
@@ -986,6 +992,10 @@ pzpr.classmgr.makeCommon({
 					g.vhide();
 				}
 			}
+		},
+
+		getBorderHorizontalOffset: function(cell) {
+			return 0;
 		},
 
 		getBorderColor: function(border) {
@@ -1072,7 +1082,7 @@ pzpr.classmgr.makeCommon({
 
 				g.vid = "b_qsub1_" + border.id;
 				if (border.qsub === 1) {
-					var px = border.bx * this.bw,
+					var px = border.bx * this.bw + this.getBorderHorizontalOffset(border),
 						py = border.by * this.bh;
 					g.fillStyle = !border.trial ? this.pekecolor : this.linetrialcolor;
 					if (border.isHorz()) {
@@ -1617,7 +1627,11 @@ pzpr.classmgr.makeCommon({
 				g.vid = "c_cirb_" + cell.id;
 				if (!!color) {
 					g.fillStyle = color;
-					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, rsize_fill);
+					g.fillCircle(
+						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
+						cell.by * this.bh,
+						rsize_fill
+					);
 				} else {
 					g.vhide();
 				}
@@ -1633,7 +1647,11 @@ pzpr.classmgr.makeCommon({
 				g.vid = "c_cira_" + cell.id;
 				if (!!color) {
 					g.strokeStyle = color;
-					g.strokeCircle(cell.bx * this.bw, cell.by * this.bh, rsize_stroke);
+					g.strokeCircle(
+						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
+						cell.by * this.bh,
+						rsize_stroke
+					);
 				} else {
 					g.vhide();
 				}
@@ -2042,6 +2060,15 @@ pzpr.classmgr.makeCommon({
 
 			var px = cursor.bx * this.bw,
 				py = cursor.by * this.bh;
+
+			var obj = !cursor.group ? cursor.getobj() : cursor;
+
+			if (obj && obj.group === "cell") {
+				px += this.getCellHorizontalOffset(obj);
+			} else if (obj && obj.group === "border") {
+				px += this.getBorderHorizontalOffset(obj);
+			}
+
 			var t, w, h;
 			if (islarge !== false) {
 				t = Math.max(this.cw / 16, 2) | 0;
@@ -2128,7 +2155,7 @@ pzpr.classmgr.makeCommon({
 			if (this.puzzle.playmode && target !== 0) {
 				var bw = this.bw,
 					bh = this.bh;
-				var px = cursor.bx * bw + 0.5,
+				var px = cursor.bx * bw + 0.5 + this.getCellHorizontalOffset(cell),
 					py = cursor.by * bh + 0.5;
 				var tw = bw * 0.8,
 					th = bh * 0.8;
