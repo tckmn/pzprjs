@@ -228,6 +228,7 @@
 			kurochute: [0, 1, "クロシュート", "Kurochute"],
 			kuroclone: [0, 0, "クロクローン", "Kuroclone"],
 			kurodoko: [0, 1, "黒どこ(黒マスはどこだ)", "Kurodoko"],
+			kuromenbun: [0, 0, "クロメンブン", "Kuromenbun"],
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
 			ladders: [0, 0, "はしごをかけろ", "Ladders"],
@@ -244,6 +245,7 @@
 			lineofsight: [0, 0, "サイトライン", "Line of Sight"],
 			lither: [0, 0, "Litherslink", "Litherslink"],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
+			lixloop: [0, 0, "LIX Loop", "LIX Loop", "yajilin"],
 			lohkous: [0, 0, "Lohkous", "Lohkous"],
 			lollipops: [0, 0, "ペロペロキャンディ", "Lollipops"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
@@ -314,6 +316,7 @@
 				"pipelink"
 			],
 			pmemory: [0, 0, "Persistence of Memory", "Persistence of Memory"],
+			portal: [0, 0, "Portal Loop", "Portal Loop"],
 			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
 			ququ: [0, 0, "区区", "Ququ"],
 			railpool: [0, 0, "Rail Pool", "Rail Pool"],
@@ -322,6 +325,13 @@
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
+			retroships: [
+				0,
+				0,
+				"Retrograde Battleships",
+				"Retrograde Battleships",
+				"statuepark"
+			],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
 				0,
@@ -368,6 +378,7 @@
 			statuepark: [0, 0, "Statue Park", "Statue Park"],
 			"statuepark-aux": [0, 0, "図形の編集", "Edit shape"],
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],
+			subomino: [0, 0, "Subomino", "Subomino", "nawabari"],
 			sudoku: [0, 1, "数独", "Sudoku"],
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
@@ -383,6 +394,7 @@
 			tawa: [0, 0, "たわむれんが", "Tawamurenga"],
 			tentaisho: [0, 0, "天体ショー", "Tentaisho"],
 			tents: [0, 0, "Tents", "Tents", "tents"],
+			teri: [0, 0, "テリトリー", "Territory", "kurodoko"],
 			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
