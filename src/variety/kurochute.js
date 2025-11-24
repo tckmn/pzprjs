@@ -15,11 +15,16 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["shade", "unshade", "completion"]
+			play: ["shade", "unshade", "peke", "completion"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart) {
+					this.isDraggingPeke = this.puzzle.key.isALT;
+				}
+				if (this.isDraggingPeke) {
+					this.inputpeke();
+				} else if (this.mousestart) {
 					this.inputcell_kurochute();
 				} else if (this.mousemove) {
 					this.inputcell();
@@ -75,6 +80,7 @@
 		}
 	},
 	Board: {
+		hasborder: 1,
 		cols: 8,
 		rows: 8
 	},
@@ -98,6 +104,8 @@
 			this.drawQuesNumbers();
 
 			this.drawChassis();
+
+			this.drawPekes();
 
 			this.drawTarget();
 		},
@@ -134,10 +142,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellQanssubcmp();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellQanssubcmp();
+			this.encodeBorderLineIfPresent();
 		},
 
 		decodeCellQanssubcmp: function() {

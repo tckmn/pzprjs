@@ -15,10 +15,10 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		autoedit_func: "qnum",
-		autoplay_func: "cell"
+		autoplay_func: "cellpeke"
 	},
 
 	//---------------------------------------------------------
@@ -65,6 +65,7 @@
 		}
 	},
 	Board: {
+		hasborder: 1,
 		cols: 8,
 		rows: 8
 	},
@@ -92,6 +93,8 @@
 			this.drawQuesNumbers_hitori();
 
 			this.drawChassis();
+
+			this.drawPekes();
 
 			this.drawTarget();
 		},
@@ -204,10 +207,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		},
 
 		kanpenOpen: function() {

@@ -138,6 +138,7 @@
 			// 枠外の一辺のmargin(セル数換算)
 			margin: 0.15,
 			bankratio: 0.5,
+			bankVerticalOffset: 0.5,
 
 			// canvasの大きさを保持する
 			canvasWidth: null,
@@ -455,6 +456,8 @@
 			// pc.resetRange()     rangeオブジェクトを初期化する
 			//---------------------------------------------------------------------------
 			prepaint: function() {
+				var hasIndicator =
+					this.pid === "starbattle" || this.pid === "isowatari";
 				if (this.suspended || !this.context) {
 					return;
 				}
@@ -479,7 +482,7 @@
 						x1 >= bd.maxbx + bm ||
 						y1 >= bd.maxby + bm ||
 						x2 <= bd.minbx - bm ||
-						y2 <= bd.minby - (bm + (this.pid === "starbattle" ? 2 : 0)))
+						y2 <= bd.minby - (bm + (hasIndicator ? 2 : 0)))
 				) {
 					/* 入力が範囲外ならば何もしない */
 				} else if (!this.useBuffer) {

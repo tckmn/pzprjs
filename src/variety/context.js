@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["context"], {
+})(["context", "smullyan"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -15,10 +15,10 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["shade", "unshade", "info-blk", "info-ublk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		autoedit_func: "qnum",
-		autoplay_func: "cell"
+		autoplay_func: "cellpeke"
 	},
 
 	//---------------------------------------------------------
@@ -32,6 +32,12 @@
 	Cell: {
 		minnum: 0,
 		maxnum: 4
+	},
+	"Cell@smullyan": {
+		maxnum: 9
+	},
+	Board: {
+		hasborder: 1
 	},
 
 	AreaUnshadeGraph: {
@@ -52,9 +58,12 @@
 			this.drawDashedGrid();
 			this.drawShadedCells();
 			this.drawQuesNumbers();
-			this.drawShadeTicks();
-			this.drawUnshadeTicks();
+			if (this.pid === "context") {
+				this.drawShadeTicks();
+				this.drawUnshadeTicks();
+			}
 			this.drawChassis();
+			this.drawPekes();
 			this.drawTarget();
 		},
 
@@ -188,10 +197,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		}
 	},
 
@@ -202,8 +213,10 @@
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
-			"checkShadeCountDiag",
-			"checkUnshadeCountAdj",
+			"checkShadeCountDiag@context",
+			"checkUnshadeCountAdj@context",
+			"checkShadeAdjacent@smullyan",
+			"checkUnshadeAdjacent@smullyan",
 			"doneShadingDecided"
 		],
 
@@ -233,6 +246,38 @@
 						cell.qnum
 				);
 			}, "nmUnshadeAdjNe");
+		}
+	},
+	"AnsCheck@smullyan": {
+		checkUnshadeAdjacent: function() {
+			this.checkAllCounts(false, "nmShadeGt");
+		},
+		checkShadeAdjacent: function() {
+			this.checkAllCounts(true, "nmShadeEq");
+		},
+
+		checkAllCounts: function(isShaded, code) {
+			this.checkAllCell(function(cell) {
+				if (!cell.isValidNum()) {
+					return false;
+				}
+				if (isShaded !== cell.isShade()) {
+					return false;
+				}
+
+				var clist = cell.board.cellinside(
+					cell.bx - 2,
+					cell.by - 2,
+					cell.bx + 2,
+					cell.by + 2
+				);
+
+				var count = clist.filter(function(cell) {
+					return cell.isShade();
+				}).length;
+
+				return isShaded === (count === cell.getNum());
+			}, code);
 		}
 	}
 });

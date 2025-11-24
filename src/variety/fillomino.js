@@ -10,7 +10,8 @@
 		"pentominous",
 		"snakepit",
 		"wafusuma",
-		"tetrominous"
+		"tetrominous",
+		"numcity"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -77,7 +78,7 @@
 				cell.clrSnum();
 				cell.setAnum(this.inputData);
 				cell.draw();
-			} else if (this.inputData <= -3) {
+			} else if (this.inputData <= -3 && this.pid !== "numcity") {
 				var cell2 = this.mouseCell;
 				var border = this.board.getb(
 					(cell.bx + cell2.bx) >> 1,
@@ -132,6 +133,15 @@
 
 		inputShade: function() {
 			this.inputIcebarn();
+		}
+	},
+	"MouseEvent@numcity": {
+		inputModes: {
+			edit: ["number", "border", "clear"],
+			play: ["copynum", "number", "clear", "subline"]
+		},
+		isBorderMode: function() {
+			return false;
 		}
 	},
 	"MouseEvent@wafusuma": {
@@ -376,6 +386,10 @@
 	Cell: {
 		enableSubNumberArray: true,
 		maxnum: function() {
+			if (this.puzzle.getConfig("fillomino_tri")) {
+				return 3;
+			}
+
 			return this.board.cols * this.board.rows;
 		},
 
@@ -468,6 +482,13 @@
 			return this.countDir4Cell(function(adj) {
 				return cell.isSameBlock(adj);
 			});
+		}
+	},
+	"Cell@numcity": {
+		disInputHatena: true,
+		maxnum: function() {
+			var size = this.room.clist.length;
+			return Math.floor(Math.sqrt(size * 2 + 0.25) - 0.5);
 		}
 	},
 	Border: {
@@ -588,6 +609,14 @@
 				border.updateGhostBorder();
 			});
 		}
+	},
+	"Board@numcity": {
+		rows: 7,
+		cols: 7
+	},
+
+	"AreaRoomGraph@numcity": {
+		enabled: true
 	},
 
 	"AreaEqualNumberGraph:AreaNumberGraph": {
@@ -716,6 +745,11 @@
 			component.number = 4;
 		}
 	},
+	"AreaNumBlockGraph@numcity": {
+		isnodevalid: function(cell) {
+			return cell.isValidNum();
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -830,6 +864,9 @@
 			}
 		}
 	},
+	"Graphic@numcity": {
+		autocmp: ""
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -837,8 +874,10 @@
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodeBorder();
+			this.puzzle.setConfig("fillomino_tri", this.checkpflag("t"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("fillomino_tri") ? "t" : null;
 			this.encodeNumber16();
 			this.encodeBorderIfPresent();
 		},
@@ -943,6 +982,7 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("t", "fillomino_tri");
 			if (this.puzzle.pid === "wafusuma") {
 				this.decodeBorder(function(border, ca) {
 					if (ca !== ".") {
@@ -962,6 +1002,7 @@
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("t", "fillomino_tri");
 			if (this.puzzle.pid === "wafusuma") {
 				this.encodeBorder(function(border) {
 					return border.qnum === -1 ? ". " : border.qnum + " ";
@@ -1097,6 +1138,7 @@
 			"checkMidpoints@snakepit",
 
 			"checkSmallArea",
+			"checkMaxNum",
 			"checkSideAreaNumberSize",
 			"checkLargeArea",
 			"checkNumKinds",
@@ -1106,6 +1148,16 @@
 			"checkGivenLines",
 			"checkNoNumCell_fillomino+"
 		],
+
+		checkMaxNum: function() {
+			if (!this.puzzle.getConfig("fillomino_tri")) {
+				return;
+			}
+
+			this.checkAllErrorRoom(function(area) {
+				return area.clist.length <= 3;
+			}, "bkSizeGt3");
+		},
 
 		checkSideAreaNumberSize: function() {
 			this.checkSideAreaSize(
@@ -1433,6 +1485,107 @@
 				}
 				border.seterr(1);
 			}
+		}
+	},
+	"AnsCheck@numcity": {
+		checklist: [
+			"checkAdjacentDiffNumber",
+			"checkNumberCounts",
+			"checkNumberMissing",
+			"checkNumberSeparated",
+			"checkNoNumCell+"
+		],
+
+		checkNumberSeparated: function() {
+			var rooms = this.board.roommgr.components;
+			var numblks = this.board.numblkgraph.components;
+
+			for (var r = 0; r < rooms.length; r++) {
+				rooms[r].blocks = {};
+			}
+			for (var r = 0; r < numblks.length; r++) {
+				var numblk = numblks[r];
+				var room = numblk.clist[0].room;
+				if (!room) {
+					continue;
+				}
+
+				var num = "" + numblks[r].number;
+				if (num in room.blocks) {
+					this.failcode.add("nmDivide");
+					if (this.checkOnly) {
+						return;
+					}
+					room.blocks[num].clist.seterr(1);
+					numblk.clist.seterr(1);
+				} else {
+					room.blocks[num] = numblk;
+				}
+			}
+		},
+
+		checkNumberMissing: function() {
+			this.genericCheckNumber(true, "nmNoSequence");
+		},
+		checkNumberCounts: function() {
+			this.genericCheckNumber(false, "nmOrder");
+		},
+
+		genericCheckNumber: function(flag, code) {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				rooms[r].counts = {};
+			}
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				if (!cell.isValidNum() || !cell.room) {
+					continue;
+				}
+				var b = cell.room.counts;
+				var num = "" + cell.getNum();
+				if (!(num in b)) {
+					b[num] = new this.klass.CellList();
+				}
+				b[num].add(cell);
+			}
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var b = room.counts;
+				for (var key in b) {
+					if (key === "1") {
+						continue;
+					}
+
+					var numblk = b[key];
+					var prevlist = b[+key - 1];
+
+					if ((flag && prevlist) || (!flag && !prevlist)) {
+						continue;
+					}
+
+					if (!prevlist || prevlist.length <= numblk.length) {
+						this.failcode.add(code);
+						if (this.checkOnly) {
+							return;
+						}
+						(flag ? room.clist : numblk).seterr(1);
+					}
+				}
+			}
+		},
+
+		checkAdjacentDiffNumber: function() {
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return (
+						cell1.isValidNum() &&
+						cell2.isValidNum() &&
+						cell1.getNum() === cell2.getNum()
+					);
+				},
+				false,
+				"nmAdjacent"
+			);
 		}
 	}
 });

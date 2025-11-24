@@ -248,6 +248,10 @@ pzpr.classmgr.makeCommon({
 		// linegraph.createNodeIfEmpty()  指定されたオブジェクトの場所にNodeを生成する
 		// linegraph.deleteNodeIfEmpty()  指定されたオブジェクトの場所からNodeを除去する
 		//---------------------------------------------------------------------------
+		usesSecondNode: function(cell, other) {
+			return cell.getvert(other, 2);
+		},
+
 		createNodeIfEmpty: function(cell) {
 			var nodes = this.getObjNodeList(cell);
 
@@ -265,8 +269,8 @@ pzpr.classmgr.makeCommon({
 				// 上下/左右の線が1本ずつだった場合は左右の線をnodes[1]に付加し直します
 				var nbnodes = nodes[0].nodes;
 				var isvert = [
-					cell.getvert(nbnodes[0].obj, 2),
-					cell.getvert(nbnodes[1].obj, 2)
+					this.usesSecondNode(cell, nbnodes[0].obj),
+					this.usesSecondNode(cell, nbnodes[1].obj)
 				];
 				if (isvert[0] !== isvert[1]) {
 					// breaking up a corner; we create two new nodes to ensure
@@ -284,7 +288,10 @@ pzpr.classmgr.makeCommon({
 				// 両方左右線の場合はnodes[0], nodes[1]を交換してnodes[0]に0本、nodes[1]に2本付加する
 				else {
 					this.createNode(cell);
-					if (!isvert[0] && !isvert[1]) {
+					if (
+						isvert[0] === isvert[1] &&
+						isvert[0] === this.board.borderAsLine
+					) {
 						nodes.push(nodes.shift());
 					}
 				}
@@ -373,9 +380,14 @@ pzpr.classmgr.makeCommon({
 			if (clist.length < 1) {
 				return;
 			}
+
+			var hasQnum = false;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
 				cell.base = cell.isNum() ? cell : emptycell;
+				if (cell.anum === -1 && cell.isNum()) {
+					hasQnum = true;
+				}
 			}
 
 			var before = null,
@@ -389,7 +401,11 @@ pzpr.classmgr.makeCommon({
 					var cell = clist[i];
 					if (cell[this.countprop] === 1) {
 						point++;
-						if (cell.isNum()) {
+						if (cell.isNum() && (cell.anum === -1 || !hasQnum)) {
+							/*
+							 * Pick the before cell once. If a qnum and anum are both
+							 * present, only go for the cell with the qnum.
+							 */
 							before = cell;
 						} else {
 							after = cell;

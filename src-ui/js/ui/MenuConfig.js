@@ -84,12 +84,17 @@
 			switch (ui.puzzle.pid) {
 				case "yajilin":
 				case "lixloop":
-					idname = "disptype_yajilin";
+				case "retsurin":
+					idname = ["yajilin_out", "disptype_yajilin"];
+					break;
+				case "yajilin-regions":
+					idname = "yajilin_out";
 					break;
 				case "bosanowa":
 					idname = "disptype_bosanowa";
 					break;
 				case "interbd":
+				case "outofsight":
 					idname = "disptype_interbd";
 					break;
 				case "arukone":
@@ -112,10 +117,11 @@
 					idname = "nuriuzu_connect";
 					break;
 				case "pentopia":
+				case "distopia":
 					idname = "pentopia_transparent";
 					break;
 				case "koburin":
-					idname = ["disptype_yajilin", "koburin_minesweeper"];
+					idname = ["yajilin_out", "disptype_yajilin", "koburin_minesweeper"];
 					break;
 				case "akichi":
 					idname = "akichi_maximum";
@@ -131,6 +137,37 @@
 					break;
 				case "bdwalk":
 					idname = "bdwalk_height";
+					break;
+				case "balloon":
+					idname = "balloon_adjacent";
+					break;
+				case "aqre":
+					idname = "aqre_borders";
+					break;
+				case "fillomino":
+					idname = "fillomino_tri";
+					break;
+				case "slither":
+				case "tslither":
+				case "swslither":
+				case "myopia":
+				case "lineofsight":
+					idname = "slither_full";
+					break;
+				case "mashu":
+				case "geradeweg":
+				case "disloop":
+				case "midloop":
+				case "ovotovata":
+				case "balance":
+				case "turnaround":
+				case "turnrun":
+				case "icewalk":
+				case "waterwalk":
+				case "firewalk":
+				case "forestwalk":
+				case "wataridori":
+					idname = "loop_full";
 					break;
 			}
 

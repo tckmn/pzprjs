@@ -12,19 +12,14 @@
 		use: true,
 		inputModes: {
 			edit: ["info-blk", "arrow", "clear"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputEdit();
-				} else if (this.mouseend) {
-					this.inputEdit_end();
-				}
+		autoplay_func: "cellpeke",
+		mouseinputAutoEdit: function() {
+			if (this.mousestart || this.mousemove) {
+				this.inputEdit();
+			} else if (this.mouseend) {
+				this.inputEdit_end();
 			}
 		},
 
@@ -254,11 +249,16 @@
 			this.drawShadedCells();
 
 			this.drawGoalStar();
-			this.drawCellArrows(true, true);
+			this.drawCellArrows(true);
 			this.drawHatenas();
 
 			this.drawChassis();
+			this.drawPekes();
 			this.drawTarget();
+		},
+		getCellArrowColor: null,
+		getCellArrowOutline: function(cell) {
+			return cell.qnum !== -1 ? this.quescolor : null;
 		},
 
 		drawGoalStar: function() {
@@ -311,12 +311,14 @@
 			this.decodeG();
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 			this.board.isStale = true;
 		},
 		encodeData: function() {
 			this.encodeG();
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		},
 		decodeG: function() {
 			var str = this.readLine();

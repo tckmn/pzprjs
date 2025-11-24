@@ -12,7 +12,9 @@
 		"battleship",
 		"pentatouch",
 		"kissing",
-		"retroships"
+		"retroships",
+		"regional-poly",
+		"distopia"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -36,7 +38,7 @@
 					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.pid === "kissing") {
+				if (this.pid === "kissing" || this.pid === "regional-poly") {
 					if (this.mousestart || this.mousemove) {
 						this.inputborder();
 					} else if (this.mouseend && this.notInputted()) {
@@ -151,6 +153,12 @@
 				newdir = -1;
 			}
 			cell.setNum(newdir);
+		}
+	},
+	"MouseEvent@distopia#1": {
+		inputModes: {
+			edit: ["number", "clear", "completion"],
+			play: ["shade", "unshade", "clear", "completion"]
 		}
 	},
 
@@ -354,7 +362,7 @@
 			play: ["shade", "unshade", "clear", "completion"]
 		}
 	},
-	"MouseEvent@kissing": {
+	"MouseEvent@kissing,regional-poly": {
 		inputModes: {
 			edit: ["completion", "border", "empty"],
 			play: ["shade", "unshade", "clear", "completion"]
@@ -427,7 +435,7 @@
 		}
 	},
 
-	"Board@statuepark,pentatouch": {
+	"Board@statuepark,pentatouch,regional-poly": {
 		rows: 12,
 		cols: 12
 	},
@@ -544,7 +552,7 @@
 	"Board@pentatouch": {
 		hascross: 1
 	},
-	"Board@kissing": {
+	"Board@kissing,regional-poly": {
 		hasborder: 1
 	},
 
@@ -700,6 +708,11 @@
 					"41u",
 					"51v"
 				]
+			},
+			{
+				name: "preset.tetrominoes",
+				shortkey: "t",
+				constant: ["14u", "23bg", "22u", "23f", "23eg"]
 			},
 			{
 				name: "preset.pentominoes",
@@ -874,6 +887,18 @@
 		}
 	},
 
+	"Cell@distopia": {
+		minnum: 0,
+		maxnum: function() {
+			var a = this.board.rows - 1,
+				b = this.board.cols - 1;
+			return Math.max(a, b, 2 * Math.min(a, b));
+		},
+		allowShade: function() {
+			return this.puzzle.getConfig("pentopia_transparent") || this.qnum === -1;
+		}
+	},
+
 	"Cell@pentopia": {
 		numberAsObject: true,
 		maxnum: 15,
@@ -887,7 +912,7 @@
 		}
 	},
 
-	"Cell@kissing": {
+	"Cell@kissing,regional-poly": {
 		allowShade: function() {
 			return this.isValid();
 		},
@@ -990,7 +1015,7 @@
 	},
 	"BoardExec@pentopia": {
 		adjustBoardData: function(key, d) {
-			this.adjustCellQnumArrow(key, d);
+			this.adjustCellArrow(key, d);
 		},
 		getTranslateDir: function(key) {
 			var trans = {};
@@ -1063,7 +1088,7 @@
 	},
 	"BoardExec@battleship,retroships": {
 		adjustBoardData: function(key, d) {
-			this.adjustCellQnumArrow(key, d);
+			this.adjustCellArrow(key, d);
 			this.adjustExCellTopLeft_1(key, d);
 		},
 		adjustBoardData2: function(key, d) {
@@ -1110,6 +1135,9 @@
 	AreaShadeGraph: {
 		enabled: true
 	},
+	"AreaRoomGraph@regional-poly": {
+		enabled: true
+	},
 	"AreaShadeGraph@battleship,retroships": {
 		relation: { "cell.qnum": "node", "cell.qans": "node" }
 	},
@@ -1141,7 +1169,7 @@
 
 		crosssize: 0.15
 	},
-	"Graphic@pentatouch,kissing#1": {
+	"Graphic@pentatouch,kissing,regional-poly#1": {
 		drawTarget: function() {
 			var show = this.puzzle.editmode && this.puzzle.cursor.bankpiece !== null;
 			this.drawCursor(true, show);
@@ -1158,10 +1186,12 @@
 				this.drawCrossMarks();
 			} else if (this.pid === "statuepark") {
 				this.drawCircles();
+			} else if (this.pid === "distopia") {
+				this.drawQuesNumbers();
 			} else if (this.pid === "pentopia") {
 				this.drawArrowCombinations();
 				this.drawHatenas();
-			} else if (this.pid === "kissing") {
+			} else if (this.pid === "kissing" || this.pid === "regional-poly") {
 				this.drawBorders();
 				this.drawXCells();
 				this.drawDotCells();
@@ -1197,7 +1227,7 @@
 		}
 	},
 
-	"Graphic@pentopia": {
+	"Graphic@pentopia,distopia#1": {
 		enablebcolor: true,
 
 		shadecolor: "rgb(80, 80, 80)",
@@ -1208,8 +1238,9 @@
 				return cell.isShade() ? this.errbcolor1 : this.errcolor1;
 			}
 			return cell.isShade() ? "white" : this.quescolor;
-		},
-
+		}
+	},
+	"Graphic@pentopia": {
 		drawArrowCombinations: function() {
 			var g = this.vinc("cell_arrow");
 
@@ -1281,10 +1312,9 @@
 		}
 	},
 
-	"Graphic@kissing": {
+	"Graphic@kissing,regional-poly": {
 		shadecolor: "#777",
 		trialcolor: "rgb(255, 160, 0)",
-
 		drawXCells: function() {
 			var g = this.vinc("cell_x", "auto", true);
 
@@ -1304,7 +1334,9 @@
 					g.vhide();
 				}
 			}
-		},
+		}
+	},
+	"Graphic@kissing#2": {
 		drawBorders: function() {
 			this.vinc("border", "auto", true);
 			var g = this.context;
@@ -1739,7 +1771,7 @@
 			this.encodePieceBank();
 		}
 	},
-	"Encode@pentopia,retroships": {
+	"Encode@pentopia,distopia,retroships": {
 		decodePzpr: function(type) {
 			this.puzzle.setConfig("pentopia_transparent", this.checkpflag("t"));
 			if (this.outbstr[0] !== "/") {
@@ -1795,7 +1827,7 @@
 		}
 	},
 
-	"Encode@kissing": {
+	"Encode@kissing,regional-poly": {
 		decodePzpr: function(type) {
 			if (this.outbstr[0] !== "/") {
 				this.decodeBorder();
@@ -1863,7 +1895,7 @@
 		encodeConfig: function() {}
 	},
 
-	"FileIO@pentopia": {
+	"FileIO@pentopia,distopia": {
 		decodeConfig: function() {
 			this.decodeConfigFlag("t", "pentopia_transparent");
 		},
@@ -1884,7 +1916,7 @@
 		}
 	},
 
-	"FileIO@kissing": {
+	"FileIO@kissing,regional-poly": {
 		decodeData: function() {
 			this.decodePieceBank();
 			this.decodeBorderQues();
@@ -1938,15 +1970,57 @@
 			}, "circleShade");
 		}
 	},
-	"AnsCheck@kissing": {
+	"AnsCheck@kissing,regional-poly": {
 		checklist: [
 			"checkUnshadeOnCircle",
-			"checkPieceSize",
-			"checkSeparators",
+			"checkSideAreaShadeCell@regional-poly",
+			"checkSeqBlocksInRoom@regional-poly",
+			"checkShadeDiagonal@regional-poly",
+			"checkPieceSize@kissing",
+			"checkSeparators@kissing",
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
 			"checkBankPiecesUsed"
 		],
+
+		checkSideAreaShadeCell: function() {
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return cell1.isShade() && cell2.isShade();
+				},
+				false,
+				"cbShade"
+			);
+		},
+
+		checkSeqBlocksInRoom: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var clist = rooms[r].clist,
+					sblkbase = null,
+					check = true;
+				for (var i = 0; i < clist.length; i++) {
+					if (clist[i].sblk === null) {
+					} else if (clist[i].sblk !== sblkbase) {
+						if (sblkbase === null) {
+							sblkbase = clist[i].sblk;
+						} else {
+							check = false;
+							break;
+						}
+					}
+				}
+				if (check) {
+					continue;
+				}
+
+				this.failcode.add("bkShadeDivide");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		},
 
 		checkPieceSize: function() {
 			// A separate check for pieces that are far too large,
@@ -2000,7 +2074,7 @@
 		}
 	},
 
-	"AnsCheck@pentopia,battleship,retroships,pentatouch#1": {
+	"AnsCheck@pentopia,distopia,battleship,retroships,pentatouch,regional-poly#1": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -2040,14 +2114,16 @@
 		}
 	},
 
-	"AnsCheck@pentopia": {
+	"AnsCheck@pentopia,distopia#1": {
 		checklist: [
 			"checkShadeOnArrow",
 			"checkBankPiecesAvailable",
 			"checkShadeDiagonal",
-			"checkShadeDirCloser",
-			"checkShadeDirUnequal",
-			"checkShadeDirExist",
+			"checkShadeDirCloser@pentopia",
+			"checkShadeDirUnequal@pentopia",
+			"checkShadeDirExist@pentopia",
+			"checkNumberEqual@distopia",
+			"checkNumberExist@distopia",
 			"checkBankPiecesInvalid+"
 		],
 
@@ -2069,7 +2145,10 @@
 
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell0 = bd.cell[c];
-				if (cell0.qnum <= 0) {
+				if (this.pid === "pentopia" && cell0.qnum <= 0) {
+					continue;
+				}
+				if (this.pid === "distopia" && !cell0.isValidNum()) {
 					continue;
 				}
 				var row = [cell0, -1, -1, -1, -1];
@@ -2091,7 +2170,9 @@
 			}
 
 			return (this._info.shadeDirs = ret);
-		},
+		}
+	},
+	"AnsCheck@pentopia": {
 		checkShadeDirExist: function() {
 			var clues = this.getShadeDirs();
 			for (var i in clues) {
@@ -2184,6 +2265,57 @@
 			}
 		}
 	},
+	"AnsCheck@distopia": {
+		checkNumberEqual: function() {
+			var clues = this.getShadeDirs();
+			for (var i in clues) {
+				var dist = this.board.cols * this.board.rows;
+				var count = 0;
+
+				for (var dir = 1; dir <= 4; dir++) {
+					var d = clues[i][dir];
+					if (d !== -1 && d < dist) {
+						count = 1;
+						dist = d;
+					} else if (d === dist) {
+						count++;
+					}
+				}
+
+				if (count > 0 && clues[i][0].qnum !== dist * count) {
+					this.failcode.add("arDistance");
+					if (this.checkOnly) {
+						return;
+					}
+					clues[i][0].seterr(1);
+				}
+			}
+		},
+
+		checkNumberExist: function() {
+			var clues = this.getShadeDirs();
+			for (var i in clues) {
+				if (clues[i][0].qnum <= 0) {
+					continue;
+				}
+
+				var found = false;
+				for (var dir = 1; dir <= 4 && !found; dir++) {
+					if (clues[i][dir] !== -1) {
+						found = true;
+					}
+				}
+
+				if (!found) {
+					this.failcode.add("arNoShade");
+					if (this.checkOnly) {
+						return;
+					}
+					clues[i][0].seterr(1);
+				}
+			}
+		}
+	},
 
 	"AnsCheck@battleship,retroships": {
 		checklist: [
@@ -2225,40 +2357,6 @@
 				}
 				return cell.isShade() && cell.qnum !== cell.getShape();
 			}, "csMismatch");
-		},
-
-		checkShadeCount: function() {
-			this.checkRowsCols(this.isExCellCount, "exShadeNe");
-		},
-
-		isExCellCount: function(clist) {
-			var d = clist.getRectSize(),
-				bd = this.board;
-			var count = clist.filter(function(c) {
-				return c.isShade();
-			}).length;
-
-			var result = true;
-
-			if (d.x1 === d.x2) {
-				var exc = bd.getex(d.x1, -1);
-				if (exc.qnum !== -1 && exc.qnum !== count) {
-					exc.seterr(1);
-					result = false;
-				}
-			}
-			if (d.y1 === d.y2) {
-				var exc = bd.getex(-1, d.y1);
-				if (exc.qnum !== -1 && exc.qnum !== count) {
-					exc.seterr(1);
-					result = false;
-				}
-			}
-
-			if (!result) {
-				clist.seterr(1);
-			}
-			return result;
 		}
 	},
 	"AnsCheck@pentatouch": {

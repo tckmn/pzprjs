@@ -251,7 +251,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawCellArrows() 矢印だけをCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawCellArrows: function(wide, outline) {
+		drawCellArrows: function(wide) {
 			var g = this.vinc("cell_arrow", "auto");
 			var al, aw, tl, tw;
 
@@ -260,6 +260,12 @@ pzpr.classmgr.makeCommon({
 				aw = this.cw * 0.03; // ArrowWidth
 				tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
 				tw = this.cw * 0.16; // 矢じりの幅
+			} else if (wide === 0.5) {
+				/* 太い矢印 */
+				al = this.cw * 0.35; // ArrowLength
+				aw = this.cw * 0.1; // ArrowWidth
+				tl = 0; // 矢じりの長さの座標(中心-長さ)
+				tw = this.cw * 0.27; // 矢じりの幅
 			} else {
 				/* 太い矢印 */
 				al = this.cw * 0.35; // ArrowLength
@@ -271,114 +277,127 @@ pzpr.classmgr.makeCommon({
 			tw = tw >= 5 ? tw : 5;
 
 			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i],
-					dir = !cell.numberAsObject ? cell.qdir : cell.getNum();
-				var color = dir >= 1 && dir <= 4 ? this.getCellArrowColor(cell) : null;
+			for (var item = 0; item < 2; item++) {
+				var func =
+					item === 1 ? this.getCellArrowOutline : this.getCellArrowColor;
+				if (!func) {
+					continue;
+				}
 
-				g.vid = "c_arrow_" + cell.id;
-				if (!!color) {
-					g.lineWidth = 1.5;
-					g.strokeStyle = g.fillStyle = color;
-					g.beginPath();
-					var px = cell.bx * this.bw,
-						py = cell.by * this.bh;
-					switch (dir) {
-						case cell.UP:
-							g.setOffsetLinePath(
-								px,
-								py,
-								0,
-								-al,
-								-tw,
-								-tl,
-								-aw,
-								-tl,
-								-aw,
-								al,
-								aw,
-								al,
-								aw,
-								-tl,
-								tw,
-								-tl,
-								true
-							);
-							break;
-						case cell.DN:
-							g.setOffsetLinePath(
-								px,
-								py,
-								0,
-								al,
-								-tw,
-								tl,
-								-aw,
-								tl,
-								-aw,
-								-al,
-								aw,
-								-al,
-								aw,
-								tl,
-								tw,
-								tl,
-								true
-							);
-							break;
-						case cell.LT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-al,
-								0,
-								-tl,
-								-tw,
-								-tl,
-								-aw,
-								al,
-								-aw,
-								al,
-								aw,
-								-tl,
-								aw,
-								-tl,
-								tw,
-								true
-							);
-							break;
-						case cell.RT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								al,
-								0,
-								tl,
-								-tw,
-								tl,
-								-aw,
-								-al,
-								-aw,
-								-al,
-								aw,
-								tl,
-								aw,
-								tl,
-								tw,
-								true
-							);
-							break;
-					}
-					if (outline) {
-						g.stroke();
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i],
+						dir = !!cell.getArrow
+							? cell.getArrow()
+							: !cell.numberAsObject
+							? cell.qdir
+							: cell.getNum();
+					var color = dir >= 1 && dir <= 4 ? func.call(this, cell) : null;
+
+					g.vid = "c_arrow_" + item + "_" + cell.id;
+					if (!!color) {
+						g.lineWidth = 1.5;
+						g.strokeStyle = g.fillStyle = color;
+						g.beginPath();
+						var px = cell.bx * this.bw,
+							py = cell.by * this.bh;
+						switch (dir) {
+							case cell.UP:
+								g.setOffsetLinePath(
+									px,
+									py,
+									0,
+									-al,
+									-tw,
+									-tl,
+									-aw,
+									-tl,
+									-aw,
+									al,
+									aw,
+									al,
+									aw,
+									-tl,
+									tw,
+									-tl,
+									true
+								);
+								break;
+							case cell.DN:
+								g.setOffsetLinePath(
+									px,
+									py,
+									0,
+									al,
+									-tw,
+									tl,
+									-aw,
+									tl,
+									-aw,
+									-al,
+									aw,
+									-al,
+									aw,
+									tl,
+									tw,
+									tl,
+									true
+								);
+								break;
+							case cell.LT:
+								g.setOffsetLinePath(
+									px,
+									py,
+									-al,
+									0,
+									-tl,
+									-tw,
+									-tl,
+									-aw,
+									al,
+									-aw,
+									al,
+									aw,
+									-tl,
+									aw,
+									-tl,
+									tw,
+									true
+								);
+								break;
+							case cell.RT:
+								g.setOffsetLinePath(
+									px,
+									py,
+									al,
+									0,
+									tl,
+									-tw,
+									tl,
+									-aw,
+									-al,
+									-aw,
+									-al,
+									aw,
+									tl,
+									aw,
+									tl,
+									tw,
+									true
+								);
+								break;
+						}
+						if (item === 1) {
+							g.stroke();
+						} else {
+							g.fill();
+						}
 					} else {
-						g.fill();
+						g.vhide();
 					}
-				} else {
-					g.vhide();
 				}
 			}
 		},
+		getCellArrowOutline: null,
 		getCellArrowColor: function(cell) {
 			var dir = !cell.numberAsObject ? cell.qdir : cell.getNum();
 			if (dir >= 1 && dir <= 4) {
@@ -559,11 +578,7 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		getNumberTextCore: function(num) {
-			var hideHatena =
-				this.pid !== "yajilin" && this.pid !== "koburin"
-					? this.hideHatena
-					: this.puzzle.getConfig("disptype_yajilin") === 2;
-			return num >= 0 ? "" + num : !hideHatena && num === -2 ? "?" : "";
+			return num >= 0 ? "" + num : !this.hideHatena && num === -2 ? "?" : "";
 		},
 		getNumberTextCore_letter: function(num) {
 			var text = "" + num;
@@ -904,6 +919,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawCrosses()    Crossの丸数字をCanvasに書き込む
 		// pc.drawCrossMarks() Cross上の黒点をCanvasに書き込む
+		// pc.drawCrossErrors() Cross error dots
 		//---------------------------------------------------------------------------
 		drawCrosses: function() {
 			var g = this.vinc("cross_base", "auto", true);
@@ -954,6 +970,24 @@ pzpr.classmgr.makeCommon({
 							? this.errcolor1
 							: this.quescolor;
 					g.fillCircle(cross.bx * this.bw, cross.by * this.bh, csize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		drawCrossErrors: function(isdraw) {
+			var g = this.vinc("cross_error", "auto");
+			g.strokeStyle = this.errcolor1;
+			g.lineWidth = Math.max(this.cw * 0.04, 1);
+
+			var size = this.cw / 4;
+			var clist = this.range.crosses;
+			for (var i = 0; i < clist.length; i++) {
+				var cross = clist[i];
+				g.vid = "x_ce_" + cross.id;
+				if (cross.error) {
+					g.fillStyle = cross.lcnt === 2 ? this.errbcolor1 : "white";
+					g.shapeCircle(cross.bx * this.bw, cross.by * this.bh, size / 2);
 				} else {
 					g.vhide();
 				}
@@ -1294,8 +1328,10 @@ pzpr.classmgr.makeCommon({
 					border = null;
 				if (
 					cell.lcnt === 1 &&
+					!this.puzzle.execConfig("dispmove") &&
 					cell.qnum === -1 &&
-					!this.puzzle.execConfig("dispmove")
+					/* Inverse arrow direction if a temporary departure was added by the solver */
+					(cell.path.departure.anum === -1) ^ (cell.path.departure === cell)
 				) {
 					var adb = cell.adjborder;
 					if (adb.top.isLine()) {
@@ -1545,66 +1581,70 @@ pzpr.classmgr.makeCommon({
 				g.vid = "b_daux_" + border.id;
 				if (dir >= 1 && dir <= 8) {
 					g.strokeStyle = !border.trial ? "rgb(64,64,64)" : this.linetrialcolor;
-					g.beginPath();
-					switch (dir) {
-						case border.UP:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize * 2,
-								+ssize,
-								0,
-								-ssize,
-								+ssize * 2,
-								+ssize,
-								false
-							);
-							break;
-						case border.DN:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize * 2,
-								-ssize,
-								0,
-								+ssize,
-								+ssize * 2,
-								-ssize,
-								false
-							);
-							break;
-						case border.LT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								+ssize,
-								-ssize * 2,
-								-ssize,
-								0,
-								+ssize,
-								+ssize * 2,
-								false
-							);
-							break;
-						case border.RT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize,
-								-ssize * 2,
-								+ssize,
-								0,
-								-ssize,
-								+ssize * 2,
-								false
-							);
-							break;
-					}
-					g.stroke();
+					this.strokeSingleAuxDir(g, dir, px, py, ssize);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+		strokeSingleAuxDir: function(g, dir, px, py, ssize) {
+			var piece = this.board.emptycell;
+
+			switch (dir) {
+				case piece.UP:
+					g.setOffsetLinePath(
+						px,
+						py,
+						-ssize * 2,
+						+ssize,
+						0,
+						-ssize,
+						+ssize * 2,
+						+ssize,
+						false
+					);
+					break;
+				case piece.DN:
+					g.setOffsetLinePath(
+						px,
+						py,
+						-ssize * 2,
+						-ssize,
+						0,
+						+ssize,
+						+ssize * 2,
+						-ssize,
+						false
+					);
+					break;
+				case piece.LT:
+					g.setOffsetLinePath(
+						px,
+						py,
+						+ssize,
+						-ssize * 2,
+						-ssize,
+						0,
+						+ssize,
+						+ssize * 2,
+						false
+					);
+					break;
+				case piece.RT:
+					g.setOffsetLinePath(
+						px,
+						py,
+						-ssize,
+						-ssize * 2,
+						+ssize,
+						0,
+						-ssize,
+						+ssize * 2,
+						false
+					);
+					break;
+			}
+			g.stroke();
 		},
 
 		//---------------------------------------------------------------------------
@@ -2090,7 +2130,7 @@ pzpr.classmgr.makeCommon({
 
 					px = (piece.x + 0.25 + piece.w / 2) * this.cw * r;
 					py = (piece.y + 0.25 + piece.h / 2) * this.ch * r;
-					py += (this.board.rows + 0.5) * this.ch;
+					py += (this.board.rows + this.bankVerticalOffset) * this.ch;
 					w = (piece.w + 0.25) * this.cw * r * 0.5;
 					h = (piece.h + 0.25) * this.ch * r * 0.5;
 				} else {
@@ -2717,7 +2757,7 @@ pzpr.classmgr.makeCommon({
 				var r = this.bankratio;
 				var px = this.cw * r * (addButton.x + 0.25) + 1;
 				var py = this.ch * r * (addButton.y + 0.25) + 1;
-				py += (this.board.rows + 0.5) * this.ch;
+				py += (this.board.rows + this.bankVerticalOffset) * this.ch;
 				var px2 = px + this.cw * r * addButton.w - 1;
 				var py2 = py + this.ch * r * addButton.h - 1;
 				for (var i = 0; i < 4; i++) {

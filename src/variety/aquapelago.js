@@ -15,11 +15,16 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart) {
+					this.isDraggingPeke = this.puzzle.key.isALT;
+				}
+				if (this.isDraggingPeke) {
+					this.inputpeke();
+				} else if (this.mousestart) {
 					this.inputcell_aquapelago();
 				} else if (this.mousemove) {
 					this.inputcell();
@@ -125,6 +130,7 @@
 			this.sblkdiagmgr = this.addInfoList(this.klass.AreaShadeDiagGraph);
 		},
 
+		hasborder: 1,
 		cols: 10,
 		rows: 10
 	},
@@ -149,6 +155,8 @@
 			this.drawQuesNumbers();
 
 			this.drawChassis();
+
+			this.drawPekes();
 
 			this.drawTarget();
 		},
@@ -186,9 +194,11 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnumAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnumAns();
+			this.encodeBorderLineIfPresent();
 		}
 	},
 

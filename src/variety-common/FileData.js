@@ -181,7 +181,9 @@ pzpr.classmgr.makeCommon({
 				if (cell.enableSubNumberArray && ca.indexOf("[") >= 0) {
 					ca = this.setCellSnum(cell, ca);
 				}
-				if (ca === "+") {
+				if (ca === "c") {
+					cell.qcmp = 1;
+				} else if (ca === "+") {
 					cell.qsub = 1;
 				} else if (ca === "-") {
 					cell.qsub = 2;
@@ -199,6 +201,8 @@ pzpr.classmgr.makeCommon({
 				var ca = ".";
 				if (cell.anum !== -1) {
 					ca = "" + cell.anum;
+				} else if (cell.qcmp === 1) {
+					ca = "c";
 				} else if (cell.qsub === 1) {
 					ca = "+";
 				} else if (cell.qsub === 2) {
@@ -411,6 +415,15 @@ pzpr.classmgr.makeCommon({
 					border.line = +ca;
 				}
 			});
+		},
+		encodeBorderLineIfPresent: function() {
+			if (
+				this.board.border.some(function(border) {
+					return border.line > 0 || border.qsub === 2;
+				})
+			) {
+				this.encodeBorderLine();
+			}
 		},
 		encodeBorderLine: function() {
 			this.encodeBorder(function(border) {

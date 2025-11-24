@@ -21,6 +21,7 @@ ui.keypopup = {
 	/* どの文字配置を作成するかのテーブル */
 	type: {
 		slither: [3, 0],
+		swslither: [5339, 0],
 		nawabari: [4, 0],
 		fourcells: [4, 0],
 		fivecells: [4, 0],
@@ -41,8 +42,8 @@ ui.keypopup = {
 		hebi: [5, 5],
 		tawa: [6, 0],
 		hashikake: [8, 0],
-		tapa: [8, 0],
-		tapaloop: [8, 0],
+		tapa: [80, 0],
+		tapaloop: [80, 0],
 		amibo: [10, 0],
 		cave: [10, 0],
 		bdblock: [10, 0],
@@ -102,6 +103,7 @@ ui.keypopup = {
 		kusabi: [114, 0],
 		aqre: [10, 0],
 		doppelblock: [10, 115],
+		japanesesums: [10, 115],
 		interbd: [116, 0],
 		toichika2: [10, 10],
 		crossstitch: [10, 0],
@@ -163,10 +165,11 @@ ui.keypopup = {
 		meander: [10, 10],
 		juosan: [10, 0],
 		walllogic: [10, 0],
-		mines: [8, 0],
+		mines: [80, 0],
 		pencils: [10, 0],
 		minarism: [10, 10],
 		trainstations: [124, 0],
+		turnrun: [124, 0],
 		wafusuma: [10, 0],
 		kuroclone: [10, 0],
 		martini: [10, 0],
@@ -200,7 +203,43 @@ ui.keypopup = {
 		teri: [10, 0],
 		portal: [10, 0],
 		kuromenbun: [10, 0],
-		bosnianroad: [8, 0]
+		turnaround: [3, 0],
+		bosnianroad: [80, 0],
+		sananko: [10, 113],
+		zabajaba: [80, 0],
+		batten: [10, 0],
+		firewalk: [10, 0],
+		snakeegg: [10, 0],
+		timebomb: [10, 0],
+		smullyan: [10, 0],
+		meidjuluk: [10, 0],
+		island: [10, 0],
+		archipelago: [10, 0],
+		yajirushi2: [4, 0],
+		nibunnogo: [4, 0],
+		mintonette: [10, 0],
+		balloon: [10, 0],
+		tilecity: [10, 0],
+		orbital: [124, 0],
+		outofsight: [132, 0],
+		nuritwin: [10, 0],
+		arrowflow: [10, 0],
+		tjunction: [4, 0],
+		retsurin: [10, 0],
+		forestwalk: [10, 0],
+		onsen: [10, 0],
+		wataridori: [10, 0],
+		kurarin: [133, 0],
+		narrow: [134, 0],
+		blindrush: [10, 0],
+		isowatari: [10, 0],
+		uturns: [133, 0],
+		distopia: [10, 0],
+		numcity: [10, 10],
+		cityspace: [10, 0],
+		diamond: [4, 0],
+		morningwalk: [10, 0],
+		energywalk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -237,6 +276,15 @@ ui.keypopup = {
 		var type = this.type[ui.puzzle.pid];
 		if (!type) {
 			type = [0, 0];
+		}
+
+		/* Change maximum number for Fillomino variant */
+		if (
+			ui.puzzle.playeronly &&
+			ui.puzzle.pid === "fillomino" &&
+			ui.puzzle.getConfig("fillomino_tri")
+		) {
+			type = [3, 3];
 		}
 
 		this.paneltype = { 1: !ui.puzzle.playeronly ? type[0] : 0, 3: type[1] };
@@ -298,6 +346,8 @@ ui.keypopup = {
 			this.gentable6(mode);
 		} else if (type === 8) {
 			this.gentable8(mode);
+		} else if (type === 80) {
+			this.gentable80(mode);
 		} else if (type === 101) {
 			this.generate_slalom(mode);
 		} else if (type === 102) {
@@ -342,6 +392,16 @@ ui.keypopup = {
 			this.generate_retroships(mode);
 		} else if (type === 130) {
 			this.generate_lix(mode);
+		} else if (type === 131) {
+			this.generate_infinity(mode);
+		} else if (type === 132) {
+			this.generate_outofsight(mode);
+		} else if (type === 133) {
+			this.generate_kurarin(mode);
+		} else if (type === 134) {
+			this.generate_narrowfence(mode);
+		} else if (type === 5339) {
+			this.generate_swslither();
 		}
 	},
 	gentable4: function(mode) {
@@ -361,6 +421,7 @@ ui.keypopup = {
 				switch (pid) {
 					case "lightup":
 					case "shakashaka":
+					case "tjunction":
 						cap = "■";
 						break;
 					case "gokigen":
@@ -387,14 +448,16 @@ ui.keypopup = {
 				null
 			);
 		}
-		if (
-			mode === 1 &&
-			(pid === "kakuru" ||
-				pid === "tateyoko" ||
-				pid === "crossstitch" ||
-				pid === "numrope" ||
-				pid === "yajisoko")
-		) {
+
+		var separateEmptyHatena =
+			pid === "kakuru" ||
+			pid === "tateyoko" ||
+			pid === "crossstitch" ||
+			pid === "numrope" ||
+			pid === "sananko" ||
+			pid === "yajisoko";
+
+		if (mode === 1 && separateEmptyHatena) {
 			itemlist.push(["q1", pid === "yajisoko" ? "□" : "■"]);
 			if (pid === "crossstitch") {
 				itemlist.push(["w2", "○"]);
@@ -411,14 +474,8 @@ ui.keypopup = {
 		);
 
 		var cap = null;
-		if (
-			mode === 3 ||
-			pid === "kakuru" ||
-			pid === "numrope" ||
-			pid === "tateyoko" ||
-			pid === "crossstitch" ||
-			pid === "yajisoko"
-		) {
+		if (mode === 3 || separateEmptyHatena) {
+			/* Do nothing */
 		} else if (pid === "tasquare") {
 			cap = "□";
 		} else if (
@@ -432,26 +489,8 @@ ui.keypopup = {
 				text: "■",
 				color: "rgb(204,204,204)"
 			};
-		} else if (
-			pid === "kurotto" ||
-			pid === "bonsan" ||
-			pid === "satogaeri" ||
-			pid === "heyabon" ||
-			pid === "yosenabe" ||
-			pid === "herugolf" ||
-			pid === "kazunori" ||
-			pid === "nurimisaki" ||
-			pid === "amibo" ||
-			pid === "firefly" ||
-			pid === "shikaku" ||
-			pid === "aho" ||
-			pid === "bosanowa" ||
-			pid === "portal" ||
-			pid === "minarism"
-		) {
-			cap = "○";
-		} else if (!ui.puzzle.painter.hideHatena) {
-			cap = "?";
+		} else {
+			cap = ui.puzzle.painter.hideHatena ? "○" : "?";
 		}
 		if (cap !== null) {
 			itemlist.push(["-", cap]);
@@ -464,13 +503,29 @@ ui.keypopup = {
 			pid === "icelom2" ||
 			pid === "icewalk" ||
 			pid === "waterwalk" ||
-			pid === "dbchoco"
+			pid === "firewalk" ||
+			pid === "forestwalk" ||
+			pid === "morningwalk" ||
+			pid === "energywalk" ||
+			pid === "dbchoco" ||
+			pid === "balloon"
 		) {
 			itemlist.push([
 				"q",
 				{
 					text: "■",
-					color: pid === "dbchoco" ? "rgb(204,204,204)" : "rgb(192,224,255)"
+					color:
+						pid === "dbchoco" || pid === "balloon"
+							? "rgb(204,204,204)"
+							: pid === "firewalk"
+							? "rgb(255,192,192)"
+							: pid === "forestwalk"
+							? "rgb(195,253,186)"
+							: pid === "morningwalk"
+							? "rgb(212,180,212)"
+							: pid === "energywalk"
+							? "rgb(255,255,163)"
+							: "rgb(192,224,255)"
 				}
 			]);
 		}
@@ -503,7 +558,11 @@ ui.keypopup = {
 	// kp.gentable8()  キーポップアップの0～8を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	gentable3: function(mode) {
-		this.generate_main(["1", "2", "3", "0", " ", ["-", "?"]], 3);
+		var itemlist = ["1", "2", "3", "0", " "];
+		if (mode === 1) {
+			itemlist.push(["-", "?"]);
+		}
+		this.generate_main(itemlist, 3);
 	},
 	gentable5: function(mode) {
 		this.generate_main(
@@ -531,28 +590,16 @@ ui.keypopup = {
 		this.generate_main(["1", "2", "3", "4", "5", "6", "0", " ", ["-", "?"]], 3);
 	},
 	gentable8: function(mode) {
-		var pid = ui.puzzle.pid;
-		if (pid === "brownies") {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "?"], ["w", "○"]],
-				4
-			);
-		} else if (
-			pid !== "tapa" &&
-			pid !== "tapaloop" &&
-			pid !== "mines" &&
-			pid !== "bosnianroad"
-		) {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
-				4
-			);
-		} else {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", "0", " ", ["-", "?"]],
-				4
-			);
-		}
+		this.generate_main(
+			["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
+			4
+		);
+	},
+	gentable80: function(mode) {
+		this.generate_main(
+			["1", "2", "3", "4", "5", "6", "7", "8", "0", " ", ["-", "?"]],
+			4
+		);
 	},
 
 	//---------------------------------------------------------------------------
@@ -659,15 +706,24 @@ ui.keypopup = {
 		var pid = ui.puzzle.pid,
 			itemlist = [];
 
-		itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
-		if (pid === "hakoiri" || pid === "alter") {
-			itemlist.push([
-				"4",
-				{
-					text: mode === 1 ? "?" : "・",
-					color: mode === 3 ? "rgb(255, 96, 191)" : ""
-				}
-			]);
+		if (pid === "sananko") {
+			var mbcolor = ui.puzzle.painter.mbcolor;
+			itemlist.push("1", "2", "3");
+			itemlist.push(
+				["q", { text: "○", color: mbcolor }],
+				["w", { text: "×", color: mbcolor }]
+			);
+		} else {
+			itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
+			if (pid !== "tontonbeya") {
+				itemlist.push([
+					"4",
+					{
+						text: mode === 1 ? "?" : "・",
+						color: mode === 3 ? "rgb(255, 96, 191)" : ""
+					}
+				]);
+			}
 		}
 		itemlist.push(" ");
 		this.generate_main(itemlist, 3);
@@ -855,6 +911,7 @@ ui.keypopup = {
 	},
 
 	generate_trainstations: function(mode) {
+		var orbital = ui.puzzle.pid === "orbital";
 		this.generate_main(
 			[
 				"0",
@@ -868,8 +925,8 @@ ui.keypopup = {
 				"8",
 				"9",
 				" ",
-				["-", "?"],
-				["q", "╋"]
+				["-", orbital ? "●" : "?"],
+				["q", orbital ? "○" : "╋"]
 			],
 			4
 		);
@@ -977,6 +1034,48 @@ ui.keypopup = {
 	generate_lix: function(mode) {
 		this.generate_main(
 			[["l", "L"], ["i", "I"], ["x", "X"], ["-", "?"], " "],
+			3
+		);
+	},
+
+	generate_swslither: function() {
+		this.generate_main(
+			[["5", "🐑"], ["6", "🐺"], null, "1", "2", "3", "0", " ", ["-", "?"]],
+			3
+		);
+	},
+
+	generate_kurarin: function() {
+		this.generate_main(
+			[
+				["1", { text: "●" }],
+				["2", { text: "●", color: "gray" }],
+				["3", { text: "○" }],
+				" "
+			],
+			3
+		);
+	},
+
+	generate_outofsight: function() {
+		this.generate_main(
+			[
+				["a", { text: "A", color: "red" }],
+				["b", { text: "B", color: "blue" }],
+				["c", { text: "C", color: "green" }],
+				["d", { text: "D", color: "#c000c0" }],
+				["e", { text: "E", color: "#ff8000" }],
+				["f", { text: "F", color: "#00c0c0" }],
+				["-", { text: "?", color: "gray" }],
+				" "
+			],
+			3
+		);
+	},
+
+	generate_narrowfence: function(mode) {
+		this.generate_main(
+			[["1", "○"], ["2", "╋"], " ", ["3", "×"], ["4", "◇"]],
 			3
 		);
 	},

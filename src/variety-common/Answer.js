@@ -103,7 +103,7 @@ pzpr.classmgr.makeCommon({
 		// ans.checkAdjacentDiffNumber() 同じ数字が隣接している時、エラーを設定する
 		// ans.checkAroundCell()  Same as checkSideCell, but also checks diagonally adjacent cells
 		//---------------------------------------------------------------------------
-		checkSideCell: function(func, code) {
+		checkSideCell: function(func, code, mark) {
 			var result = true,
 				bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -114,8 +114,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cell.seterr(1);
-					cell2.seterr(1);
+					if (mark !== false) {
+						cell.seterr(1);
+						cell2.seterr(1);
+					}
 				}
 				cell2 = cell.adjacent.bottom;
 				if (cell.by < bd.maxby - 1 && func(cell, cell2)) {
@@ -123,8 +125,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cell.seterr(1);
-					cell2.seterr(1);
+					if (mark !== false) {
+						cell.seterr(1);
+						cell2.seterr(1);
+					}
 				}
 			}
 			if (!result) {
@@ -393,7 +397,15 @@ pzpr.classmgr.makeCommon({
 			this.checkLineCount(1, "lnDeadEnd");
 		},
 		checkNoLine: function() {
-			this.checkLineCount(0, "ceNoLine");
+			this.checkLineCount(0, this.board.borderAsLine ? "cxNoLine" : "ceNoLine");
+		},
+		checkNoLineIfVariant: function() {
+			if (
+				this.puzzle.getConfig("slither_full") ||
+				this.puzzle.getConfig("loop_full")
+			) {
+				this.checkNoLine();
+			}
 		},
 		checkLineCount: function(val, code) {
 			var result = true,
@@ -418,7 +430,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cross.seterr(1);
+
+					if (val === 0) {
+						cross.seterr(1);
+					}
 					bd.borderinside(
 						cross.bx - 1,
 						cross.by - 1,
@@ -660,7 +675,7 @@ pzpr.classmgr.makeCommon({
 				if (
 					evalfunc(
 						clist.filter(function(cell) {
-							return cell.isNum();
+							return cell.qnum !== -1;
 						}).length
 					)
 				) {
@@ -969,6 +984,41 @@ pzpr.classmgr.makeCommon({
 				code
 			);
 		},
+		checkShadeCount: function() {
+			this.checkRowsCols(this.isExCellCount, "exShadeNe");
+		},
+		getRowsColsValue: function(clist) {
+			return clist.filter(function(c) {
+				return c.isShade();
+			}).length;
+		},
+		isExCellCount: function(clist) {
+			var d = clist.getRectSize(),
+				bd = this.board;
+			var count = this.getRowsColsValue(clist);
+
+			var result = true;
+
+			if (d.x1 === d.x2) {
+				var exc = bd.getex(d.x1, -1);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+			if (d.y1 === d.y2) {
+				var exc = bd.getex(-1, d.y1);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+
+			if (!result) {
+				clist.seterr(1);
+			}
+			return result;
+		},
 
 		//---------------------------------------------------------------------------
 		// ans.checkBorderCount()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
@@ -1052,7 +1102,7 @@ pzpr.classmgr.makeCommon({
 
 		//--------------------------------------------------------------------------------
 		// ans.getLineShapeInfo() 丸などで区切られた線を探索し情報を設定する
-		// ans.serachLineShapeInfo() 丸などで区切られた線を探索します
+		// ans.searchLineShapeInfo() 丸などで区切られた線を探索します
 		//--------------------------------------------------------------------------------
 		getLineShapeInfo: function() {
 			if (this._info.num) {
@@ -1067,7 +1117,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			var clist = bd.cell.filter(function(cell) {
-				return cell.isNum();
+				return cell.isLineShapeEndpoint();
 			});
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
@@ -1079,7 +1129,7 @@ pzpr.classmgr.makeCommon({
 						continue;
 					}
 
-					var pathseg = this.serachLineShapeInfo(cell, a + 1, passed);
+					var pathseg = this.searchLineShapeInfo(cell, a + 1, passed);
 					if (!!pathseg) {
 						pathsegs.push(pathseg);
 					}
@@ -1088,7 +1138,7 @@ pzpr.classmgr.makeCommon({
 
 			return (this._info.num = pathsegs);
 		},
-		serachLineShapeInfo: function(cell1, dir, passed) {
+		searchLineShapeInfo: function(cell1, dir, passed) {
 			var pathseg = {
 				objs: new this.klass.BorderList(),
 				cells: [cell1, null], // 出発したセル、到達したセル
@@ -1104,7 +1154,7 @@ pzpr.classmgr.makeCommon({
 				if (pos.oncell()) {
 					var cell = pos.getc(),
 						adb = cell.adjborder;
-					if (cell.isnull || cell1 === cell || cell.isNum()) {
+					if (cell.isnull || cell1 === cell || cell.isLineShapeEndpoint()) {
 						break;
 					} else if (this.board.linegraph.iscrossing(cell) && cell.lcnt >= 3) {
 					} else if (dir !== 1 && adb.bottom.isLine()) {
@@ -1270,7 +1320,7 @@ pzpr.classmgr.makeCommon({
 
 			for (var key in pieces) {
 				var found = false;
-				for (var b = 0; b < this.board.bank.pieces.length; b++ && !found) {
+				for (var b = 0; b < this.board.bank.pieces.length && !found; b++) {
 					if (key === this.board.bank.pieces[b].canonize()) {
 						found = true;
 					}

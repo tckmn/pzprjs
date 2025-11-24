@@ -111,7 +111,11 @@ pzpr.classmgr.makeCommon({
 		// areagraph.setExtraData()   指定された領域の拡張データを設定する
 		//--------------------------------------------------------------------------------
 		setExtraData: function(component) {
-			component.clist = new this.klass.CellList(component.getnodeobjs());
+			if (component.nodes.length) {
+				component.clist = new this.klass.CellList(component.getnodeobjs());
+			} else {
+				component.clist = new this.klass.CellList();
+			}
 		}
 	},
 
@@ -155,6 +159,29 @@ pzpr.classmgr.makeCommon({
 				clist_all.extend(components[i].getnodeobjs());
 			}
 			this.puzzle.painter.repaintBlocks(clist_all);
+		}
+	},
+	"AreaShade8Graph:AreaShadeGraph": {
+		setComponentRefs: function(obj, component) {
+			obj.blk8 = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.blk8nodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.blk8nodes = [];
+		},
+
+		getSideObjByNodeObj: function(cell) {
+			var list = cell.getdir8clist(),
+				cells = [];
+			for (var i = 0; i < list.length; i++) {
+				var cell2 = list[i][0];
+				if (this.isnodevalid(cell2)) {
+					cells.push(cell2);
+				}
+			}
+			return cells;
 		}
 	},
 
@@ -283,27 +310,8 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			this.addEdge(sidenodes[0], sidenodes[1]);
-			if (
-				border.sidecross[0][this.countprop] === 0 ||
-				border.sidecross[1][this.countprop] === 0
-			) {
-				this.modifyNodes = [];
-			} else if (this.hastop && sidenodes.length >= 2) {
+			if (this.hastop && sidenodes.length >= 2) {
 				this.setTopOfRoom_combine(sidenodes[0].obj, sidenodes[1].obj);
-			}
-		},
-		removeEdgeBySeparator: function(border) {
-			// 境界線を引いた時の処理
-			var sidenodes = this.getSideNodesBySeparator(border);
-			if (!sidenodes) {
-				return;
-			}
-			this.removeEdge(sidenodes[0], sidenodes[1]);
-			if (
-				border.sidecross[0][this.countprop] === 1 ||
-				border.sidecross[1][this.countprop] === 1
-			) {
-				this.modifyNodes = [];
 			}
 		},
 

@@ -222,7 +222,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			// pzplus pause functionality
-			if (this.keydown && (c === 'shift+p' || (c === 'p' && puzzle.pid !== 'pentominous'))) {
+			if (this.keydown && puzzle.playeronly && (localStorage.pause === 'xs' ? c === 'F4' : (c === 'shift+p' || (c === 'p' && puzzle.pid !== 'pentominous')))) {
 				puzzle.togglePause();
 				return;
 			}
@@ -306,10 +306,13 @@ pzpr.classmgr.makeCommon({
 				pos0 = cursor.getaddr(),
 				flag = true,
 				dir = cursor.NDIR;
+
+			var hasIndicator = this.pid === "easyasabc" || this.pid === "isowatari";
+
 			switch (ca) {
 				case "up":
 					if (
-						(this.pid === "easyasabc" && cursor.by === -1) ||
+						(hasIndicator && cursor.by === cursor.miny) ||
 						cursor.by - mv >= cursor.miny
 					) {
 						dir = cursor.UP;
@@ -524,6 +527,9 @@ pzpr.classmgr.makeCommon({
 			else if (this.modesnum) {
 				this.targetdir = this.puzzle.playmode && this.disableAnum ? 5 : 0;
 			}
+			if (this.puzzle.playmode) {
+				this.bankpiece = null;
+			}
 		},
 		adjust_cell_to_excell: function() {
 			var bd = this.board;
@@ -578,8 +584,6 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		movedir: function(dir, mv) {
 			if (this.bankpiece !== null) {
-				// TODO implement moving from board to bank
-				// TODO implement moving between bankpieces
 				return this;
 			}
 
@@ -595,11 +599,12 @@ pzpr.classmgr.makeCommon({
 		// tc.setaddr() ターゲットの位置をAddressクラス等のオブジェクトで設定する
 		//---------------------------------------------------------------------------
 		setaddr: function(pos) {
+			var hasIndicator = this.pid === "easyasabc" || this.pid === "isowatari";
 			/* Address, Cellなどのオブジェクトいずれを入力しても良い */
 			if (
 				pos.bx < this.minx ||
 				this.maxx < pos.bx ||
-				pos.by < this.miny - (this.pid === "easyasabc" ? 2 : 0) ||
+				pos.by < this.miny - (hasIndicator ? 2 : 0) ||
 				this.maxy < pos.by
 			) {
 				return;

@@ -211,7 +211,11 @@ pzpr.classmgr.makeCommon({
 			} else if (cell.numberWithMB) {
 				subtype = 2;
 				qs = cell.qsub;
-			} else if (puzzle.pid === "roma" || puzzle.pid === "yinyang") {
+			} else if (
+				puzzle.pid === "roma" ||
+				puzzle.pid === "arrowflow" ||
+				puzzle.pid === "yinyang"
+			) {
 				subtype = 0;
 			} // 全マス埋めるタイプのパズルは補助記号なし
 			else if (cell.numberAsObject || puzzle.pid === "hebi") {
@@ -423,6 +427,8 @@ pzpr.classmgr.makeCommon({
 		inputarrow_cell_main: function(cell, dir) {
 			if (cell.numberAsObject) {
 				cell.setNum(dir);
+			} else {
+				cell.setQdir(dir);
 			}
 		},
 
@@ -750,12 +756,23 @@ pzpr.classmgr.makeCommon({
 					this.mouseCell = cell;
 					this.prevPos = pos;
 					cell.draw();
-				} else if (this.mousemove && !cell0.isnull && !cell.isDestination()) {
+				} else if (this.mousemove && !cell0.isnull) {
+					if (cell0.path && cell.path && cell.path !== cell0.path) {
+						if (cell.isDeparture() && !cell.isDestination()) {
+							return;
+						}
+
+						/* Allow connecting a qnum and an anum */
+						if ((cell0.base.qnum === -1) === (cell.base.qnum === -1)) {
+							return;
+						}
+					}
+
 					/* 移動中の場合 */
 					var border = this.prevPos.getnb(pos);
 					if (
 						!border.isnull &&
-						((!border.isLine() && cell.lcnt === 0) ||
+						((!border.isLine() && cell.lcnt <= 1) ||
 							(border.isLine() && cell0.lcnt === 1))
 					) {
 						var old = border.isLine();
@@ -766,10 +783,16 @@ pzpr.classmgr.makeCommon({
 						}
 						this.puzzle.opemgr.changeflag = true;
 						if (old !== border.isLine()) {
-							this.mouseCell = cell;
-							this.prevPos = pos;
+							if (!cell.isDestination()) {
+								this.mouseCell = this.board.emptycell;
+								cell.base.draw();
+								cell.path.destination.draw();
+							} else {
+								this.mouseCell = cell;
+								this.prevPos = pos;
+								moving = true;
+							}
 							border.draw();
-							moving = true;
 						}
 					}
 				}
@@ -992,6 +1015,17 @@ pzpr.classmgr.makeCommon({
 
 		mouseinputAutoPlay_cell: function() {
 			this.inputcell();
+		},
+		mouseinputAutoPlay_cellpeke: function() {
+			if (this.mousestart) {
+				this.isDraggingPeke = this.puzzle.key.isALT;
+			}
+
+			if (this.isDraggingPeke) {
+				this.inputpeke();
+			} else {
+				this.inputcell();
+			}
 		},
 		mouseinputAutoPlay_qnum: function() {
 			if (this.mousestart) {

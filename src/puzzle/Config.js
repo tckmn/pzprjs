@@ -53,7 +53,6 @@
 				"patchwork_leftaux",
 				true
 			); /* patchwork: Alternative mouse input */
-
 			this.add("squarecell", true); /* セルは正方形にする */
 
 			/* 入力方法設定 */
@@ -114,6 +113,10 @@
 				variant: true,
 				volatile: true
 			}); /* nuriuzu: Rule variation for shaded connectivity */
+			this.add("balloon_adjacent", false, {
+				variant: true,
+				volatile: true
+			}); /* balloon: Disallow strings being adjacent */
 			this.add("bdwalk_height", false, {
 				variant: true,
 				volatile: true
@@ -122,6 +125,10 @@
 				variant: true,
 				volatile: true
 			}); /* pentopia: Allow shading clues */
+			this.add("yajilin_out", false, {
+				variant: true,
+				volatile: true
+			}); /* yajilin: All shaded cells are outside the loop */
 			this.add("koburin_minesweeper", false, {
 				variant: true,
 				volatile: true
@@ -138,6 +145,22 @@
 				variant: true,
 				volatile: true
 			}); /* heyapin: Pins must overlap at least 2 regions */
+			this.add("aqre_borders", false, {
+				variant: true,
+				volatile: true
+			}); /* Borders must touch exactly one shaded cell */
+			this.add("fillomino_tri", false, {
+				variant: true,
+				volatile: true
+			}); /* Maximum number is 3 */
+			this.add("slither_full", false, {
+				variant: true,
+				volatile: true
+			}); /* All vertices must be visited */
+			this.add("loop_full", false, {
+				variant: true,
+				volatile: true
+			}); /* All cells must be visited */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -373,13 +396,18 @@
 					exec = pid === "context";
 					break;
 				case "disptype_yajilin":
-					exec = pid === "yajilin" || pid === "koburin" || pid === "lixloop";
+					exec =
+						pid === "yajilin" ||
+						pid === "koburin" ||
+						pid === "lixloop" ||
+						pid === "retsurin";
 					break;
 				case "disptype_interbd":
-					exec = pid === "interbd";
+					exec =
+						pid === "interbd" || (pid === "outofsight" && !puzzle.board.isMono);
 					break;
 				case "bgcolor":
-					exec = pid === "slither" || pid === "myopia";
+					exec = pid === "slither" || pid === "myopia" || pid === "swslither";
 					break;
 				case "irowake":
 					exec = puzzle.painter.irowake;
@@ -403,7 +431,8 @@
 					exec = pid === "patchwork";
 					break;
 				case "undefcell":
-					exec = pid === "shugaku" || pid === "lightshadow";
+					exec =
+						pid === "shugaku" || pid === "lightshadow" || pid === "nibunnogo";
 					break;
 				case "autocmp":
 					exec = !!puzzle.painter.autocmp;
@@ -412,7 +441,7 @@
 					exec = pid === "hitori" || pid === "gokigen" || pid === "wagiri";
 					break;
 				case "singlenum":
-					exec = pid === "hanare" || pid === "putteria";
+					exec = pid === "hanare" || pid === "putteria" || pid === "twinarea";
 					break;
 				case "singleregion":
 					exec = pid === "parquet";
@@ -452,8 +481,11 @@
 				case "bdwalk_height":
 					exec = pid === "bdwalk";
 					break;
+				case "balloon_adjacent":
+					exec = pid === "balloon";
+					break;
 				case "pentopia_transparent":
-					exec = pid === "pentopia";
+					exec = pid === "pentopia" || pid === "distopia";
 					break;
 				case "koburin_minesweeper":
 					exec = pid === "koburin";
@@ -466,6 +498,51 @@
 					break;
 				case "heyapin_overlap":
 					exec = pid === "heyapin";
+					break;
+				case "aqre_borders":
+					exec = pid === "aqre";
+					break;
+				case "fillomino_tri":
+					exec = pid === "fillomino";
+					break;
+				case "yajilin_out":
+					exec =
+						[
+							"yajilin",
+							"yajilin-regions",
+							"koburin",
+							"lixloop",
+							"retsurin"
+						].indexOf(pid) >= 0;
+					break;
+				case "slither_full":
+					exec =
+						[
+							"slither",
+							"tslither",
+							"swslither",
+							"myopia",
+							"lineofsight"
+						].indexOf(pid) >= 0;
+					break;
+				case "loop_full":
+					exec =
+						[
+							"mashu",
+							"geradeweg",
+							"disloop",
+							"midloop",
+							"ovotovata",
+							"balance",
+							"turnaround",
+							"turnrun",
+							"icewalk",
+							"waterwalk",
+							"firewalk",
+							"forestwalk",
+							"morningwalk",
+							"wataridori"
+						].indexOf(pid) >= 0;
 					break;
 				default:
 					exec = !!this.list[name];
