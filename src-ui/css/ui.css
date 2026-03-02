@@ -616,6 +616,17 @@ form#fileform2 {
   content: "+";
 }
 
+div#saveicon {
+  float: right;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
+  margin-top: 1px;
+}
+
+
 /***** custom pzplus styles *****/
 
 table.scales {

@@ -1,4 +1,3 @@
-/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -234,6 +233,7 @@
 			}
 		},
 		Cell: {
+			l2cnt: 0,
 			updateFireQans: function() {},
 			posthook: {
 				qnum: function(val) {
@@ -284,9 +284,6 @@
 					this.setQans(0);
 				}
 			}
-		},
-		Cross: {
-			l2cnt: 0
 		},
 		"Dot@firewalk": {
 			getDot: function() {
