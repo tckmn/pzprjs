@@ -1,8 +1,9 @@
 pzpr.classmgr.makeCommon({
 	Bank: {
 		enabled: false,
+		isVerticalList: false,
 
-		// Valid values are: boolean | function(): boolean
+		// Valid values are: boolean | "empty" | function(): boolean
 		allowAdd: false,
 
 		// One entry contains one of these:
@@ -35,6 +36,8 @@ pzpr.classmgr.makeCommon({
 				pieces = this[preset.func](param);
 			} else if (preset.constant) {
 				pieces = preset.constant;
+			} else if (Array.isArray(preset)) {
+				pieces = preset;
 			} else {
 				return;
 			}
@@ -70,7 +73,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		performLayout: function() {
-			if (!this.pieces || !this.width) {
+			if (!this.pieces || !this.puzzle.board.cols) {
 				return;
 			}
 
@@ -78,21 +81,37 @@ pzpr.classmgr.makeCommon({
 				y = 0,
 				nexty = 0;
 
-			var showAdd = !this.puzzle.playeronly && !!this.allowAdd;
+			if (this.isVerticalList) {
+				this.width = 3;
+			}
+
+			var showAdd = !this.puzzle.playeronly ? this.allowAdd : false;
 			var len = this.pieces.length;
+			if (showAdd === "empty") {
+				showAdd = len === 0;
+			}
 
 			for (var i = 0; i < len + (showAdd ? 1 : 0); i++) {
 				var p = i < len ? this.pieces[i] : this.addButton;
-				if (x + p.w + 1 > this.width) {
-					x = 0;
-					y = nexty;
-				}
 
-				p.x = x;
-				p.y = y;
-				nexty = Math.max(nexty, y + p.h + 1);
-				p.index = i;
-				x += p.w + 1;
+				if (this.isVerticalList) {
+					p.x = 0;
+					p.y = i;
+					p.index = i;
+					nexty = i + (p.height - 1);
+					this.width = Math.max(this.width, p.w);
+				} else {
+					if (x + p.w + 1 > this.width) {
+						x = 0;
+						y = nexty;
+					}
+
+					p.x = x;
+					p.y = y;
+					nexty = Math.max(nexty, y + p.h + 1);
+					p.index = i;
+					x += p.w + 1;
+				}
 			}
 
 			if (!showAdd) {
@@ -113,6 +132,10 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < this.pieces.length; i++) {
 				this.pieces[i].seterr(0);
 			}
+		},
+
+		sanitizeItem: function(str) {
+			return str;
 		},
 
 		setPiece: function(piece, index) {
@@ -196,8 +219,6 @@ pzpr.classmgr.makeCommon({
 	},
 
 	"BankAddButton:BankPiece": {
-		isadd: true,
-
 		w: 2,
 		h: 2,
 

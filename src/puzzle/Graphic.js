@@ -138,6 +138,7 @@
 			// 枠外の一辺のmargin(セル数換算)
 			margin: 0.15,
 			bankratio: 0.5,
+			bankHorizontalOffset: 0.25,
 			bankVerticalOffset: 0.5,
 
 			// canvasの大きさを保持する
@@ -384,11 +385,23 @@
 			// pc.getOffsetRows()  有効範囲が(0,0)-(C,R)からずれているパズルで、上下の中心位置を調整する
 			//---------------------------------------------------------------------------
 			getCanvasCols: function() {
-				return this.getBoardCols() + 2 * this.margin;
+				var cols = this.getBoardCols() + 2 * this.margin;
+				if (
+					this.board.bank &&
+					this.board.bank.isVerticalList &&
+					this.showBank
+				) {
+					cols += this.board.bank.width * this.bankratio + 1 / 16;
+				}
+				return cols;
 			},
 			getCanvasRows: function() {
 				var rows = this.getBoardRows() + 2 * this.margin;
-				if (this.board.bank && this.showBank) {
+				if (
+					this.board.bank &&
+					!this.board.bank.isVerticalList &&
+					this.showBank
+				) {
 					rows += this.board.bank.height * this.bankratio + 1 / 16;
 				}
 				return rows;
@@ -405,12 +418,24 @@
 
 			getOffsetCols: function() {
 				/* 右にずらしたい分プラス、左にずらしたい分マイナス */
-				return (0 - this.board.minbx) / 2;
+				var cols = (0 - this.board.minbx) / 2;
+				if (
+					this.board.bank &&
+					this.board.bank.isVerticalList &&
+					this.showBank
+				) {
+					cols -= (this.board.bank.width * this.bankratio) / 2;
+				}
+				return cols;
 			},
 			getOffsetRows: function() {
 				/* 下にずらしたい分プラス、上にずらしたい分マイナス */
 				var rows = (0 - this.board.minby) / 2;
-				if (this.board.bank && this.showBank) {
+				if (
+					this.board.bank &&
+					!this.board.bank.isVerticalList &&
+					this.showBank
+				) {
 					rows -= (this.board.bank.height * this.bankratio) / 2;
 				}
 				return rows;
@@ -456,8 +481,7 @@
 			// pc.resetRange()     rangeオブジェクトを初期化する
 			//---------------------------------------------------------------------------
 			prepaint: function() {
-				var hasIndicator =
-					this.pid === "starbattle" || this.pid === "isowatari";
+				var hasIndicator = this.puzzle.cursor.hasIndicator;
 				if (this.suspended || !this.context) {
 					return;
 				}

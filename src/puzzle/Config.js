@@ -153,6 +153,14 @@
 				variant: true,
 				volatile: true
 			}); /* Maximum number is 3 */
+			this.add("trizone_ghost", false, {
+				variant: true,
+				volatile: true
+			}); /* Groups may have no number */
+			this.add("lapaz_liar", false, {
+				variant: true,
+				volatile: true
+			}); /* Clues may be erased by shading over them */
 			this.add("slither_full", false, {
 				variant: true,
 				volatile: true
@@ -428,7 +436,7 @@
 					exec = pid === "lollipops" || pid === "magnets";
 					break;
 				case "patchwork_leftaux":
-					exec = pid === "patchwork";
+					exec = pid === "patchwork" || pid === "trizone";
 					break;
 				case "undefcell":
 					exec =
@@ -438,7 +446,12 @@
 					exec = !!puzzle.painter.autocmp;
 					break;
 				case "autoerr":
-					exec = pid === "hitori" || pid === "gokigen" || pid === "wagiri";
+					exec =
+						pid === "hitori" ||
+						pid === "gokigen" ||
+						pid === "wagiri" ||
+						pid === "narrow" ||
+						pid === "ubahn";
 					break;
 				case "singlenum":
 					exec = pid === "hanare" || pid === "putteria" || pid === "twinarea";
@@ -529,6 +542,12 @@
 							"lineofsight"
 						].indexOf(pid) >= 0;
 					break;
+				case "lapaz_liar":
+					exec = pid === "lapaz";
+					break;
+				case "trizone_ghost":
+					exec = pid === "trizone";
+					break;
 				case "loop_full":
 					exec =
 						[
@@ -547,7 +566,9 @@
 							"morningwalk",
 							"roboticwalk",
 							"wataridori",
-							"bhaibahan"
+							"bhaibahan",
+							"bwloop",
+							"lring"
 						].indexOf(pid) >= 0;
 					break;
 				default:

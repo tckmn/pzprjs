@@ -152,6 +152,12 @@
 				case "fillomino":
 					idname = "fillomino_tri";
 					break;
+				case "lapaz":
+					idname = "lapaz_liar";
+					break;
+				case "trizone":
+					idname = "trizone_ghost";
+					break;
 				case "slither":
 				case "tslither":
 				case "swslither":
@@ -175,6 +181,8 @@
 				case "roboticwalk":
 				case "wataridori":
 				case "bhaibahan":
+				case "bwloop":
+				case "lring":
 					idname = "loop_full";
 					break;
 			}

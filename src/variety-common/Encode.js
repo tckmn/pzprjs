@@ -671,6 +671,59 @@ pzpr.classmgr.makeCommon({
 			this.outbstr += cm;
 		},
 
+		decodeOuterBorder: function() {
+			var bstr = this.outbstr,
+				bd = this.board,
+				twi = [16, 8, 4, 2, 1];
+			var pos = bstr
+					? Math.min(((bd.border.length + 4) / 5) | 0, bstr.length)
+					: 0,
+				id = 0;
+			for (var i = 0; i < pos; i++) {
+				var ca = parseInt(bstr.charAt(i), 32);
+				for (var w = 0; w < 5; w++) {
+					if (!!bd.border[id]) {
+						bd.border[id].ques = ca & twi[w] ? 1 : 0;
+						id++;
+					}
+				}
+			}
+			this.outbstr = bstr.substr(pos);
+		},
+		encodeOuterBorder: function() {
+			var hasoutside = 0,
+				bd = this.board;
+			var bdinside = 2 * bd.cols * bd.rows - bd.cols - bd.rows;
+			for (var id = bdinside; id < bd.border.length && !hasoutside; id++) {
+				if (bd.border[id].isLineNG()) {
+					hasoutside = true;
+				}
+			}
+			var num = 0,
+				pass = 0,
+				cm = "",
+				twi = [16, 8, 4, 2, 1];
+			for (
+				var id = 0, max = !hasoutside ? bdinside : bd.border.length;
+				id < max;
+				id++
+			) {
+				if (bd.border[id].isLineNG()) {
+					pass += twi[num];
+				}
+				num++;
+				if (num === 5) {
+					cm += pass.toString(32);
+					num = 0;
+					pass = 0;
+				}
+			}
+			if (num > 0) {
+				cm += pass.toString(32);
+			}
+			this.outbstr += cm;
+		},
+
 		//---------------------------------------------------------------------------
 		// enc.decodeCrossMark() 黒点をデコードする
 		// enc.encodeCrossMark() 黒点をエンコードする
@@ -787,7 +840,12 @@ pzpr.classmgr.makeCommon({
 				pass = 0,
 				tri = [9, 3, 1];
 			for (var c = 0; c < length; c++) {
-				pass += get_func(c) * tri[num];
+				var value = get_func(c);
+				if (value >= 0 && value <= 2) {
+					pass += value * tri[num];
+				} else {
+					throw Error("Value out of range");
+				}
 				num++;
 				if (num === 3) {
 					cm += pass.toString(27);

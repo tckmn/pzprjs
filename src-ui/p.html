@@ -88,8 +88,6 @@ if ('serviceWorker' in navigator) {
        <li data-value="3"><span>__use_tri.3__</span></li>
      </menu></li>
      <li class="check" data-config="bgcolor"><span>__bgcolor.menu__</span></li>
-     <li class="check" data-config="autoerr"><span data-disp-pid="hitori">__autoerr.menu.hitori__</span
-                                            ><span data-disp-pid="gokigen,wagiri">__autoerr.menu.gokigen__</span></li>
      <li class="check" data-config="multierr"><span>__multierr__</span></li>
      <li class="check" data-config="forceallcell"><span>__forceallcell.menu__</span></li>
      <li class="check" data-config="dirauxmark"><span>__dirauxmark.menu__</span></li>
@@ -192,6 +190,7 @@ if ('serviceWorker' in navigator) {
       <div class="child" data-value="undef">__inputmode.undef__</div>
       <div class="child" data-value="line">__inputmode.line__</div>
       <div class="child" data-value="peke">__inputmode.peke__</div>
+      <div class="child" data-value="pekeborder">__inputmode.pekeborder__</div>
       <div class="child" data-value="diraux">__inputmode.diraux__</div>
       <div class="child" data-value="bar">__inputmode.bar__</div>
       <div class="child" data-value="crossbar">__inputmode.bar__</div>
@@ -278,6 +277,7 @@ if ('serviceWorker' in navigator) {
         <input type="checkbox">
         <span data-disp-pid="hitori">__autoerr.tool.hitori__</span>
         <span data-disp-pid="gokigen">__autoerr.tool.gokigen__</span>
+        <span data-disp-pid="ubahn,narrow">__autoerr.tool.ubahn__</span>
         <span data-disp-pid="wagiri">__autoerr.tool.wagiri__</span>
       </label>
     </div>
@@ -476,6 +476,18 @@ if ('serviceWorker' in navigator) {
       <label>
         <input type="checkbox">
         <span>__fillomino_tri__</span>
+      </label>
+    </div>
+    <div class="config" data-config="trizone_ghost">
+      <label>
+        <input type="checkbox">
+        <span>__trizone_ghost__</span>
+      </label>
+    </div>
+    <div class="config" data-config="lapaz_liar">
+      <label>
+        <input type="checkbox">
+        <span>__lapaz_liar__</span>
       </label>
     </div>
     <div class="config" data-config="slither_full">
@@ -826,6 +838,16 @@ if ('serviceWorker' in navigator) {
         <span class="spacer"></span>
         <button type="button" class="btn btn-danger" data-button-exec="delete">__delete__</button>
       </div>
+    </form>
+  </div>
+
+  <div class="popup" id="popwordbank">
+    <div class="titlebar">__wordbank__</div>
+    <form name="wordbank">
+      <textarea id="wordbank_field" name="bank" cols=20 rows=24 wrap="hard"></textarea>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="apply">__applypreset.submit__</button>
+      <button type="button" class="btn" data-button-exec="close">__cancel__</button>
     </form>
   </div>
 

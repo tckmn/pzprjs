@@ -180,7 +180,7 @@ pzpr.classmgr.makeCommon({
 					g.fillStyle = color;
 					g.fillRectCenter(
 						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
-						cell.by * this.bh,
+						cell.by * this.bh + this.getCellVerticalOffset(cell),
 						this.bw + 0.5,
 						this.bh + 0.5
 					);
@@ -191,6 +191,9 @@ pzpr.classmgr.makeCommon({
 		},
 
 		getCellHorizontalOffset: function(cell) {
+			return 0;
+		},
+		getCellVerticalOffset: function(cell) {
 			return 0;
 		},
 
@@ -549,7 +552,10 @@ pzpr.classmgr.makeCommon({
 				if (!!text) {
 					g.fillStyle = colorfunc.call(this, cell);
 					var x = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
-					var y = cell.by * this.bh + this.getNumberVerticalOffset(cell);
+					var y =
+						cell.by * this.bh +
+						this.getCellVerticalOffset(cell) +
+						this.getNumberVerticalOffset(cell);
 					this.disptext(text, x, y, textoption);
 				} else {
 					g.vhide();
@@ -932,13 +938,13 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < clist.length; i++) {
 				var cross = clist[i],
 					px = cross.bx * this.bw,
-					py = cross.by * this.bh;
+					py = cross.by * this.bh,
+					iserr = cross.error === 1 || cross.qinfo === 1;
 
 				// ○の描画
 				g.vid = "x_cp_" + cross.id;
 				if (cross.qnum !== -1) {
-					g.fillStyle =
-						cross.error === 1 || cross.qinfo === 1 ? this.errcolor1 : "white";
+					g.fillStyle = iserr ? this.errcolor1 : "white";
 					g.strokeStyle = "black";
 					g.shapeCircle(px, py, csize);
 				} else {
@@ -947,13 +953,17 @@ pzpr.classmgr.makeCommon({
 
 				// 数字の描画
 				g.vid = "cross_text_" + cross.id;
-				if (cross.qnum >= 0) {
-					g.fillStyle = this.quescolor;
-					this.disptext("" + cross.qnum, px, py, option);
+				var txt = this.getCrossNumberText(cross, cross.qnum);
+				if (txt) {
+					g.fillStyle = iserr ? "white" : this.quescolor;
+					this.disptext(txt, px, py, option);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+		getCrossNumberText: function(cross, num) {
+			return num >= 0 ? "" + num : null;
 		},
 		drawCrossMarks: function() {
 			var g = this.vinc("cross_mark", "auto", true);
@@ -1529,9 +1539,9 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawMBs()    Cell上の○,×をCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawMBs: function() {
+		drawMBs: function(withcross) {
 			var g = this.vinc("cell_mb", "auto", true);
-			g.lineWidth = 1;
+			g.lineWidth = Math.max(1, this.cw * 0.04);
 
 			var rsize = this.cw * 0.35;
 			var clist = this.range.cells;
@@ -1553,7 +1563,7 @@ pzpr.classmgr.makeCommon({
 				}
 
 				g.vid = "c_MB2_" + cell.id;
-				if (cell.qsub === 2) {
+				if (withcross !== false && cell.qsub === 2) {
 					g.strokeCross(px, py, rsize);
 				} else {
 					g.vhide();
@@ -1669,7 +1679,7 @@ pzpr.classmgr.makeCommon({
 					g.fillStyle = color;
 					g.fillCircle(
 						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
-						cell.by * this.bh,
+						cell.by * this.bh + this.getCellVerticalOffset(cell),
 						rsize_fill
 					);
 				} else {
@@ -1689,7 +1699,7 @@ pzpr.classmgr.makeCommon({
 					g.strokeStyle = color;
 					g.strokeCircle(
 						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
-						cell.by * this.bh,
+						cell.by * this.bh + this.getCellVerticalOffset(cell),
 						rsize_stroke
 					);
 				} else {
@@ -2070,12 +2080,16 @@ pzpr.classmgr.makeCommon({
 		},
 
 		drawCursor: function(islarge, isdraw) {
+			if (isdraw !== false) {
+				isdraw = this.puzzle.getConfig("cursor") && this.puzzle.cursor.isActive;
+			}
+
 			this.drawRawCursor(
 				"target_cursor",
 				"",
 				this.puzzle.cursor,
 				islarge,
-				isdraw !== false && this.puzzle.getConfig("cursor"),
+				isdraw,
 				this.puzzle.editmode ? this.targetColorEdit : this.targetColorPlay
 			);
 		},
@@ -2182,10 +2196,7 @@ pzpr.classmgr.makeCommon({
 			var target = cursor.targetdir;
 			var cell = cursor.getc();
 
-			if (
-				cursor.disableAnum &&
-				this.puzzle.mouse.inputMode.indexOf("number") === -1
-			) {
+			if (!cursor.isActive) {
 				target = 0;
 			}
 
@@ -2757,7 +2768,11 @@ pzpr.classmgr.makeCommon({
 				var r = this.bankratio;
 				var px = this.cw * r * (addButton.x + 0.25) + 1;
 				var py = this.ch * r * (addButton.y + 0.25) + 1;
-				py += (this.board.rows + this.bankVerticalOffset) * this.ch;
+				if (bd.bank.isVerticalList) {
+					px += (this.board.cols + this.bankHorizontalOffset) * this.cw;
+				} else {
+					py += (this.board.rows + this.bankVerticalOffset) * this.ch;
+				}
 				var px2 = px + this.cw * r * addButton.w - 1;
 				var py2 = py + this.ch * r * addButton.h - 1;
 				for (var i = 0; i < 4; i++) {
