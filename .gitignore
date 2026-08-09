@@ -1,4 +1,13 @@
-dist
+dist/*
+!dist/android-chrome-*.png
+!dist/apple-touch-icon.png
+!dist/db.js
+!dist/favicon*
+!dist/safari-pinned-tab.svg
+!dist/site.webmanifest
+!dist/sw.js
+!dist/theme.js
+
 node_modules
 .DS_Store
 .eslintcache
