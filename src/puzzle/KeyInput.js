@@ -238,7 +238,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			// pzplus pause functionality
-			if (this.keydown && puzzle.playeronly && (localStorage.pause === 'xs' ? c === 'F4' : (c === 'shift+p' || (c === 'p' && puzzle.pid !== 'pentominous')))) {
+			if (this.keydown && puzzle.playeronly && (localStorage.pause === 'xs' ? c === 'F4' : (c === 'shift+p' || (c === 'p' && puzzle.pid !== 'pentominous' && puzzle.pid !== 'scrabble')))) {
 				puzzle.togglePause();
 				return;
 			}
